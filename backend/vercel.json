@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/horoscope.js": {
+      "maxDuration": 60
+    }
+  }
+}

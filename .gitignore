@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+
+# Local tooling state (not project source)
+.claude/
+
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+*.xcuserdatad
+xcuserdata/
+*.moved-aside
+
+# Swift Package Manager build artifacts (Package.resolved IS committed)
+.build/
+.swiftpm/xcode/package.xcworkspace/xcuserdata/
+
+# Node / Vercel (backend also has its own .gitignore)
+node_modules/
+.env
+.env.*
+.vercel

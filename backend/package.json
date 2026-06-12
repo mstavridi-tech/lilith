@@ -1,0 +1,7 @@
+{
+  "name": "lilith-horoscope",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LILITH horoscope backend: one Vercel function that calls the Claude API with the LILITH voice prompt. Receives placements only, never identity."
+}
