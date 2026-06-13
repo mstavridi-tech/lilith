@@ -13,7 +13,8 @@ struct TodayView: View {
     @State private var horoscope: HoroscopeService.HoroscopeResponse?
     @State private var moonStatus = "☽ READING THE SKY"
     @State private var moonElongation: Double = 180 // tonight's real phase; full until loaded
-    @State private var scope: HoroscopeService.Scope = .daily
+    @State private var scope: HoroscopeService.Scope = .daily        // the selected tab (underline)
+    @State private var displayScope: HoroscopeService.Scope = .daily // what the reading actually shows
     @State private var showMoonSheet = false
 
     // Lure-pass state
@@ -227,10 +228,10 @@ struct TodayView: View {
     /// with paragraph spacing (docs/03 long-form rule); monthly chapters get gold mono labels.
     @ViewBuilder
     private var reading: some View {
-        if scope == .daily {
+        if displayScope == .daily {
             Text(readingText)
                 .font(Theme.body(15))
-                .foregroundStyle(Theme.bone.opacity(0.82))
+                .foregroundStyle(Theme.bone.opacity(0.9))
                 .multilineTextAlignment(.center)
                 .lineSpacing(5)
                 .frame(maxWidth: 272)
@@ -242,9 +243,11 @@ struct TodayView: View {
         }
     }
 
+    /// Both weekly and monthly carry the simple gold section labels Maria liked on monthly (THE ARC,
+    /// KEY DATES, and so on): any short ALL-CAPS line ending in ":" becomes a gold mono label.
     private var longFormReading: some View {
         VStack(alignment: .leading, spacing: 18) {
-            ForEach(Array(Self.paragraphs(readingText, detectLabels: scope == .monthly).enumerated()), id: \.offset) { _, para in
+            ForEach(Array(Self.paragraphs(readingText, detectLabels: true).enumerated()), id: \.offset) { _, para in
                 VStack(alignment: .leading, spacing: 7) {
                     if let label = para.label {
                         Text(label)
@@ -254,7 +257,7 @@ struct TodayView: View {
                     }
                     Text(para.body)
                         .font(Theme.body(15))
-                        .foregroundStyle(Theme.bone.opacity(0.82))
+                        .foregroundStyle(Theme.bone.opacity(0.9))
                         .multilineTextAlignment(.leading)
                         .lineSpacing(10) // ~1.7 line-height at 15pt, a comfortable reading column
                         .fixedSize(horizontal: false, vertical: true) // full height, never an ellipsis
@@ -328,12 +331,21 @@ struct TodayView: View {
     private func load() async {
         updateSky()
         let isFirst = horoscope == nil
-        let new = await HoroscopeService.reading(chart: chart, scope: scope)
+        let target = scope
+        let new = await HoroscopeService.reading(chart: chart, scope: target)
+        // The tab may have changed again while we awaited; only commit if it's still the latest pick.
+        guard scope == target else { return }
         if isFirst {
             horoscope = new
+            displayScope = target
             bumpDevelop()
         } else {
-            withAnimation(.easeInOut(duration: 0.25)) { horoscope = new }
+            // Swap the content and the rendered scope together, so the reading never shows the old
+            // scope's text in the new scope's layout (the weekly "glitch"). One clean crossfade.
+            withAnimation(.easeInOut(duration: 0.3)) {
+                horoscope = new
+                displayScope = target
+            }
         }
     }
 
@@ -342,8 +354,10 @@ struct TodayView: View {
     private func refresh() async {
         isRefreshing = true
         updateSky()
-        let new = await HoroscopeService.refresh(chart: chart, scope: scope)
+        let target = scope
+        let new = await HoroscopeService.refresh(chart: chart, scope: target)
         horoscope = new
+        displayScope = target
         isRefreshing = false
         bumpDevelop()
     }

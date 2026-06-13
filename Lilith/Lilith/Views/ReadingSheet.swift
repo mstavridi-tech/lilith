@@ -116,7 +116,7 @@ struct ReadingSheet: View {
     private func paragraph(_ text: String) -> some View {
         Text(text)
             .font(Theme.body(17))
-            .foregroundStyle(Theme.bone.opacity(0.88))
+            .foregroundStyle(Theme.bone.opacity(0.92))
             .lineSpacing(7)
             .multilineTextAlignment(.leading)
             .frame(maxWidth: .infinity, alignment: .leading)

@@ -24,12 +24,14 @@ enum Theme {
     //
     // Cormorant runs optically smaller than New York at equal point size, so when the real font is
     // active we scale display type up by `cormorantDisplayScale`. If after building it looks a hair
-    // small or large next to the v9 mockup, nudge THIS ONE NUMBER and rebuild. Body gets its own.
+    // small or large next to the v9 mockup, nudge THIS ONE NUMBER and rebuild.
+    //
+    // DISPLAY type only (headlines, titles, mantra) uses Cormorant: that is where it shines. The
+    // long READING body stays the system serif (New York), which is built for reading on screen and
+    // holds contrast on black. Cormorant Regular at body size is too thin to read in long columns.
     static let cormorantDisplayScale: CGFloat = 1.12
-    static let cormorantBodyScale: CGFloat = 1.08
 
     private static let displayFont = "CormorantGaramond-Medium"
-    private static let bodyFont = "CormorantGaramond-Regular"
     static let italicFont = "CormorantGaramond-MediumItalic"
 
     /// True once the bundled Cormorant files exist and are registered. Cached after first lookup.
@@ -57,11 +59,10 @@ enum Theme {
     /// Tracking that scales with the type: the celestial editorial letterspacing.
     static func displayTracking(_ size: CGFloat) -> CGFloat { size * 0.18 }
 
-    /// Body copy: serif for readings, generous line height, never tiny. Cormorant Regular fallback.
+    /// Body copy: the system serif (New York), built for reading and high-contrast on black. Kept
+    /// deliberately simple and legible while the display type carries the Cormorant character.
     static func body(_ size: CGFloat = 17) -> Font {
-        cormorantActive
-            ? .custom(bodyFont, size: size * cormorantBodyScale)
-            : .system(size: size, weight: .regular, design: .serif)
+        .system(size: size, weight: .regular, design: .serif)
     }
 
     /// UI controls only (buttons, toggles): the one place sans-serif lives.

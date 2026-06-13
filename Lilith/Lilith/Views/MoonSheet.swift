@@ -35,7 +35,7 @@ struct MoonSheet: View {
 
                 Text(meaning)
                     .font(Theme.body(17))
-                    .foregroundStyle(Theme.bone.opacity(0.88))
+                    .foregroundStyle(Theme.bone.opacity(0.92))
                     .lineSpacing(7)
                     .multilineTextAlignment(.leading)
                     .padding(.top, 26)
