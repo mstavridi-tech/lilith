@@ -259,10 +259,13 @@ struct MoonView: View {
             .frame(width: diameter, height: diameter)
             .clipShape(Circle())
 
-            // Tonight's actual phase: a soft terminator shadow over the night side.
+            // Tonight's actual phase: a terminator shadow over the night side. Kept deep and only
+            // lightly softened so the phase reads clearly (the old version was so faint and blurred
+            // that even a real crescent looked full). The terminator geometry stays astronomically
+            // correct; we just render the existing shadow with enough contrast to actually see it.
             MoonPhaseShadow(elongation: elongation)
-                .fill(Theme.void.opacity(0.95))
-                .blur(radius: diameter * 0.03)
+                .fill(Theme.void.opacity(0.97))
+                .blur(radius: diameter * 0.016)
                 .frame(width: diameter, height: diameter)
                 .clipShape(Circle())
 
