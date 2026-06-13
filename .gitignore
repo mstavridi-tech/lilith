@@ -21,3 +21,6 @@ node_modules/
 .env
 .env.*
 .vercel
+
+# Dead pre-Xcode scaffold (kept on disk, never in repo)
+_archive-starter-DO-NOT-EDIT/
