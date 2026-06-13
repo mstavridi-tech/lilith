@@ -12,6 +12,7 @@ struct TodayView: View {
     let chart: NatalChart
     @State private var horoscope: HoroscopeService.HoroscopeResponse?
     @State private var moonStatus = "☽ READING THE SKY"
+    @State private var moonCaption = "READING THE SKY" // phase name + % lit, named plainly under the moon
     @State private var moonElongation: Double = 180 // tonight's real phase; full until loaded
     @State private var scope: HoroscopeService.Scope = .daily        // the selected tab (underline)
     @State private var displayScope: HoroscopeService.Scope = .daily // what the reading actually shows
@@ -33,6 +34,7 @@ struct TodayView: View {
                 VStack(spacing: 0) {
                     credits.cascadeIn(0, trigger: developToken)
                     moonBlock
+                    moonCaptionView.cascadeIn(1, trigger: developToken)
                     scopeSwitcher.cascadeIn(1, trigger: developToken)
                     eyebrow.cascadeIn(2, trigger: developToken)
                     headline.cascadeIn(3, trigger: developToken)
@@ -121,6 +123,18 @@ struct TodayView: View {
             }
             .padding(.top, 24)
             .moonSettle(trigger: developToken)
+    }
+
+    /// The phase, named plainly right under the moon, with how lit it is tonight. So the cycle is
+    /// always legible even when the disc itself is near-full and the shadow is only a sliver.
+    private var moonCaptionView: some View {
+        Text(moonCaption.isEmpty ? "READING THE SKY" : moonCaption)
+            .font(Theme.mono(11))
+            .tracking(Theme.tracking(11, em: 0.22))
+            .foregroundStyle(Theme.gold.opacity(0.92))
+            .multilineTextAlignment(.center)
+            .contentTransition(.opacity)
+            .padding(.top, 6)
     }
 
     /// The signature pull-to-refresh: while loading, the terminator shadow sweeps across the moon,
@@ -376,6 +390,11 @@ struct TodayView: View {
         }
         if let elongation = try? ChartEngine.moonElongation() {
             moonElongation = elongation
+            // Illuminated fraction from the sun-moon elongation: (1 - cos θ) / 2, 0 = new, 1 = full.
+            let illum = (1 - cos(elongation * .pi / 180)) / 2
+            if let phase = try? ChartEngine.moonPhase() {
+                moonCaption = "\(phase.rawValue.uppercased()) · \(Int((illum * 100).rounded()))% LIT"
+            }
         }
     }
 }
