@@ -4,6 +4,10 @@ import SwiftUI
 /// Layout is the APPROVED v7 card (docs/design/today-card-mockup.html): everything centered,
 /// real moon up top ringed by hairline geometry, mono credits in the corners, ember eyebrow,
 /// letterspaced serif headline, capped reading, diamond divider, caps mantra, big three + wordmark.
+///
+/// The lure pass (docs/08) adds the craft on top of that layout: the card develops instead of
+/// popping, the sky drifts in parallax behind it, pull-to-refresh is the signature eclipse (never a
+/// spinner), and the screen answers her touch with restrained haptics.
 struct TodayView: View {
     let chart: NatalChart
     @State private var horoscope: HoroscopeService.HoroscopeResponse?
@@ -12,22 +16,30 @@ struct TodayView: View {
     @State private var scope: HoroscopeService.Scope = .daily
     @State private var showMoonSheet = false
 
+    // Lure-pass state
+    @State private var developToken = 0       // bumps once per fresh load; drives the cascade
+    @State private var scrollY: CGFloat = 0    // top offset, for parallax + custom pull-to-refresh
+    @State private var armed = false           // over-pulled past the threshold, waiting for release
+    @State private var isRefreshing = false    // the eclipse is sweeping
+
     private let moonDiameter: CGFloat = 234 // v9: bigger, floating free in black
+    private let pullThreshold: CGFloat = 88
+    private static let space = "todayScroll"
 
     var body: some View {
         GeometryReader { geo in
             ScrollView {
                 VStack(spacing: 0) {
-                    credits
+                    credits.cascadeIn(0, trigger: developToken)
                     moonBlock
-                    scopeSwitcher
-                    eyebrow
-                    headline
-                    reading
-                    HairlineDivider().padding(.top, 22)
-                    mantra
+                    scopeSwitcher.cascadeIn(1, trigger: developToken)
+                    eyebrow.cascadeIn(2, trigger: developToken)
+                    headline.cascadeIn(3, trigger: developToken)
+                    reading.cascadeIn(4, trigger: developToken)
+                    HairlineDivider().padding(.top, 22).cascadeIn(5, trigger: developToken)
+                    mantra.cascadeIn(6, trigger: developToken)
                     Spacer(minLength: 30)
-                    footer
+                    footer.cascadeIn(7, trigger: developToken)
                 }
                 .padding(.horizontal, 30)
                 .padding(.top, 8)
@@ -36,13 +48,43 @@ struct TodayView: View {
                 // daily, but free to grow past it so a long weekly or monthly reading shows in
                 // full and scrolls. Never a fixed height, which is what truncated the reading.
                 .frame(minHeight: geo.size.height, alignment: .top)
+                .background(scrollReader)
             }
             .scrollIndicators(.hidden)
-            .refreshable { await refresh() }
+            .coordinateSpace(name: Self.space)
+            .onPreferenceChange(ScrollOffsetKey.self) { handleScroll($0) }
         }
-        .cosmicScreen(bloomAlignment: .top, bloomIntensity: 1)
+        .cosmicScreen(bloomAlignment: .top, bloomIntensity: 1, parallax: parallaxOffset)
         .task { await load() }
         .sheet(isPresented: $showMoonSheet) { MoonSheet(chart: chart) }
+    }
+
+    // MARK: Scroll plumbing (parallax + the custom, spinner-free pull-to-refresh)
+
+    private var scrollReader: some View {
+        GeometryReader { proxy in
+            Color.clear.preference(key: ScrollOffsetKey.self,
+                                   value: proxy.frame(in: .named(Self.space)).minY)
+        }
+    }
+
+    /// The sky drifts a fraction of the scroll, slower than the content, for depth. Clamped so it
+    /// can never wander far from home.
+    private var parallaxOffset: CGFloat {
+        max(-60, min(60, scrollY * 0.10))
+    }
+
+    /// Arm on over-pull, fire on release. No system spinner is ever involved.
+    private func handleScroll(_ y: CGFloat) {
+        scrollY = y
+        guard !isRefreshing else { return }
+        if y > pullThreshold, !armed {
+            armed = true
+            Haptics.light()
+        } else if armed, y < 12 {
+            armed = false
+            Task { await refresh() }
+        }
     }
 
     // MARK: Top credits (mono, in the corners like poster credits)
@@ -70,9 +112,33 @@ struct TodayView: View {
     private var moonBlock: some View {
         MoonView(diameter: moonDiameter, elongation: moonElongation)
             .frame(height: moonDiameter + 40)
-            .padding(.top, 24)
+            .overlay { if isRefreshing { eclipseSweep } }
             .contentShape(Rectangle())
-            .onTapGesture { showMoonSheet = true }
+            .onTapGesture {
+                Haptics.open()
+                showMoonSheet = true
+            }
+            .padding(.top, 24)
+            .moonSettle(trigger: developToken)
+    }
+
+    /// The signature pull-to-refresh: while loading, the terminator shadow sweeps across the moon,
+    /// again and again until the reading lands. An eclipse, never a spinner (docs/08). Driven by
+    /// wall-clock time so it auto-stops the instant `isRefreshing` flips off.
+    private var eclipseSweep: some View {
+        TimelineView(.animation) { tl in
+            let t = tl.date.timeIntervalSinceReferenceDate
+            let p = CGFloat((t.truncatingRemainder(dividingBy: 1.3)) / 1.3) // 0...1 each 1.3s
+            Circle()
+                .fill(Theme.void.opacity(0.95))
+                .frame(width: moonDiameter, height: moonDiameter)
+                .offset(x: -moonDiameter * 1.25 + p * moonDiameter * 2.5)
+                .blur(radius: moonDiameter * 0.05)
+                .frame(width: moonDiameter, height: moonDiameter)
+                .clipShape(Circle())
+        }
+        .frame(width: moonDiameter, height: moonDiameter)
+        .allowsHitTesting(false)
     }
 
     // MARK: Scope — DAILY / WEEKLY / MONTHLY (all hit the same backend, docs/06)
@@ -82,6 +148,7 @@ struct TodayView: View {
             ForEach(HoroscopeService.Scope.allCases) { s in
                 Button {
                     guard scope != s else { return }
+                    Haptics.light()
                     scope = s
                     Task { await load() }
                 } label: {
@@ -98,6 +165,7 @@ struct TodayView: View {
                 .buttonStyle(.plain)
             }
         }
+        .animation(.easeInOut(duration: 0.2), value: scope)
         .padding(.top, 24)
     }
 
@@ -146,6 +214,7 @@ struct TodayView: View {
             .foregroundStyle(Theme.bone)
             .multilineTextAlignment(.center)
             .lineSpacing(8)
+            .contentTransition(.opacity) // crossfade on scope change, never a hard cut
             .padding(.leading, Theme.tracking(23, em: 0.19)) // recenter the letterspacing
             .padding(.top, 14)
     }
@@ -166,6 +235,7 @@ struct TodayView: View {
                 .lineSpacing(5)
                 .frame(maxWidth: 272)
                 .fixedSize(horizontal: false, vertical: true) // never truncate
+                .contentTransition(.opacity)
                 .padding(.top, 16)
         } else {
             longFormReading
@@ -232,6 +302,7 @@ struct TodayView: View {
             .tracking(Theme.tracking(15, em: 0.3))
             .foregroundStyle(Theme.bone)
             .multilineTextAlignment(.center)
+            .contentTransition(.opacity)
             .padding(.leading, Theme.tracking(15, em: 0.3))
             .padding(.top, 18)
     }
@@ -248,17 +319,39 @@ struct TodayView: View {
         }
     }
 
+    // MARK: Loading
+
     /// Cache-first. Runs on appear, tab switch, and scope switch. Costs ZERO network calls when
     /// this scope is already cached for today; only the first view of a scope per day fetches.
+    /// The develop cascade fires only on the very first content load (never on a tab return); scope
+    /// switches crossfade the text instead.
     private func load() async {
         updateSky()
-        horoscope = await HoroscopeService.reading(chart: chart, scope: scope)
+        let isFirst = horoscope == nil
+        let new = await HoroscopeService.reading(chart: chart, scope: scope)
+        if isFirst {
+            horoscope = new
+            bumpDevelop()
+        } else {
+            withAnimation(.easeInOut(duration: 0.25)) { horoscope = new }
+        }
     }
 
-    /// Pull-to-refresh: the one manual override that always re-fetches from the backend.
+    /// Pull-to-refresh: the one manual override that always re-fetches from the backend. Develops
+    /// the card again when the fresh reading lands.
     private func refresh() async {
+        isRefreshing = true
         updateSky()
-        horoscope = await HoroscopeService.refresh(chart: chart, scope: scope)
+        let new = await HoroscopeService.refresh(chart: chart, scope: scope)
+        horoscope = new
+        isRefreshing = false
+        bumpDevelop()
+    }
+
+    /// One fresh-load beat: replay the cascade and answer with a single soft landing.
+    private func bumpDevelop() {
+        developToken += 1
+        Haptics.soft()
     }
 
     /// Tonight's moon status and phase for the card. Pure local math, never a network call.
@@ -271,4 +364,11 @@ struct TodayView: View {
             moonElongation = elongation
         }
     }
+}
+
+/// Reads the Today scroll view's top offset so the backdrop can parallax and the eclipse refresh
+/// can arm and fire without a system spinner.
+private struct ScrollOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
 }

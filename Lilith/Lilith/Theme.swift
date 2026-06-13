@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import CoreText
 
 /// The LILITH look: celestial editorial. See docs/03, docs/inspo/, docs/design/.
 /// Warm espresso black with heavy grain, REAL moon/nebula photography (never vector planets),
@@ -15,18 +16,52 @@ enum Theme {
     static let blood = Color(red: 0.557, green: 0.231, blue: 0.275) // #8E3B46 deep wine, cycle features
 
     // MARK: - Typography
-    /// Display: serif ALL CAPS, letterspaced wide. Pair with .tracking(displayTracking(size))
-    /// and .textCase(.uppercase) at the call site. New York serif now; Cormorant later.
+    //
+    // The real typeface is Cormorant Garamond (the single biggest "amateur" tell was the system
+    // serif, per docs/08). The three weights are bundled in the target and registered at launch by
+    // `registerFonts()`. Until Maria drags the .ttf files in, every call gracefully falls back to
+    // New York serif, so the app keeps its current look and nothing breaks.
+    //
+    // Cormorant runs optically smaller than New York at equal point size, so when the real font is
+    // active we scale display type up by `cormorantDisplayScale`. If after building it looks a hair
+    // small or large next to the v9 mockup, nudge THIS ONE NUMBER and rebuild. Body gets its own.
+    static let cormorantDisplayScale: CGFloat = 1.12
+    static let cormorantBodyScale: CGFloat = 1.08
+
+    private static let displayFont = "CormorantGaramond-Medium"
+    private static let bodyFont = "CormorantGaramond-Regular"
+    static let italicFont = "CormorantGaramond-MediumItalic"
+
+    /// True once the bundled Cormorant files exist and are registered. Cached after first lookup.
+    static let cormorantActive: Bool = UIFont(name: displayFont, size: 12) != nil
+
+    /// Register every bundled font file at runtime. Called once from LilithApp.init, so there's no
+    /// Info.plist (UIAppFonts) editing for Maria: just drag the .ttf files into the target. We scan
+    /// for any ttf/otf rather than fixed filenames, so it works no matter how the files are named.
+    static func registerFonts() {
+        for ext in ["ttf", "otf"] {
+            for url in Bundle.main.urls(forResourcesWithExtension: ext, subdirectory: nil) ?? [] {
+                _ = CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+            }
+        }
+    }
+
+    /// Display: serif ALL CAPS, letterspaced wide. Pair with .tracking(tracking(size, em:))
+    /// and .textCase(.uppercase) at the call site. Cormorant Medium, New York serif fallback.
     static func display(_ size: CGFloat = 28) -> Font {
-        .system(size: size, weight: .regular, design: .serif)
+        cormorantActive
+            ? .custom(displayFont, size: size * cormorantDisplayScale)
+            : .system(size: size, weight: .regular, design: .serif)
     }
 
     /// Tracking that scales with the type: the celestial editorial letterspacing.
     static func displayTracking(_ size: CGFloat) -> CGFloat { size * 0.18 }
 
-    /// Body copy: serif for readings, generous line height, never tiny.
+    /// Body copy: serif for readings, generous line height, never tiny. Cormorant Regular fallback.
     static func body(_ size: CGFloat = 17) -> Font {
-        .system(size: size, weight: .regular, design: .serif)
+        cormorantActive
+            ? .custom(bodyFont, size: size * cormorantBodyScale)
+            : .system(size: size, weight: .regular, design: .serif)
     }
 
     /// UI controls only (buttons, toggles): the one place sans-serif lives.
@@ -71,6 +106,88 @@ struct GrainOverlay: View {
             grainTile.resizable(resizingMode: .tile).scaleEffect(1.7).opacity(0.01)
         }
         .blendMode(.screen)
+        .allowsHitTesting(false)
+        .ignoresSafeArea()
+    }
+}
+
+// MARK: - The develop cascade
+
+/// The card does not pop in, it develops (docs/08). Each element starts faint and a few points low
+/// and settles up with a heavy ease-out, staggered ~120ms by `index`. Driven by a `trigger` token
+/// that bumps once per fresh load, so it plays on first open and pull-to-refresh and NEVER on a tab
+/// return (on return the element is simply already in place).
+struct CascadeIn: ViewModifier {
+    let index: Int
+    let trigger: Int
+    @State private var shown = false
+    func body(content: Content) -> some View {
+        content
+            .opacity(shown ? 1 : 0)
+            .offset(y: shown ? 0 : 12)
+            .onAppear { if trigger > 0 { shown = true } }      // already developed on tab return
+            .onChange(of: trigger) { _, _ in replay() }
+    }
+    private func replay() {
+        shown = false // snap to hidden this frame (no ambient animation around the trigger bump)
+        DispatchQueue.main.async {
+            withAnimation(.easeOut(duration: 0.6).delay(Double(index) * 0.12)) { shown = true }
+        }
+    }
+}
+
+/// The moon settles first, before the text cascades. A slow fade with the faintest scale, no slide.
+struct MoonSettle: ViewModifier {
+    let trigger: Int
+    @State private var shown = false
+    func body(content: Content) -> some View {
+        content
+            .opacity(shown ? 1 : 0)
+            .scaleEffect(shown ? 1 : 0.965)
+            .onAppear { if trigger > 0 { shown = true } }
+            .onChange(of: trigger) { _, _ in replay() }
+    }
+    private func replay() {
+        shown = false
+        DispatchQueue.main.async {
+            withAnimation(.easeOut(duration: 0.7)) { shown = true }
+        }
+    }
+}
+
+extension View {
+    func cascadeIn(_ index: Int, trigger: Int) -> some View {
+        modifier(CascadeIn(index: index, trigger: trigger))
+    }
+    func moonSettle(trigger: Int) -> some View { modifier(MoonSettle(trigger: trigger)) }
+}
+
+// MARK: - Haptics
+
+/// She touches back. Restraint is the brand: nothing on scroll, nothing repeated.
+enum Haptics {
+    /// The daily card finishing its arrival. A single soft landing.
+    static func soft() { UIImpactFeedbackGenerator(style: .soft).impactOccurred(intensity: 0.9) }
+    /// A scope switch or a placement tap. A light tick.
+    static func light() { UIImpactFeedbackGenerator(style: .light).impactOccurred(intensity: 0.7) }
+    /// A reading sheet rising. A gentle confirmation, never a buzz.
+    static func open() { UIImpactFeedbackGenerator(style: .soft).impactOccurred(intensity: 0.8) }
+}
+
+// MARK: - Edge vignette
+
+/// A barely-there darkening at the frame's edges. Pulls the eye inward and makes the black read
+/// deep instead of flat (docs/08). Lives inside the backdrop so it never muddies the text on top.
+struct EdgeVignette: View {
+    var body: some View {
+        GeometryReader { geo in
+            let d = max(geo.size.width, geo.size.height)
+            RadialGradient(
+                colors: [.clear, .clear, Theme.void.opacity(0.55)],
+                center: .center,
+                startRadius: d * 0.34, endRadius: d * 0.74)
+        }
+        .blendMode(.multiply)
         .allowsHitTesting(false)
         .ignoresSafeArea()
     }
@@ -232,28 +349,61 @@ struct SeededGenerator: RandomNumberGenerator {
 }
 
 /// A deep field of stars across the whole screen: mostly faint dust, a few brighter ones with a
-/// soft glow, a touch of gold. Outer space without the purple cliché. Drawn in one Canvas pass.
+/// soft glow, a touch of gold. Outer space without the purple cliché. The bright hero stars drift
+/// in opacity on slow, independent 6 to 12 second cycles, so the sky feels faintly alive, never
+/// twinkly (docs/08). Geometry is generated once and cached; only opacity moves per frame.
 struct StarField: View {
     var count: Int = 160
+    var live: Bool = true
+
+    private struct Star {
+        let x, y, r, opacity, phase, cycle: Double
+        let isGold, isBright: Bool
+    }
+    private let stars: [Star]
+
+    init(count: Int = 160, live: Bool = true) {
+        self.count = count
+        self.live = live
+        var rng = SeededGenerator(seed: 0xA11CE5)
+        var out: [Star] = []
+        out.reserveCapacity(count)
+        for _ in 0..<count {
+            let x = Double.random(in: 0...1, using: &rng)
+            let y = Double.random(in: 0...1, using: &rng)
+            let base = Double.random(in: 0.3...1.2, using: &rng)
+            let opacity = Double.random(in: 0.12...0.55, using: &rng)
+            let isGold = Double.random(in: 0...1, using: &rng) < 0.12
+            let isBright = Double.random(in: 0...1, using: &rng) < 0.07
+            let phase = Double.random(in: 0...(2 * .pi), using: &rng)
+            let cycle = Double.random(in: 6...12, using: &rng)
+            out.append(Star(x: x, y: y, r: isBright ? base * 1.9 : base,
+                            opacity: opacity, phase: phase, cycle: cycle,
+                            isGold: isGold, isBright: isBright))
+        }
+        stars = out
+    }
+
     var body: some View {
-        Canvas { ctx, size in
-            var rng = SeededGenerator(seed: 0xA11CE5)
-            for _ in 0..<count {
-                let x = Double.random(in: 0...1, using: &rng) * size.width
-                let y = Double.random(in: 0...1, using: &rng) * size.height
-                let base = Double.random(in: 0.3...1.2, using: &rng)
-                let opacity = Double.random(in: 0.12...0.55, using: &rng)
-                let isGold = Double.random(in: 0...1, using: &rng) < 0.12
-                let isBright = Double.random(in: 0...1, using: &rng) < 0.07
-                let color = isGold ? Theme.gold : Theme.bone
-                let r = isBright ? base * 1.9 : base
-                if isBright { // soft halo for the hero stars, for depth
-                    let halo = CGRect(x: x - r * 3.5, y: y - r * 3.5, width: r * 7, height: r * 7)
-                    ctx.fill(Path(ellipseIn: halo), with: .color(color.opacity(opacity * 0.16)))
+        TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: !live)) { tl in
+            let t = tl.date.timeIntervalSinceReferenceDate
+            Canvas { ctx, size in
+                for s in stars {
+                    let x = s.x * size.width, y = s.y * size.height
+                    var op = s.opacity
+                    if s.isBright && live { // subliminal breathing, only the hero stars move
+                        op = max(0.05, op + sin(t * (2 * .pi / s.cycle) + s.phase) * 0.16)
+                    }
+                    let color = s.isGold ? Theme.gold : Theme.bone
+                    let r = s.r
+                    if s.isBright { // soft halo for depth
+                        let halo = CGRect(x: x - r * 3.5, y: y - r * 3.5, width: r * 7, height: r * 7)
+                        ctx.fill(Path(ellipseIn: halo), with: .color(color.opacity(op * 0.16)))
+                    }
+                    let dot = CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2)
+                    ctx.fill(Path(ellipseIn: dot),
+                             with: .color(color.opacity(s.isBright ? min(0.85, op + 0.3) : op)))
                 }
-                let dot = CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2)
-                ctx.fill(Path(ellipseIn: dot),
-                         with: .color(color.opacity(isBright ? min(0.85, opacity + 0.3) : opacity)))
             }
         }
         .allowsHitTesting(false)
@@ -263,29 +413,47 @@ struct StarField: View {
 
 // MARK: - Scaffolding
 
-/// Near-black void + a deep star field + a single ember bloom. The shared stage for every screen.
+/// Near-black void + a deep star field + a single ember bloom + the edge vignette. The shared
+/// stage for every screen. The bloom slowly swells and dims on an 8 second loop (felt, not seen),
+/// and an optional `parallax` offset lets the whole sky drift a few points slower than the content
+/// that scrolls in front of it, for depth without gimmick.
 struct CosmicBackdrop: View {
     var bloomAlignment: Alignment = .top
     var bloomOffset: CGFloat = 40
     var bloomDiameter: CGFloat = 380
     var bloomIntensity: Double = 1
+    var parallax: CGFloat = 0
+    var alive: Bool = true
+
     var body: some View {
         ZStack {
             Theme.void
-            StarField()
-            EmberBloom(diameter: bloomDiameter, intensity: bloomIntensity)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: bloomAlignment)
-                .offset(y: bloomAlignment == .top ? bloomOffset : 0)
+            StarField(live: alive)
+                .offset(y: parallax)
+            TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: !alive)) { tl in
+                let t = tl.date.timeIntervalSinceReferenceDate
+                let pulse = alive ? 1.0 + sin(t * (2 * .pi / 8.0)) * 0.10 : 1.0
+                EmberBloom(diameter: bloomDiameter, intensity: bloomIntensity * pulse)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: bloomAlignment)
+                    .offset(y: (bloomAlignment == .top ? bloomOffset : 0) + parallax * 1.4)
+            }
+            EdgeVignette()
         }
         .ignoresSafeArea()
     }
 }
 
 extension View {
-    /// Lay any screen on the cosmic stage and finish it with grain on top.
-    func cosmicScreen(bloomAlignment: Alignment = .center, bloomIntensity: Double = 0.7) -> some View {
+    /// Lay any screen on the cosmic stage and finish it with grain on top. `parallax` drifts the
+    /// sky behind scrolling content; `alive` toggles the breathing bloom and living stars.
+    func cosmicScreen(bloomAlignment: Alignment = .center,
+                      bloomIntensity: Double = 0.7,
+                      parallax: CGFloat = 0,
+                      alive: Bool = true) -> some View {
         self
-            .background(CosmicBackdrop(bloomAlignment: bloomAlignment, bloomIntensity: bloomIntensity))
+            .background(CosmicBackdrop(bloomAlignment: bloomAlignment,
+                                       bloomIntensity: bloomIntensity,
+                                       parallax: parallax, alive: alive))
             .overlay(GrainOverlay())
     }
 }

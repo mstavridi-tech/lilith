@@ -6,6 +6,12 @@ struct LilithApp: App {
     // Move to SwiftData when CycleEntry arrives in Phase 2.
     @AppStorage("birthData") private var birthDataJSON: String = ""
 
+    init() {
+        // Register Cormorant Garamond at launch (no Info.plist editing needed). No-ops gracefully
+        // until the .ttf files are added to the target, at which point the real typeface activates.
+        Theme.registerFonts()
+    }
+
     var body: some Scene {
         WindowGroup {
             Group {
