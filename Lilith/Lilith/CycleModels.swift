@@ -109,6 +109,7 @@ enum CyclePhase: String, Codable, CaseIterable {
 struct CycleState {
     let cycleDay: Int        // 1-based day since the last period start
     let cycleLength: Int     // her average, or the 28-day default until we know better
+    let periodLength: Int    // her average bleed length, learned from logs (5 until known)
     let phase: CyclePhase
     let isBleedingToday: Bool
     let nextPeriodInDays: Int
@@ -161,6 +162,25 @@ enum CycleMath {
         return min(40, max(21, valid.reduce(0, +) / valid.count))
     }
 
+    /// Her real period (bleed) length, learned from the logged runs. A run is a stretch of bleeding
+    /// days (gaps of up to 2 count as the same run). We average only runs of 3+ days, so a stray
+    /// spotting day never drags it down, and fall back to the 5-day standard until there's real data.
+    static func averagePeriodLength(_ entries: [CycleEntry]) -> Int {
+        let days = bleedingDays(entries)
+        guard days.count >= 2 else { return defaultPeriodLength }
+        var runs: [Int] = []
+        var current = 1
+        for i in 1..<days.count {
+            if daysBetween(days[i - 1], days[i]) <= 2 { current += 1 }
+            else { runs.append(current); current = 1 }
+        }
+        runs.append(current)
+        let pool = runs.filter { $0 >= 3 }
+        guard !pool.isEmpty else { return defaultPeriodLength }
+        let avg = Int((Double(pool.reduce(0, +)) / Double(pool.count)).rounded())
+        return min(8, max(2, avg))
+    }
+
     /// One phase's span of days, Identifiable so views can ForEach over it directly.
     struct PhaseSpan: Identifiable {
         let phase: CyclePhase
@@ -170,10 +190,10 @@ enum CycleMath {
 
     /// The day range each phase occupies for a given cycle length, for drawing the orb's arcs.
     /// Clamped and ordered so it's always valid even for short or long cycles.
-    static func phaseRanges(length: Int) -> [PhaseSpan] {
+    static func phaseRanges(length: Int, periodLength: Int = defaultPeriodLength) -> [PhaseSpan] {
         let len = max(21, min(40, length))
         let ovulation = max(10, len - 14)
-        let menEnd = min(defaultPeriodLength, ovulation - 3)
+        let menEnd = min(max(2, periodLength), ovulation - 3)
         let folEnd = max(menEnd + 1, ovulation - 2)
         let ovEnd = min(len - 1, ovulation + 1)
         return [
@@ -197,11 +217,12 @@ enum CycleMath {
         guard cycleDay <= 60 else { return nil } // stale data; ask her to log rather than guess
 
         let length = averageLength(periodStarts(entries))
+        let periodLen = averagePeriodLength(entries)
         let ovulation = max(10, length - 14)
         let isBleedingToday = entries.contains { $0.isBleeding && day($0.date) == today }
 
         let phase: CyclePhase
-        if isBleedingToday || cycleDay <= defaultPeriodLength {
+        if isBleedingToday || cycleDay <= periodLen {
             phase = .menstrual
         } else if cycleDay < ovulation - 1 {
             phase = .follicular
@@ -212,7 +233,8 @@ enum CycleMath {
         }
 
         let nextPeriodInDays = max(0, length - cycleDay + 1)
-        return CycleState(cycleDay: cycleDay, cycleLength: length, phase: phase,
-                          isBleedingToday: isBleedingToday, nextPeriodInDays: nextPeriodInDays)
+        return CycleState(cycleDay: cycleDay, cycleLength: length, periodLength: periodLen,
+                          phase: phase, isBleedingToday: isBleedingToday,
+                          nextPeriodInDays: nextPeriodInDays)
     }
 }

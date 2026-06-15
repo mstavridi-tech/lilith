@@ -68,12 +68,14 @@ final class CycleStore: ObservableObject {
     /// Mark a period starting on `date`, auto-blocking the typical span of days so she doesn't have
     /// to tap each one. Works for ANY day: today, a past period (so patterns can form), or an
     /// upcoming one she's expecting. Each day stays individually editable afterward.
-    func logPeriodStart(on date: Date, days: Int = 5) {
+    func logPeriodStart(on date: Date, days: Int? = nil) {
+        // Use her learned period length; fall back to the 5-day standard only until there's history.
+        let span = max(1, days ?? CycleMath.averagePeriodLength(entries))
         let start = Calendar.current.startOfDay(for: date)
-        for offset in 0..<max(1, days) {
+        for offset in 0..<span {
             guard let d = Calendar.current.date(byAdding: .day, value: offset, to: start) else { continue }
             var e = entry(on: d) ?? CycleEntry(date: d)
-            e.flow = offset >= days - 1 ? .light : .medium // taper the last day
+            e.flow = offset >= span - 1 ? .light : .medium // taper the last day
             save(e)
         }
     }

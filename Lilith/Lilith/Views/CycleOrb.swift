@@ -15,7 +15,8 @@ struct CycleOrb: View {
         return min(1, max(0, Double(state.cycleDay - 1) / Double(max(1, length))))
     }
     private var ranges: [CycleMath.PhaseSpan] {
-        CycleMath.phaseRanges(length: length)
+        CycleMath.phaseRanges(length: length,
+                              periodLength: state?.periodLength ?? CycleMath.defaultPeriodLength)
     }
 
     private var orbD: CGFloat { size * 0.86 }

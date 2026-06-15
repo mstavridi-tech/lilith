@@ -283,27 +283,32 @@ struct CycleLogSheet: View {
                 periodStartAction.padding(.top, 26)
 
                 groupLabel("FLOW")
-                chips(FlowLevel.allCases, isOn: { flow == $0 }) { picked in
+                chips(FlowLevel.allCases, accent: Theme.blood, isOn: { flow == $0 }) { picked in
                     flow = (flow == picked) ? nil : picked
                 }
 
                 groupLabel("MOOD")
-                chips(CycleMood.allCases, isOn: { mood == $0 }) { picked in
+                chips(CycleMood.allCases, accent: Theme.ember, isOn: { mood == $0 }) { picked in
                     mood = (mood == picked) ? nil : picked
                 }
 
                 groupLabel("SYMPTOMS")
-                chips(CycleSymptom.allCases, isOn: { symptoms.contains($0) }) { picked in
+                chips(CycleSymptom.allCases, accent: Theme.gold, isOn: { symptoms.contains($0) }) { picked in
                     if symptoms.contains(picked) { symptoms.remove(picked) } else { symptoms.insert(picked) }
                 }
 
                 groupLabel("NOTE")
                 TextField("anything worth remembering", text: $note, axis: .vertical)
                     .font(Theme.body(16)).foregroundStyle(Theme.bone)
+                    .tint(Theme.gold)
                     .lineLimit(2...5)
-                    .padding(12)
-                    .overlay(RoundedRectangle(cornerRadius: 4)
-                        .strokeBorder(Theme.gold.opacity(0.3), lineWidth: 0.5))
+                    .padding(14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(Theme.bone.opacity(0.05))
+                            .overlay(RoundedRectangle(cornerRadius: 14)
+                                .strokeBorder(Theme.gold.opacity(0.25), lineWidth: 0.5))
+                    )
 
                 Button {
                     Haptics.soft()
@@ -311,14 +316,15 @@ struct CycleLogSheet: View {
                     dismiss()
                 } label: {
                     Text("SAVE")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.18))
+                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
                         .foregroundStyle(Theme.void)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(RoundedRectangle(cornerRadius: 4).fill(Theme.gold))
+                        .background(Capsule().fill(Theme.gold))
+                        .background(Capsule().fill(Theme.gold).opacity(0.4).blur(radius: 18))
                 }
                 .buttonStyle(.plain)
-                .padding(.top, 30)
+                .padding(.top, 34)
             }
             .padding(.horizontal, 30)
             .padding(.bottom, 40)
@@ -335,8 +341,8 @@ struct CycleLogSheet: View {
         }
     }
 
-    /// The clearest way to log a period on this day: one tap that blocks off the typical span, or
-    /// removes it. Works for any day the sheet was opened on (today, past, or expected).
+    /// Log a period on this day with one tap, or remove it. The span follows her learned length, so
+    /// there's no "5 days" claim: it adapts as she logs more. Works for any day (today, past, expected).
     @ViewBuilder private var periodStartAction: some View {
         if store.isBleeding(on: date) {
             Button {
@@ -345,24 +351,25 @@ struct CycleLogSheet: View {
                 Text("REMOVE THIS PERIOD")
                     .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
                     .foregroundStyle(Theme.blood)
-                    .frame(maxWidth: .infinity).padding(.vertical, 14)
-                    .overlay(RoundedRectangle(cornerRadius: 4)
-                        .strokeBorder(Theme.blood.opacity(0.6), lineWidth: 0.75))
+                    .frame(maxWidth: .infinity).padding(.vertical, 15)
+                    .background(Capsule().strokeBorder(Theme.blood.opacity(0.6), lineWidth: 1))
             }
             .buttonStyle(.plain)
         } else {
-            VStack(spacing: 8) {
+            VStack(spacing: 10) {
                 Button {
                     Haptics.soft(); store.logPeriodStart(on: date); dismiss()
                 } label: {
                     Text("PERIOD STARTED THIS DAY")
                         .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.16))
-                        .foregroundStyle(Theme.void)
+                        .foregroundStyle(Theme.bone)
                         .frame(maxWidth: .infinity).padding(.vertical, 15)
-                        .background(RoundedRectangle(cornerRadius: 4).fill(Theme.blood))
+                        .background(Capsule().fill(Theme.blood.opacity(0.30))
+                            .overlay(Capsule().strokeBorder(Theme.blood.opacity(0.9), lineWidth: 1)))
+                        .background(Capsule().fill(Theme.blood).opacity(0.4).blur(radius: 20))
                 }
                 .buttonStyle(.plain)
-                Text("blocks off the next 5 days. edit any of them below.")
+                Text("I'll learn your real rhythm as you log more.")
                     .font(Theme.body(12)).foregroundStyle(Theme.bone.opacity(0.55))
                     .frame(maxWidth: .infinity, alignment: .center)
             }
@@ -378,8 +385,9 @@ struct CycleLogSheet: View {
             .padding(.bottom, 12)
     }
 
-    /// A wrapping row of selectable chips for any labelled, identifiable set.
-    private func chips<T: Identifiable>(_ items: [T], isOn: @escaping (T) -> Bool,
+    /// A wrapping row of selectable aura chips for any labelled, identifiable set. Selected chips
+    /// fill the group's accent and glow softly; the rest sit as faint outlines.
+    private func chips<T: Identifiable>(_ items: [T], accent: Color, isOn: @escaping (T) -> Bool,
                                         toggle: @escaping (T) -> Void) -> some View where T: Hashable {
         FlowLayout(spacing: 10) {
             ForEach(items) { item in
@@ -390,14 +398,17 @@ struct CycleLogSheet: View {
                 } label: {
                     Text(label(for: item))
                         .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.12))
-                        .foregroundStyle(on ? Theme.void : Theme.bone.opacity(0.8))
-                        .padding(.horizontal, 14).padding(.vertical, 9)
+                        .foregroundStyle(on ? Theme.bone : Theme.bone.opacity(0.8))
+                        .padding(.horizontal, 16).padding(.vertical, 10)
                         .background(
-                            RoundedRectangle(cornerRadius: 3)
-                                .fill(on ? Theme.gold : Color.clear)
-                                .overlay(RoundedRectangle(cornerRadius: 3)
-                                    .strokeBorder(Theme.gold.opacity(on ? 0 : 0.4), lineWidth: 0.5))
+                            ZStack {
+                                Capsule().fill(accent.opacity(on ? 0.30 : 0))
+                                Capsule().strokeBorder(accent.opacity(on ? 0.9 : 0.35), lineWidth: 1)
+                            }
                         )
+                        .background {
+                            if on { Capsule().fill(accent).opacity(0.4).blur(radius: 10) }
+                        }
                 }
                 .buttonStyle(.plain)
             }

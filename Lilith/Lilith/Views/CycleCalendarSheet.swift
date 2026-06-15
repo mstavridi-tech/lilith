@@ -278,10 +278,11 @@ struct CycleCalendarSheet: View {
     /// Predicted period days (start plus the typical 5-day span) for upcoming cycles.
     private func predictedPeriodDays() -> Set<Date> {
         guard let start = lastStart else { return [] }
+        let span = CycleMath.averagePeriodLength(store.entries) // her learned bleed length
         var set: Set<Date> = []
         for k in 1...13 {
             guard let s = cal.date(byAdding: .day, value: k * length, to: start) else { continue }
-            for offset in 0..<CycleMath.defaultPeriodLength {
+            for offset in 0..<span {
                 if let d = cal.date(byAdding: .day, value: offset, to: s) {
                     set.insert(cal.startOfDay(for: d))
                 }
