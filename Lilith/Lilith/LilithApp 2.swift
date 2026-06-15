@@ -60,26 +60,41 @@ struct RootContainer<Content: View>: View {
     }
 }
 
-/// The title card. The wordmark rises out of the void, holds a beat, then signals it's done.
+/// The title card. An ember aura blooms up out of the void first, then the LILITH wordmark rises
+/// into it, holds a beat, and signals it's done. Slow and weighty, never a bounce (docs/03, docs/08).
 struct LaunchRitual: View {
     var onDone: () -> Void
+    @State private var auraIn = false
     @State private var wordmarkIn = false
 
     var body: some View {
         ZStack {
             Theme.void.ignoresSafeArea()
+
+            // The aura: a warm ember bloom that swells up and brightens out of the dark.
+            RadialGradient(
+                colors: [Theme.ember.opacity(0.45), Theme.ember.opacity(0.12), .clear],
+                center: .center, startRadius: 0, endRadius: 360)
+                .scaleEffect(auraIn ? 1.0 : 0.5)
+                .opacity(auraIn ? 1 : 0)
+                .blur(radius: 6)
+                .ignoresSafeArea()
+
             Text("LILITH")
                 .font(Theme.display(34).weight(.medium))
                 .tracking(Theme.tracking(34, em: 0.5))
-                .foregroundStyle(Theme.gold.opacity(0.92))
+                .foregroundStyle(Theme.bone.opacity(0.95))
                 .padding(.leading, Theme.tracking(34, em: 0.5)) // recenter the wide tracking
                 .opacity(wordmarkIn ? 1 : 0)
-                .scaleEffect(wordmarkIn ? 1 : 0.98)
+                .scaleEffect(wordmarkIn ? 1 : 0.97)
+
             GrainOverlay()
         }
         .task {
-            withAnimation(.easeOut(duration: 1.1)) { wordmarkIn = true }
-            try? await Task.sleep(nanoseconds: 1_900_000_000)
+            withAnimation(.easeOut(duration: 1.2)) { auraIn = true }     // aura blooms first
+            try? await Task.sleep(nanoseconds: 750_000_000)
+            withAnimation(.easeOut(duration: 1.0)) { wordmarkIn = true } // then the name rises in
+            try? await Task.sleep(nanoseconds: 1_650_000_000)
             onDone()
         }
     }
