@@ -26,7 +26,7 @@ struct CycleOrb: View {
             base
             aura.clipShape(Circle()).frame(width: orbD, height: orbD)
             hairlines
-            phaseArcs
+            if state != nil { phaseArcs }
             dottedTrack
             if state != nil { marker }
             center
@@ -50,21 +50,30 @@ struct CycleOrb: View {
     // the current phase brightest. This is the "aura".
     private var aura: some View {
         ZStack {
-            ForEach(ranges) { item in
-                let mid = midFraction(item.range)
-                let isNow = item.phase == state?.phase
-                Circle()
-                    .fill(item.phase.aura)
-                    .frame(width: orbD * (isNow ? 0.78 : 0.6),
-                           height: orbD * (isNow ? 0.78 : 0.6))
-                    .offset(offset(fraction: mid, radius: orbD * 0.2))
-                    .opacity(isNow ? 0.55 : 0.26)
-                    .blur(radius: orbD * 0.14)
+            if state != nil {
+                // tracking: each phase glows at its place on the wheel, current one brightest
+                ForEach(ranges) { item in
+                    let mid = midFraction(item.range)
+                    let isNow = item.phase == state?.phase
+                    Circle()
+                        .fill(item.phase.aura)
+                        .frame(width: orbD * (isNow ? 0.78 : 0.6),
+                               height: orbD * (isNow ? 0.78 : 0.6))
+                        .offset(offset(fraction: mid, radius: orbD * 0.2))
+                        .opacity(isNow ? 0.55 : 0.26)
+                        .blur(radius: orbD * 0.14)
+                }
+            } else {
+                // not tracking yet: a calm, centered glow so the orb reads balanced, not busy
+                Circle().fill(Theme.ember).frame(width: orbD * 0.62, height: orbD * 0.62)
+                    .opacity(0.14).blur(radius: orbD * 0.15)
+                Circle().fill(Theme.gold).frame(width: orbD * 0.42, height: orbD * 0.42)
+                    .opacity(0.10).blur(radius: orbD * 0.12)
             }
             // a warm core so the center never reads as a dead hole
             Circle().fill((state?.phase.aura ?? Theme.ember))
                 .frame(width: orbD * 0.5, height: orbD * 0.5)
-                .opacity(0.18).blur(radius: orbD * 0.13)
+                .opacity(state == nil ? 0.12 : 0.18).blur(radius: orbD * 0.13)
         }
     }
 

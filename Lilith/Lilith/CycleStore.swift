@@ -53,16 +53,40 @@ final class CycleStore: ObservableObject {
         persist()
     }
 
-    /// One-tap "my period started today" (or toggle it back off). Defaults to medium flow.
-    func togglePeriodToday() {
-        let d = Calendar.current.startOfDay(for: Date())
-        if let existing = entry(on: d), existing.isBleeding {
-            var e = existing; e.flow = nil; save(e)
-        } else {
+    /// Mark a period starting on `date`, auto-blocking the typical span of days so she doesn't have
+    /// to tap each one. Works for ANY day: today, a past period (so patterns can form), or an
+    /// upcoming one she's expecting. Each day stays individually editable afterward.
+    func logPeriodStart(on date: Date, days: Int = 5) {
+        let start = Calendar.current.startOfDay(for: date)
+        for offset in 0..<max(1, days) {
+            guard let d = Calendar.current.date(byAdding: .day, value: offset, to: start) else { continue }
             var e = entry(on: d) ?? CycleEntry(date: d)
-            e.flow = .medium
+            e.flow = offset >= days - 1 ? .light : .medium // taper the last day
             save(e)
         }
+    }
+
+    /// Remove the whole bleeding run that contains/touches `date` (the undo for a logged period).
+    func clearPeriod(around date: Date) {
+        let cal = Calendar.current
+        var day = cal.startOfDay(for: date)
+        while let prev = cal.date(byAdding: .day, value: -1, to: day), entry(on: prev)?.isBleeding == true {
+            day = prev
+        }
+        while entry(on: day)?.isBleeding == true {
+            if var e = entry(on: day) { e.flow = nil; save(e) }
+            guard let next = cal.date(byAdding: .day, value: 1, to: day) else { break }
+            day = next
+        }
+    }
+
+    /// Is this day part of a logged period?
+    func isBleeding(on date: Date) -> Bool { entry(on: date)?.isBleeding ?? false }
+
+    /// One-tap "my period started today" (or toggle it back off).
+    func togglePeriodToday() {
+        if isBleeding(on: Date()) { clearPeriod(around: Date()) }
+        else { logPeriodStart(on: Date()) }
     }
 
     /// Wipe everything. For the Settings "delete my data" promise.

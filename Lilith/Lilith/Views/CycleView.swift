@@ -246,7 +246,7 @@ struct CycleLogSheet: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("LOG TODAY")
+                Text(Calendar.current.isDateInToday(date) ? "LOG TODAY" : "EDIT DAY")
                     .displayCaps(28, em: 0.14)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.leading, Theme.tracking(28, em: 0.14))
@@ -260,6 +260,8 @@ struct CycleLogSheet: View {
                 HairlineDivider(width: 120)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, 22)
+
+                periodStartAction.padding(.top, 26)
 
                 groupLabel("FLOW")
                 chips(FlowLevel.allCases, isOn: { flow == $0 }) { picked in
@@ -310,6 +312,40 @@ struct CycleLogSheet: View {
                     .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
+            }
+        }
+    }
+
+    /// The clearest way to log a period on this day: one tap that blocks off the typical span, or
+    /// removes it. Works for any day the sheet was opened on (today, past, or expected).
+    @ViewBuilder private var periodStartAction: some View {
+        if store.isBleeding(on: date) {
+            Button {
+                Haptics.soft(); store.clearPeriod(around: date); dismiss()
+            } label: {
+                Text("REMOVE THIS PERIOD")
+                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                    .foregroundStyle(Theme.blood)
+                    .frame(maxWidth: .infinity).padding(.vertical, 14)
+                    .overlay(RoundedRectangle(cornerRadius: 4)
+                        .strokeBorder(Theme.blood.opacity(0.6), lineWidth: 0.75))
+            }
+            .buttonStyle(.plain)
+        } else {
+            VStack(spacing: 8) {
+                Button {
+                    Haptics.soft(); store.logPeriodStart(on: date); dismiss()
+                } label: {
+                    Text("PERIOD STARTED THIS DAY")
+                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.16))
+                        .foregroundStyle(Theme.void)
+                        .frame(maxWidth: .infinity).padding(.vertical, 15)
+                        .background(RoundedRectangle(cornerRadius: 4).fill(Theme.blood))
+                }
+                .buttonStyle(.plain)
+                Text("blocks off the next 5 days. edit any of them below.")
+                    .font(Theme.body(12)).foregroundStyle(Theme.bone.opacity(0.55))
+                    .frame(maxWidth: .infinity, alignment: .center)
             }
         }
     }
