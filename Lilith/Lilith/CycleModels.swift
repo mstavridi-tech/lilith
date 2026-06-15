@@ -89,6 +89,18 @@ enum CyclePhase: String, Codable, CaseIterable {
         case .luteal:     Theme.gold
         }
     }
+
+    /// The aura colour the phase glows in on the orb. Richer and more saturated than the UI accent,
+    /// because here it's light, not ink: deep rose, fresh teal, ember peach, soft mauve. Cosmic, not
+    /// the purple-pink cliché, kept low-opacity over near-black.
+    var aura: Color {
+        switch self {
+        case .menstrual:  Color(red: 0.82, green: 0.34, blue: 0.42) // deep rose
+        case .follicular: Color(red: 0.38, green: 0.65, blue: 0.57) // fresh teal
+        case .ovulatory:  Color(red: 0.89, green: 0.49, blue: 0.31) // ember peach
+        case .luteal:     Color(red: 0.60, green: 0.45, blue: 0.66) // soft mauve
+        }
+    }
 }
 
 // MARK: - Phase computation (pure, testable)
@@ -148,6 +160,32 @@ enum CycleMath {
         guard !valid.isEmpty else { return defaultLength }
         return min(40, max(21, valid.reduce(0, +) / valid.count))
     }
+
+    /// One phase's span of days, Identifiable so views can ForEach over it directly.
+    struct PhaseSpan: Identifiable {
+        let phase: CyclePhase
+        let range: ClosedRange<Int>
+        var id: String { phase.rawValue }
+    }
+
+    /// The day range each phase occupies for a given cycle length, for drawing the orb's arcs.
+    /// Clamped and ordered so it's always valid even for short or long cycles.
+    static func phaseRanges(length: Int) -> [PhaseSpan] {
+        let len = max(21, min(40, length))
+        let ovulation = max(10, len - 14)
+        let menEnd = min(defaultPeriodLength, ovulation - 3)
+        let folEnd = max(menEnd + 1, ovulation - 2)
+        let ovEnd = min(len - 1, ovulation + 1)
+        return [
+            PhaseSpan(phase: .menstrual, range: 1...max(1, menEnd)),
+            PhaseSpan(phase: .follicular, range: (menEnd + 1)...max(menEnd + 1, folEnd)),
+            PhaseSpan(phase: .ovulatory, range: (folEnd + 1)...max(folEnd + 1, ovEnd)),
+            PhaseSpan(phase: .luteal, range: (ovEnd + 1)...max(ovEnd + 1, len))
+        ]
+    }
+
+    /// The estimated ovulation day for a cycle length.
+    static func ovulationDay(length: Int) -> Int { max(10, max(21, min(40, length)) - 14) }
 
     /// Resolve the cycle state on `date`, or nil if there's not enough history to be honest about it.
     static func state(entries: [CycleEntry], on date: Date = Date()) -> CycleState? {

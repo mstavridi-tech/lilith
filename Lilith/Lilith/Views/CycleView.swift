@@ -7,27 +7,33 @@ import SwiftUI
 struct CycleView: View {
     @ObservedObject private var store = CycleStore.shared
     @State private var showLog = false
+    @State private var showCalendar = false
     @State private var developToken = 0
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                header.cascadeIn(0, trigger: developToken)
+                topBar.cascadeIn(0, trigger: developToken)
+
+                CycleOrb(state: store.today)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 22)
+                    .cascadeIn(1, trigger: developToken)
 
                 if let state = store.today {
-                    phaseBlock(state).cascadeIn(1, trigger: developToken)
-                    hormoneWeather(state).cascadeIn(2, trigger: developToken)
+                    orbCaption(state).cascadeIn(2, trigger: developToken)
+                    hormoneWeather(state).cascadeIn(3, trigger: developToken)
                 } else {
-                    emptyState.cascadeIn(1, trigger: developToken)
+                    invite.cascadeIn(2, trigger: developToken)
                 }
 
-                logActions.cascadeIn(3, trigger: developToken)
+                logActions.cascadeIn(4, trigger: developToken)
 
                 if !store.recent().isEmpty {
-                    recentLog.cascadeIn(4, trigger: developToken)
+                    recentLog.cascadeIn(5, trigger: developToken)
                 }
 
-                disclaimer.cascadeIn(5, trigger: developToken)
+                disclaimer.cascadeIn(6, trigger: developToken)
 
                 Wordmark()
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -42,37 +48,47 @@ struct CycleView: View {
         .sheet(isPresented: $showLog) {
             CycleLogSheet(date: Date(), store: store)
         }
+        .sheet(isPresented: $showCalendar) {
+            CycleCalendarSheet(store: store)
+        }
         .onAppear { if developToken == 0 { developToken = 1 } }
     }
 
-    // MARK: Header
+    // MARK: Top bar (title + the tappable calendar)
 
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("YOUR CYCLE").displayCaps(34, em: 0.16)
-            Text("Tracked against the moon, kept on your phone alone.")
-                .font(Theme.body(16)).foregroundStyle(Theme.gold)
+    private var topBar: some View {
+        HStack(alignment: .center) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("YOUR CYCLE").displayCaps(30, em: 0.16)
+                Text("Kept on your phone alone.")
+                    .font(Theme.body(14)).foregroundStyle(Theme.gold.opacity(0.85))
+            }
+            Spacer()
+            Button {
+                Haptics.light()
+                showCalendar = true
+            } label: {
+                HStack(spacing: 7) {
+                    Image(systemName: "calendar")
+                        .font(.system(size: 12, weight: .medium))
+                    Text("CALENDAR")
+                        .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.16))
+                }
+                .foregroundStyle(Theme.gold)
+                .padding(.horizontal, 14).padding(.vertical, 9)
+                .overlay(Capsule().strokeBorder(Theme.gold.opacity(0.45), lineWidth: 0.5))
+            }
+            .buttonStyle(.plain)
         }
     }
 
-    // MARK: Current phase
-
-    private func phaseBlock(_ state: CycleState) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(state.phase.name)
-                .displayCaps(40, em: 0.12, color: state.phase.accent)
-                .padding(.leading, Theme.tracking(40, em: 0.12))
-
-            Text("DAY \(state.cycleDay)  ·  \(state.phase.tagline.uppercased())")
-                .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
-                .foregroundStyle(Theme.bone.opacity(0.7))
-
-            Text(nextLine(state))
-                .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.12))
-                .foregroundStyle(Theme.gold.opacity(0.75))
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, 34)
+    // A single line under the orb: when her next period is expected.
+    private func orbCaption(_ state: CycleState) -> some View {
+        Text(nextLine(state))
+            .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+            .foregroundStyle(Theme.gold.opacity(0.8))
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.top, 18)
     }
 
     private func nextLine(_ state: CycleState) -> String {
@@ -100,20 +116,16 @@ struct CycleView: View {
         .padding(.top, 30)
     }
 
-    // MARK: Empty state (no data yet)
+    // MARK: Invite (no data yet)
 
-    private var emptyState: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("LET'S SYNC YOU UP")
-                .displayCaps(28, em: 0.14)
-                .padding(.leading, Theme.tracking(28, em: 0.14))
-            Text("Log the first day of your period and I'll start reading your phases, your hormone weather, and how it all plays against your chart. The more you log, the sharper I get. Your data never leaves this phone.")
-                .font(Theme.body(16)).foregroundStyle(Theme.bone.opacity(0.88))
-                .lineSpacing(7)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, 34)
+    private var invite: some View {
+        Text("Log the first day of your period and the orb comes alive: your phase, your hormone weather, and how it all plays against your chart. The more you log, the sharper I get, and none of it ever leaves this phone.")
+            .font(Theme.body(16)).foregroundStyle(Theme.bone.opacity(0.88))
+            .lineSpacing(7)
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity)
+            .padding(.top, 26)
     }
 
     // MARK: Logging actions
