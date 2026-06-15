@@ -22,15 +22,12 @@ struct CycleView: View {
 
                 if let state = store.today {
                     orbCaption(state).cascadeIn(2, trigger: developToken)
-                    hormoneWeather(state).cascadeIn(3, trigger: developToken)
+                    logActions.cascadeIn(3, trigger: developToken)
+                    hormoneWeather(state).cascadeIn(4, trigger: developToken)
+                    moonWeather(state).cascadeIn(5, trigger: developToken)
                 } else {
                     invite.cascadeIn(2, trigger: developToken)
-                }
-
-                logActions.cascadeIn(4, trigger: developToken)
-
-                if !store.recent().isEmpty {
-                    recentLog.cascadeIn(5, trigger: developToken)
+                    logActions.cascadeIn(3, trigger: developToken)
                 }
 
                 disclaimer.cascadeIn(6, trigger: developToken)
@@ -128,83 +125,105 @@ struct CycleView: View {
             .padding(.top, 26)
     }
 
-    // MARK: Logging actions
+    // MARK: Moon weather (cycle synced to the moon, the whole point of LILITH)
+
+    private func moonWeather(_ state: CycleState) -> some View {
+        let moon = (try? ChartEngine.moonPhase()) ?? .fullMoon
+        return VStack(alignment: .leading, spacing: 12) {
+            HairlineDivider(width: 110).frame(maxWidth: .infinity, alignment: .center)
+            HStack(spacing: 8) {
+                Image(systemName: Self.moonSymbol(moon)).font(.system(size: 13))
+                Text("MOON WEATHER · \(moon.rawValue.uppercased())")
+                    .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.22))
+            }
+            .foregroundStyle(Theme.ember)
+            Text(Self.moonCycleNote(cycle: state.phase, moon: moon))
+                .font(Theme.body(16))
+                .foregroundStyle(Theme.bone.opacity(0.9))
+                .lineSpacing(7)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.top, 30)
+    }
+
+    static func moonSymbol(_ p: MoonPhase) -> String {
+        switch p {
+        case .newMoon: "moonphase.new.moon"
+        case .waxingCrescent: "moonphase.waxing.crescent"
+        case .firstQuarter: "moonphase.first.quarter"
+        case .waxingGibbous: "moonphase.waxing.gibbous"
+        case .fullMoon: "moonphase.full.moon"
+        case .waningGibbous: "moonphase.waning.gibbous"
+        case .lastQuarter: "moonphase.last.quarter"
+        case .waningCrescent: "moonphase.waning.crescent"
+        }
+    }
+
+    /// Blends her cycle phase with tonight's moon, including the old red-moon / white-moon lore when
+    /// she's bleeding on a full or new moon. In voice, never doom, never medical.
+    static func moonCycleNote(cycle: CyclePhase, moon: MoonPhase) -> String {
+        if cycle == .menstrual && moon == .newMoon {
+            return "Bleeding on a new moon is the old White Moon cycle: deeply inward and intuitive, the body and the sky both pulling you to rest and set quiet intentions. Lean all the way in."
+        }
+        if cycle == .menstrual && moon == .fullMoon {
+            return "Bleeding on a full moon is the Red Moon cycle: potent and magnetic, a lot of energy moving at once. You're not too much, you're in season. Channel it."
+        }
+        switch moon {
+        case .newMoon:
+            return "New moon, clean slate, and you're in your \(cycle.rawValue) phase, so beginnings are doubly favoured. Plant the seed, skip the grand reveal."
+        case .waxingCrescent, .waxingGibbous:
+            return "The moon is building toward full and so is the momentum, which suits the \(cycle.rawValue) energy you're in. A good window to act."
+        case .firstQuarter:
+            return "First quarter moon: a little friction is the point. Pair it with your \(cycle.rawValue) phase and make the decision you keep circling."
+        case .fullMoon:
+            return "The full moon turns the volume up on everything, feelings included. In your \(cycle.rawValue) phase that's a lot at once, so let it peak, then breathe."
+        case .waningGibbous, .waningCrescent:
+            return "The moon is releasing and winding down, which matches the \(cycle.rawValue) instinct to let go and conserve. Permission granted."
+        case .lastQuarter:
+            return "Last quarter moon: clear, don't start. Quiet alignment with where your \(cycle.rawValue) phase already wants to go."
+        }
+    }
+
+    // MARK: Logging actions (aura pills)
 
     private var logActions: some View {
-        VStack(spacing: 12) {
-            Button {
-                Haptics.soft()
-                store.togglePeriodToday()
-            } label: {
-                Text(bleedingToday ? "PERIOD LOGGED FOR TODAY ✓" : "MY PERIOD STARTED TODAY")
-                    .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.16))
-                    .foregroundStyle(bleedingToday ? Theme.void : Theme.bone)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(bleedingToday ? Theme.blood : Color.clear)
-                            .overlay(RoundedRectangle(cornerRadius: 4)
-                                .strokeBorder(Theme.blood.opacity(0.7), lineWidth: 0.75))
-                    )
+        VStack(spacing: 14) {
+            auraPill(bleedingToday ? "PERIOD LOGGED TODAY" : "MY PERIOD STARTED TODAY",
+                     color: Theme.blood, filled: bleedingToday) {
+                Haptics.soft(); store.togglePeriodToday()
             }
-            .buttonStyle(.plain)
-
-            Button {
-                Haptics.light()
-                showLog = true
-            } label: {
-                Text("LOG TODAY IN DETAIL")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
-                    .foregroundStyle(Theme.gold)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .overlay(RoundedRectangle(cornerRadius: 4)
-                        .strokeBorder(Theme.gold.opacity(0.4), lineWidth: 0.5))
+            auraPill("LOG TODAY IN DETAIL", color: Theme.gold, filled: false) {
+                Haptics.light(); showLog = true
             }
-            .buttonStyle(.plain)
         }
-        .padding(.top, 36)
+        .padding(.top, 30)
+    }
+
+    /// A soft, glowing capsule. The aura comes from a blurred colour halo bleeding out behind it.
+    private func auraPill(_ title: String, color: Color, filled: Bool,
+                          action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.18))
+                .foregroundStyle(filled ? Theme.bone : color)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 15)
+                .background(
+                    ZStack {
+                        Capsule().fill(color.opacity(filled ? 0.30 : 0.0))
+                        Capsule().strokeBorder(color.opacity(filled ? 0.9 : 0.55), lineWidth: 1)
+                    }
+                )
+                .background(
+                    Capsule().fill(color)
+                        .opacity(filled ? 0.40 : 0.20)
+                        .blur(radius: 20) // the aura halo
+                )
+        }
+        .buttonStyle(.plain)
     }
 
     private var bleedingToday: Bool { store.entry(on: Date())?.isBleeding ?? false }
-
-    // MARK: Recent log
-
-    private var recentLog: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("RECENT").displayCaps(20, em: 0.16)
-                .padding(.bottom, 10)
-            ForEach(Array(store.recent().enumerated()), id: \.element.id) { index, entry in
-                if index > 0 {
-                    Rectangle().fill(Theme.gold.opacity(0.15)).frame(height: 0.5)
-                }
-                HStack(spacing: 14) {
-                    Text(Self.dayLabel.string(from: entry.date))
-                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.1))
-                        .foregroundStyle(Theme.bone.opacity(0.55))
-                        .frame(width: 92, alignment: .leading)
-                    Text(summary(entry))
-                        .font(Theme.body(15)).foregroundStyle(Theme.bone.opacity(0.85))
-                    Spacer()
-                }
-                .padding(.vertical, 13)
-            }
-        }
-        .padding(.top, 38)
-    }
-
-    private func summary(_ entry: CycleEntry) -> String {
-        var bits: [String] = []
-        if let f = entry.flow { bits.append(f.rawValue) }
-        if let m = entry.mood { bits.append(m.rawValue) }
-        if !entry.symptoms.isEmpty { bits.append(entry.symptoms.map(\.rawValue).joined(separator: ", ")) }
-        return bits.isEmpty ? "logged" : bits.joined(separator: " · ")
-    }
-
-    private static let dayLabel: DateFormatter = {
-        let f = DateFormatter(); f.dateFormat = "d MMM"; return f
-    }()
 
     // MARK: Disclaimer (the mandatory bridge, in voice)
 

@@ -92,23 +92,25 @@ struct CycleCalendarSheet: View {
     private var grid: some View {
         let days = monthDays()
         let predicted = predictedPeriodDays()
+        let fertile = fertileDays()
         let ovulation = ovulationDays()
         return LazyVGrid(columns: columns, spacing: 6) {
             ForEach(Array(days.enumerated()), id: \.offset) { _, day in
                 if let day {
-                    dayCell(day, predicted: predicted, ovulation: ovulation)
+                    dayCell(day, predicted: predicted, fertile: fertile, ovulation: ovulation)
                 } else {
-                    Color.clear.frame(height: 44)
+                    Color.clear.frame(height: 46)
                 }
             }
         }
     }
 
-    private func dayCell(_ date: Date, predicted: Set<Date>, ovulation: Set<Date>) -> some View {
+    private func dayCell(_ date: Date, predicted: Set<Date>, fertile: Set<Date>, ovulation: Set<Date>) -> some View {
         let d = cal.startOfDay(for: date)
         let isToday = cal.isDateInToday(d)
         let isPeriod = store.entry(on: d)?.isBleeding ?? false
         let isPredicted = predicted.contains(d)
+        let isFertile = fertile.contains(d)
         let isOvulation = ovulation.contains(d)
 
         return Button {
@@ -122,8 +124,14 @@ struct CycleCalendarSheet: View {
                     } else if isPredicted {
                         Circle().strokeBorder(Theme.blood.opacity(0.6),
                                               style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
-                    } else if isToday {
-                        Circle().strokeBorder(Theme.gold.opacity(0.7), lineWidth: 1)
+                    } else if isFertile {
+                        // the whole fertile window glows ember, the ovulation peak brightest
+                        Circle().fill(Theme.ember.opacity(isOvulation ? 0.30 : 0.14))
+                        Circle().strokeBorder(Theme.ember.opacity(isOvulation ? 0.95 : 0.45),
+                                              lineWidth: isOvulation ? 1.5 : 1)
+                    }
+                    if isToday {
+                        Circle().strokeBorder(Theme.gold.opacity(0.85), lineWidth: 1)
                     }
                     Text("\(cal.component(.day, from: d))")
                         .font(Theme.mono(12))
@@ -131,53 +139,47 @@ struct CycleCalendarSheet: View {
                 }
                 .frame(width: 30, height: 30)
 
-                // a thin row of markers: ovulation + moon
-                HStack(spacing: 3) {
-                    if isOvulation {
-                        Circle().fill(Theme.ember).frame(width: 4, height: 4)
-                    }
-                    moonMark(d)
-                }
-                .frame(height: 6)
+                // the moon cycle, marked on every day
+                moonMark(d).frame(height: 10)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 44)
+            .frame(height: 46)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
 
-    /// Marks the new and full moons (the moon cycle's anchors) with a tiny disc.
+    /// The moon phase on every day, so the whole lunar cycle reads across the month.
     @ViewBuilder private func moonMark(_ date: Date) -> some View {
-        let phase = try? ChartEngine.moonPhase(at: date)
-        switch phase {
-        case .fullMoon:
-            Circle().fill(Theme.bone.opacity(0.85)).frame(width: 4, height: 4)
-        case .newMoon:
-            Circle().strokeBorder(Theme.bone.opacity(0.6), lineWidth: 0.75).frame(width: 4, height: 4)
-        default:
+        if let phase = try? ChartEngine.moonPhase(at: date) {
+            let strong = phase == .fullMoon || phase == .newMoon
+            Image(systemName: CycleView.moonSymbol(phase))
+                .font(.system(size: 9))
+                .foregroundStyle(Theme.bone.opacity(strong ? 0.85 : 0.45))
+        } else {
             EmptyView()
         }
     }
 
     private var legend: some View {
-        HStack(spacing: 16) {
-            legendItem(Theme.blood, "PERIOD", filled: true)
-            legendItem(Theme.blood, "PREDICTED", filled: false)
-            legendItem(Theme.ember, "FERTILE", filled: true)
-            legendItem(Theme.bone, "MOON", filled: true)
+        HStack(spacing: 14) {
+            legendItem("PERIOD") { Circle().fill(Theme.blood) }
+            legendItem("PREDICTED") {
+                Circle().strokeBorder(Theme.blood.opacity(0.7), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
+            }
+            legendItem("FERTILE") { Circle().strokeBorder(Theme.ember.opacity(0.8), lineWidth: 1) }
+            legendItem("MOON") {
+                Image(systemName: "moonphase.full.moon").font(.system(size: 7))
+                    .foregroundStyle(Theme.bone.opacity(0.8))
+            }
         }
         .frame(maxWidth: .infinity)
     }
 
-    private func legendItem(_ color: Color, _ label: String, filled: Bool) -> some View {
+    private func legendItem<S: View>(_ label: String, @ViewBuilder swatch: () -> S) -> some View {
         HStack(spacing: 5) {
-            Group {
-                if filled { Circle().fill(color) }
-                else { Circle().strokeBorder(color.opacity(0.7), style: StrokeStyle(lineWidth: 1, dash: [2, 2])) }
-            }
-            .frame(width: 7, height: 7)
-            Text(label).font(Theme.mono(8)).tracking(Theme.tracking(8, em: 0.1))
+            swatch().frame(width: 8, height: 8)
+            Text(label).font(Theme.mono(8)).tracking(Theme.tracking(8, em: 0.08))
                 .foregroundStyle(Theme.bone.opacity(0.55))
         }
     }
@@ -295,6 +297,21 @@ struct CycleCalendarSheet: View {
         for k in 0...13 {
             if let d = cal.date(byAdding: .day, value: k * length + ov - 1, to: start) {
                 set.insert(cal.startOfDay(for: d))
+            }
+        }
+        return set
+    }
+
+    /// The fertile window: the few days leading into ovulation plus the day after, for each cycle.
+    private func fertileDays() -> Set<Date> {
+        guard let start = lastStart else { return [] }
+        let ov = CycleMath.ovulationDay(length: length)
+        var set: Set<Date> = []
+        for k in 0...13 {
+            for offset in -3...1 {
+                if let d = cal.date(byAdding: .day, value: k * length + ov - 1 + offset, to: start) {
+                    set.insert(cal.startOfDay(for: d))
+                }
             }
         }
         return set
