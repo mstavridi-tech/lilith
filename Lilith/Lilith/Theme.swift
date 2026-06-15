@@ -228,6 +228,36 @@ struct HairlineDivider: View {
     }
 }
 
+// MARK: - Dark glass sheet
+
+extension View {
+    /// A reading sheet that rises as dark glass (docs/08): frosted ultraThinMaterial over the void,
+    /// a single gold hairline along the top edge, and the body's glyph watermarked huge and faint
+    /// behind the text. Pass the placement glyph and its accent (gold, or ember for Lilith).
+    func glassSheet(glyph: String, accent: Color = Theme.gold) -> some View {
+        self
+            .overlay(GrainOverlay())
+            .overlay(alignment: .top) {
+                Rectangle()
+                    .fill(accent.opacity(0.55))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 0.75)
+            }
+            .presentationBackground(alignment: .center) {
+                ZStack {
+                    Rectangle().fill(.ultraThinMaterial)
+                    Theme.void.opacity(0.6)
+                    Text(glyph)
+                        .font(.system(size: 330, weight: .regular, design: .serif))
+                        .foregroundStyle(accent.opacity(0.06))
+                        .allowsHitTesting(false)
+                    EdgeVignette()
+                }
+                .ignoresSafeArea()
+            }
+    }
+}
+
 // MARK: - The moon
 
 /// The real moon, showing tonight's REAL phase. Uses the NASA photo asset "moon-nasa" when

@@ -102,7 +102,7 @@ struct ReadingSheet: View {
             .padding(.bottom, 40)
         }
         .scrollIndicators(.hidden)
-        .cosmicScreen(bloomAlignment: .top, bloomIntensity: selection.isLilith ? 0.9 : 0.6)
+        .glassSheet(glyph: selection.glyph, accent: accent)
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")

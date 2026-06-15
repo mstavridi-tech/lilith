@@ -34,6 +34,7 @@ struct ChartView: View {
                             Rectangle().fill(Theme.gold.opacity(0.15)).frame(height: 0.5)
                         }
                         Button {
+                            Haptics.open()
                             openReading = ReadingSelection(placement: placement)
                         } label: {
                             placementRow(placement)
@@ -82,6 +83,7 @@ struct ChartView: View {
                     Rectangle().fill(Theme.gold.opacity(0.15)).frame(height: 0.5)
                 }
                 Button {
+                    Haptics.open()
                     openReading = .bigThree(row.part, sign: row.sign)
                 } label: {
                     bigThreeRow(row.part, row.sign)

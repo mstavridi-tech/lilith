@@ -46,7 +46,7 @@ struct MoonSheet: View {
             .padding(.bottom, 40)
         }
         .scrollIndicators(.hidden)
-        .cosmicScreen(bloomAlignment: .top, bloomIntensity: 0.6)
+        .glassSheet(glyph: "☽", accent: Theme.gold)
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
