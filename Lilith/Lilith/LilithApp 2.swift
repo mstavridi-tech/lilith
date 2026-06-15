@@ -107,11 +107,13 @@ struct MainTabView: View {
         TabView {
             TodayView(chart: chart)
                 .tabItem { Label("Today", systemImage: "moon.stars.fill") }
+            CycleView()
+                .tabItem { Label("Cycle", systemImage: "drop.fill") }
             ChartView(chart: chart)
                 .tabItem { Label("Chart", systemImage: "circle.hexagongrid") }
             SettingsView()
                 .tabItem { Label("You", systemImage: "sparkles") }
-            // Phase 2: CycleView  |  Phase 3: CompatibilityView, LifeAreasView
+            // Phase 3: CompatibilityView, LifeAreasView
         }
         .tint(Theme.gold)
         .background(Theme.void)

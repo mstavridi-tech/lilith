@@ -102,7 +102,7 @@ struct HoroscopeService {
             moonPhase: phase.rawValue,
             scope: scope.rawValue,
             yesterdayHeadline: lastHeadline(scope),
-            cyclePhase: nil
+            cyclePhase: CycleStore.currentPhaseString() // Phase 2: "luteal, day 24", nil until logged
         )
 
         var urlRequest = URLRequest(url: backendURL)
