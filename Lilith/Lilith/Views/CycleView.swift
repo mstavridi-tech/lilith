@@ -15,7 +15,7 @@ struct CycleView: View {
             VStack(alignment: .leading, spacing: 0) {
                 topBar.cascadeIn(0, trigger: developToken)
 
-                CycleOrb(state: store.today)
+                CycleOrb(state: store.today, expectingDays: store.expectingDays)
                     .frame(maxWidth: .infinity)
                     .padding(.top, 22)
                     .cascadeIn(1, trigger: developToken)

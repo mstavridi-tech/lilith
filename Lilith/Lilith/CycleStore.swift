@@ -19,6 +19,18 @@ final class CycleStore: ObservableObject {
     /// Where she is today, or nil until there's enough history to be honest about it.
     var today: CycleState? { CycleMath.state(entries: entries, on: Date()) }
 
+    /// If she's logged a period that hasn't started yet (an expected date in the future) and isn't
+    /// currently in a tracked cycle, how many days until it begins. Lets the orb show a countdown
+    /// instead of going silent when she logs an upcoming period.
+    var expectingDays: Int? {
+        guard today == nil else { return nil }
+        let cal = Calendar.current
+        let t = cal.startOfDay(for: Date())
+        let future = CycleMath.periodStarts(entries).filter { $0 > t }.sorted()
+        guard let next = future.first else { return nil }
+        return cal.dateComponents([.day], from: t, to: next).day
+    }
+
     /// The entry for a given day, if she logged one.
     func entry(on date: Date) -> CycleEntry? {
         let d = Calendar.current.startOfDay(for: date)

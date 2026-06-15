@@ -6,6 +6,7 @@ import SwiftUI
 /// of her current phase, so the whole orb feels like it's in her phase, not just labeled with it.
 struct CycleOrb: View {
     let state: CycleState?
+    var expectingDays: Int? = nil
     var size: CGFloat = 320
 
     private var length: Int { state?.cycleLength ?? 28 }
@@ -26,7 +27,7 @@ struct CycleOrb: View {
             base
             aura.clipShape(Circle()).frame(width: orbD, height: orbD)
             hairlines
-            if state != nil { phaseArcs }
+            phaseArcs            // the rainbow ring: always on, it's the phase legend
             dottedTrack
             if state != nil { marker }
             center
@@ -122,7 +123,7 @@ struct CycleOrb: View {
         .rotationEffect(.degrees(dayFraction * 360))
     }
 
-    // The center read-out.
+    // The center read-out: tracking a current cycle, counting down to an expected one, or not yet.
     private var center: some View {
         VStack(spacing: 6) {
             if let state {
@@ -137,6 +138,19 @@ struct CycleOrb: View {
                     .foregroundStyle(state.phase.aura)
                 Text(state.phase.tagline)
                     .font(Theme.body(13)).foregroundStyle(Theme.bone.opacity(0.6))
+                    .italic()
+            } else if let days = expectingDays {
+                Text("PERIOD IN")
+                    .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.4))
+                    .foregroundStyle(Theme.bone.opacity(0.55))
+                Text("\(days)")
+                    .font(Theme.display(64).weight(.medium))
+                    .foregroundStyle(Theme.bone)
+                Text(days == 1 ? "DAY" : "DAYS")
+                    .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.3))
+                    .foregroundStyle(Theme.blood)
+                Text("expected, from what you logged")
+                    .font(Theme.body(12)).foregroundStyle(Theme.bone.opacity(0.55))
                     .italic()
             } else {
                 Text("NOT TRACKING")
