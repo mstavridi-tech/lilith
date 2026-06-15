@@ -91,10 +91,10 @@ struct LaunchRitual: View {
             GrainOverlay()
         }
         .task {
-            withAnimation(.easeOut(duration: 1.2)) { auraIn = true }     // aura blooms first
-            try? await Task.sleep(nanoseconds: 750_000_000)
-            withAnimation(.easeOut(duration: 1.0)) { wordmarkIn = true } // then the name rises in
-            try? await Task.sleep(nanoseconds: 1_650_000_000)
+            withAnimation(.easeOut(duration: 1.3)) { auraIn = true }     // aura blooms first
+            try? await Task.sleep(nanoseconds: 850_000_000)
+            withAnimation(.easeOut(duration: 2.0)) { wordmarkIn = true } // then the name fades in, slow
+            try? await Task.sleep(nanoseconds: 2_500_000_000)            // let it finish, then hold a beat
             onDone()
         }
     }
