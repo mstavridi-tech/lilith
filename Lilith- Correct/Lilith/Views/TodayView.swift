@@ -2,13 +2,14 @@ import SwiftUI
 
 /// The home screen and the product: today's merged answer to "why do I feel like this?"
 ///
-/// REBUILT July 2, 2026 (Maria's reset): body FIRST, sky as seasoning. The hero is her cycle
-/// day and phase; the moon shrinks into a compact sky row; the reading follows as an easy
-/// left-aligned column. The stage is the Marte-poster atmosphere (LimbAtmosphere in Theme),
-/// tinted by her current phase. Ease to the eyes: one glow, calm black, fewer glyphs.
+/// REBUILT July 2, 2026, twice, on Maria's orders. Round one made it body-first (cycle day hero,
+/// moon demoted to a sky row). Round two is the Oura register: a giant thin numeral instead of
+/// costume caps, calm opaque surface cards instead of raw void, a disciplined text hierarchy
+/// (Theme.textPrimary/Secondary/Tertiary), tracking reserved for a couple of editorial moments,
+/// and real pressed states. Cormorant survives only where it earns it: the headline and mantra.
 ///
 /// The lure-pass craft is kept: the card develops instead of popping, pull-to-refresh is the
-/// eclipse (never a spinner), and the screen answers her touch with restrained haptics.
+/// eclipse (never a spinner), restrained haptics.
 struct TodayView: View {
     let chart: NatalChart
     @ObservedObject private var cycle = CycleStore.shared
@@ -28,7 +29,7 @@ struct TodayView: View {
     @State private var armed = false           // over-pulled past the threshold, waiting for release
     @State private var isRefreshing = false    // the eclipse is sweeping
 
-    private let moonDiameter: CGFloat = 64 // the moon is seasoning now, not the headline
+    private let moonDiameter: CGFloat = 56 // the moon is seasoning now, not the headline
     private let pullThreshold: CGFloat = 88
     private static let space = "todayScroll"
 
@@ -39,19 +40,13 @@ struct TodayView: View {
                     credits.cascadeIn(0, trigger: developToken)
                     greeting.cascadeIn(1, trigger: developToken)
                     heroBlock.cascadeIn(2, trigger: developToken)
-                    skyRow.moonSettle(trigger: developToken)
+                    skyCard.moonSettle(trigger: developToken)
                     scopeSwitcher.cascadeIn(3, trigger: developToken)
-                    headline.cascadeIn(4, trigger: developToken)
-                    reading.cascadeIn(5, trigger: developToken)
-                    HairlineDivider()
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 24)
-                        .cascadeIn(6, trigger: developToken)
-                    mantra.cascadeIn(7, trigger: developToken)
+                    readingCard.cascadeIn(4, trigger: developToken)
                     Spacer(minLength: 30)
-                    footer.cascadeIn(8, trigger: developToken)
+                    footer.cascadeIn(5, trigger: developToken)
                 }
-                .padding(.horizontal, 28)
+                .padding(.horizontal, 24)
                 .padding(.top, 8)
                 .padding(.bottom, 110) // clears the floating tab bar
                 .frame(minHeight: geo.size.height, alignment: .top)
@@ -61,7 +56,7 @@ struct TodayView: View {
             .coordinateSpace(name: Self.space)
             .onPreferenceChange(ScrollOffsetKey.self) { handleScroll($0) }
         }
-        .atmosphereScreen(aura: cycle.today?.phase.aura ?? Theme.ember)
+        .atmosphereScreen(aura: cycle.today?.phase.aura ?? Theme.ember, intensity: 0.8)
         .task { await load() }
         .sheet(isPresented: $showMoonSheet) { MoonSheet(chart: chart) }
     }
@@ -88,7 +83,7 @@ struct TodayView: View {
         }
     }
 
-    // MARK: Top credits (mono, in the corners like poster credits)
+    // MARK: Top credits (the one place tiny mono telemetry still lives)
 
     private var credits: some View {
         HStack {
@@ -101,14 +96,14 @@ struct TodayView: View {
         .foregroundStyle(Theme.gold.opacity(0.85))
     }
 
-    /// "11 . 06 . 2026" — day . month . year, locale-independent like the mockup credit.
+    /// "11 . 06 . 2026" — day . month . year, locale-independent.
     private static let dateLine: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "dd . MM . yyyy"
         return f
     }()
 
-    // MARK: The greeting (docs/07), now leading the page like a friend at the door
+    // MARK: The greeting (docs/07), leading the page like a friend at the door
 
     /// Time-aware greeting as a pure function of the hour (0...23) and day index, unit-testable.
     /// Hour bands cover all 24 hours with no gaps. Morning slots are Maria's locked signatures.
@@ -134,49 +129,57 @@ struct TodayView: View {
     private var greeting: some View {
         TimelineView(.periodic(from: .now, by: 60)) { context in
             Text(currentGreeting(context.date))
-                .font(Theme.mono(10))
-                .tracking(Theme.tracking(10, em: 0.26))
+                .font(Theme.label(11))
+                .tracking(1.4)
                 .foregroundStyle(Theme.ember)
                 .padding(.top, 30)
         }
     }
 
-    // MARK: The hero — her body, first
+    // MARK: The hero — her body, first, in jewelry numerals
 
-    /// "DAY 24 · LUTEAL" and the phase's one-line vibe. The merged answer starts with her, not
-    /// the sky. When no cycle is logged yet, a one-line invite points at the Cycle tab instead
-    /// (a best friend notices what she doesn't know yet; she's never scolded).
+    /// The cycle day as a giant thin numeral with the phase worn as a soft chip beside it.
+    /// When no cycle is logged yet, a one-line invite points at the Cycle tab instead.
     @ViewBuilder
     private var heroBlock: some View {
         if let state = cycle.today {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(alignment: .firstTextBaseline, spacing: 14) {
-                    Text("DAY \(state.cycleDay)")
-                        .font(Theme.display(54).weight(.medium))
-                        .tracking(Theme.tracking(54, em: 0.05))
-                        .foregroundStyle(Theme.bone)
-                    Text(state.phase.name)
-                        .font(Theme.mono(12))
-                        .tracking(Theme.tracking(12, em: 0.3))
-                        .foregroundStyle(state.phase.aura)
-                        .shadow(color: state.phase.aura.opacity(0.55), radius: 9)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("CYCLE DAY")
+                    .font(Theme.label(11))
+                    .tracking(1.6)
+                    .foregroundStyle(Theme.textSecondary)
+                HStack(alignment: .firstTextBaseline, spacing: 16) {
+                    Text("\(state.cycleDay)")
+                        .font(Theme.data(84))
+                        .foregroundStyle(Theme.textPrimary)
+                    phaseChip(state)
                 }
                 Text(state.phase.tagline)
                     .font(Theme.body(16).italic())
-                    .foregroundStyle(Theme.bone.opacity(0.72))
+                    .foregroundStyle(Theme.textSecondary)
             }
-            .padding(.top, 14)
+            .padding(.top, 12)
         } else {
             Text("Half the answer lives in your cycle. Log it in the Cycle tab and I'll read the whole you.")
                 .font(Theme.body(15).italic())
-                .foregroundStyle(Theme.bone.opacity(0.6))
+                .foregroundStyle(Theme.textSecondary)
                 .padding(.top, 16)
         }
     }
 
-    // MARK: The sky row — the moon as seasoning, one tap from the full sheet
+    private func phaseChip(_ state: CycleState) -> some View {
+        Text(state.phase.name)
+            .font(Theme.label(11))
+            .tracking(1.2)
+            .foregroundStyle(state.phase.aura)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Capsule().fill(state.phase.aura.opacity(0.16)))
+    }
 
-    private var skyRow: some View {
+    // MARK: The sky card — the moon as seasoning, one tap from the full sheet
+
+    private var skyCard: some View {
         Button {
             Haptics.open()
             showMoonSheet = true
@@ -184,32 +187,32 @@ struct TodayView: View {
             HStack(spacing: 16) {
                 MoonView(diameter: moonDiameter, elongation: moonElongation)
                     .overlay { if isRefreshing { eclipseSweep } }
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 3) {
                     Text("THE SKY")
-                        .font(Theme.mono(8.5))
-                        .tracking(Theme.tracking(8.5, em: 0.22))
-                        .foregroundStyle(Theme.gold.opacity(0.55))
+                        .font(Theme.label(10))
+                        .tracking(1.4)
+                        .foregroundStyle(Theme.gold.opacity(0.8))
                     Text(skyLine)
-                        .font(Theme.mono(11))
-                        .foregroundStyle(Theme.bone.opacity(0.78))
+                        .font(.system(size: 13, weight: .regular))
+                        .foregroundStyle(Theme.textSecondary)
                         .contentTransition(.opacity)
                 }
                 Spacer()
-                Text("→")
-                    .font(Theme.mono(12))
-                    .foregroundStyle(Theme.gold.opacity(0.5))
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.textTertiary)
             }
         }
-        .buttonStyle(.plain)
-        .padding(.top, 24)
+        .buttonStyle(PressableCardStyle())
+        .padding(.top, 26)
     }
 
     private var skyLine: String {
         var parts = [String]()
-        if moonPhaseFull != "READING THE SKY" { parts.append(moonPhaseFull) }
-        if moonIllumPct > 0 { parts.append("\(moonIllumPct)% LIT") }
-        if !moonSignName.isEmpty { parts.append("IN \(moonSignName)") }
-        return parts.isEmpty ? "READING THE SKY" : parts.joined(separator: " · ")
+        if moonPhaseFull != "READING THE SKY" { parts.append(moonPhaseFull.capitalized) }
+        if moonIllumPct > 0 { parts.append("\(moonIllumPct)% lit") }
+        if !moonSignName.isEmpty { parts.append("in \(moonSignName.capitalized)") }
+        return parts.isEmpty ? "Reading the sky" : parts.joined(separator: " · ")
     }
 
     /// The signature pull-to-refresh: the terminator shadow sweeps across the moon until the
@@ -233,7 +236,7 @@ struct TodayView: View {
     // MARK: Scope — DAILY / WEEKLY / MONTHLY (all hit the same backend, docs/06)
 
     private var scopeSwitcher: some View {
-        HStack(spacing: 26) {
+        HStack(spacing: 8) {
             ForEach(HoroscopeService.Scope.allCases) { s in
                 Button {
                     guard scope != s else { return }
@@ -242,54 +245,67 @@ struct TodayView: View {
                     Task { await load() }
                 } label: {
                     Text(s.label)
-                        .font(Theme.mono(11))
-                        .tracking(Theme.tracking(11, em: 0.2))
-                        .foregroundStyle(scope == s ? Theme.bone : Theme.bone.opacity(0.32))
-                        .overlay(alignment: .bottom) {
-                            if scope == s {
-                                Rectangle().fill(Theme.gold).frame(height: 1).offset(y: 6)
-                            }
-                        }
+                        .font(Theme.label(11))
+                        .tracking(1.0)
+                        .foregroundStyle(scope == s ? Theme.void : Theme.textSecondary)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10) // a real 44pt-class target
+                        .background(
+                            Capsule().fill(scope == s ? Theme.gold : Theme.surfaceHigh)
+                        )
                 }
                 .buttonStyle(.plain)
             }
+            Spacer()
         }
         .animation(.easeInOut(duration: 0.2), value: scope)
-        .padding(.top, 28)
+        .padding(.top, 26)
     }
 
-    // MARK: The reading block — one easy left-aligned column, every scope
+    // MARK: The reading card — the merged answer on one calm surface
+
+    private var readingCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            headline
+            reading
+            HairlineDivider()
+                .frame(maxWidth: .infinity)
+                .padding(.top, 22)
+            mantra
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .softCard()
+        .padding(.top, 18)
+    }
 
     private var headline: some View {
         Text((horoscope?.headline ?? "CONSULTING THE SKY").uppercased())
-            .font(Theme.display(24).weight(.medium))
-            .tracking(Theme.tracking(24, em: 0.10)) // calmer tracking: editorial, not effortful
-            .foregroundStyle(Theme.bone)
+            .font(Theme.display(23).weight(.medium))
+            .tracking(Theme.tracking(23, em: 0.06)) // editorial, not effortful
+            .foregroundStyle(Theme.textPrimary)
             .multilineTextAlignment(.leading)
-            .lineSpacing(7)
+            .lineSpacing(6)
             .contentTransition(.opacity) // crossfade on scope change, never a hard cut
-            .padding(.top, 22)
     }
 
     private var readingText: String {
         horoscope?.reading ?? "The sky is loading your reading. Pull to refresh in a second."
     }
 
-    /// Every scope reads as a left-aligned column now ("ease to your eyes" over poetry-centered,
-    /// Maria, July 2). Monthly keeps its gold chapter labels.
+    /// One easy left-aligned column, every scope. Monthly keeps its gold chapter labels.
     private var reading: some View {
         VStack(alignment: .leading, spacing: 18) {
             ForEach(Array(Self.paragraphs(readingText, detectLabels: true).enumerated()), id: \.offset) { _, para in
                 VStack(alignment: .leading, spacing: 7) {
                     if let label = para.label {
                         Text(label)
-                            .font(Theme.mono(10))
-                            .tracking(Theme.tracking(10, em: 0.18))
+                            .font(Theme.label(10))
+                            .tracking(1.4)
                             .foregroundStyle(Theme.gold)
                     }
                     Text(para.body)
                         .font(Theme.body(15.5))
-                        .foregroundStyle(Theme.bone.opacity(0.9))
+                        .foregroundStyle(Theme.bone.opacity(0.92))
                         .multilineTextAlignment(.leading)
                         .lineSpacing(9) // a comfortable reading column, never squeezed
                         .fixedSize(horizontal: false, vertical: true) // never truncate
@@ -331,14 +347,16 @@ struct TodayView: View {
         return core.allSatisfy { $0 == " " || $0 == "/" || ($0.isLetter && $0.isUppercase) }
     }
 
+    /// The mantra keeps its wide tracking: one of exactly two editorial tracking moments on this
+    /// screen (the other is the headline). Everything else stays calm.
     private var mantra: some View {
         Text(horoscope?.cardMantra ?? "BREATHE.")
             .font(Theme.display(15).weight(.medium))
             .tracking(Theme.tracking(15, em: 0.3))
-            .foregroundStyle(Theme.bone)
+            .foregroundStyle(Theme.textPrimary)
             .multilineTextAlignment(.center)
             .contentTransition(.opacity)
-            .frame(maxWidth: .infinity) // the poster's bottom-edge tagline, centered wide
+            .frame(maxWidth: .infinity)
             .padding(.leading, Theme.tracking(15, em: 0.3))
             .padding(.top, 18)
     }
@@ -402,7 +420,7 @@ struct TodayView: View {
         if let moon = (try? ChartEngine.currentSky())?.first(where: { $0.body == .moon }),
            let phase = try? ChartEngine.moonPhase() {
             moonStatus = "☽ \(phase.shortLabel) · \(Int(moon.degreeInSign))° \(moon.sign.name.prefix(3).uppercased())"
-            moonSignName = moon.sign.name.uppercased()
+            moonSignName = moon.sign.name
         }
         if let elongation = try? ChartEngine.moonElongation() {
             moonElongation = elongation
@@ -410,9 +428,32 @@ struct TodayView: View {
             let illum = (1 - cos(elongation * .pi / 180)) / 2
             moonIllumPct = Int((illum * 100).rounded())
             if let phase = try? ChartEngine.moonPhase() {
-                moonPhaseFull = phase.rawValue.uppercased()
+                moonPhaseFull = phase.rawValue
             }
         }
+    }
+}
+
+/// A soft-card button: the whole surface presses down a breath (scale 0.98) and lifts back.
+/// Real tap feedback without layout shift (pro-UI rule: stable interaction states).
+struct PressableCardStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .fill(configuration.isPressed ? Theme.surfaceHigh : Theme.surface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                            .strokeBorder(
+                                LinearGradient(colors: [Theme.bone.opacity(0.08), .clear],
+                                               startPoint: .top, endPoint: .bottom),
+                                lineWidth: 0.75)
+                    )
+                    .shadow(color: .black.opacity(0.35), radius: 24, y: 10)
+            )
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 

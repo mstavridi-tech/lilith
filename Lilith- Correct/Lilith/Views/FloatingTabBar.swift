@@ -1,17 +1,29 @@
 import SwiftUI
 
-/// The four tabs. Custom celestial glyphs instead of SF Symbols, so the one piece of chrome that
-/// sits on every single screen still reads as LILITH and not a stock iOS app.
+/// The four tabs. Real vector icons (SF Symbols), per the pro-UI rule: text glyphs pretending to
+/// be icons are the single fastest amateur tell. LILITH's character lives in the gold, the glow,
+/// and the dark glass, not in unicode characters.
 enum MainTab: Int, CaseIterable, Identifiable {
     case today, cycle, chart, you
     var id: Int { rawValue }
 
-    var glyph: String {
+    /// Resting icon, thin and quiet.
+    var symbol: String {
         switch self {
-        case .today: "☾"
-        case .cycle: "◗"
-        case .chart: "✶"
-        case .you: "✦"
+        case .today: "moon.stars"
+        case .cycle: "drop"
+        case .chart: "sparkles"
+        case .you: "person"
+        }
+    }
+
+    /// The active tab fills in, so selection reads by shape as well as color (never color alone).
+    var symbolActive: String {
+        switch self {
+        case .today: "moon.stars.fill"
+        case .cycle: "drop.fill"
+        case .chart: "sparkles"
+        case .you: "person.fill"
         }
     }
 
@@ -65,18 +77,21 @@ struct FloatingTabBar: View {
     private func tabItem(_ tab: MainTab) -> some View {
         let on = tab == selection
         return VStack(spacing: 5) {
-            Text(tab.glyph)
-                .font(.system(size: 17))
-                .shadow(color: on ? Theme.gold.opacity(0.65) : .clear, radius: 8)
+            Image(systemName: on ? tab.symbolActive : tab.symbol)
+                .font(.system(size: 16, weight: .regular))
+                .symbolRenderingMode(.hierarchical)
+                .frame(height: 18)
+                .shadow(color: on ? Theme.gold.opacity(0.6) : .clear, radius: 8)
             Text(tab.label)
-                .font(Theme.mono(8.5))
-                .tracking(Theme.tracking(8.5, em: 0.22))
+                .font(Theme.label(9))
+                .tracking(0.8)
             Circle()
                 .fill(on ? Theme.gold : .clear)
                 .frame(width: 3, height: 3)
                 .shadow(color: on ? Theme.gold : .clear, radius: 4)
         }
-        .foregroundStyle(on ? Theme.gold : Theme.bone.opacity(0.4))
+        .foregroundStyle(on ? Theme.gold : Theme.bone.opacity(0.55)) // ≥3:1 even at rest
+        .padding(.vertical, 2) // keeps each target comfortably past 44pt with the bar's padding
         .contentShape(Rectangle())
     }
 }

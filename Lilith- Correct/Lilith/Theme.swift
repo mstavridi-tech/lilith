@@ -15,6 +15,15 @@ enum Theme {
     static let ember = Color(red: 0.851, green: 0.400, blue: 0.231) // #D9663B muted atmospheric blooms
     static let blood = Color(red: 0.557, green: 0.231, blue: 0.275) // #8E3B46 deep wine, cycle features
 
+    // Semantic layers (the Oura pass, July 2 2026): calm opaque surfaces and a disciplined text
+    // hierarchy. Contrast discipline: primary text ≥4.5:1 on void, secondary ≥3:1; tertiary is
+    // decorative only and never carries information alone.
+    static let surface = Color(red: 0.075, green: 0.066, blue: 0.055)     // lifted warm black, cards
+    static let surfaceHigh = Color(red: 0.105, green: 0.093, blue: 0.078) // chips and pressed states
+    static let textPrimary = bone
+    static let textSecondary = bone.opacity(0.66)
+    static let textTertiary = bone.opacity(0.48)
+
     // MARK: - Typography
     //
     // The real typeface is Cormorant Garamond (the single biggest "amateur" tell was the system
@@ -70,9 +79,22 @@ enum Theme {
         .system(size: size, weight: .medium, design: .default)
     }
 
-    /// Degrees, dates, ephemeris numbers. Monospaced = authority.
+    /// Degrees, dates, ephemeris numbers. Monospaced = authority. Use in small doses: tiny
+    /// telemetry only, never as the app's main label voice (the Oura pass).
     static func mono(_ size: CGFloat = 15) -> Font {
         .system(size: size, weight: .medium, design: .monospaced)
+    }
+
+    /// Jewelry numerals (the Oura register): huge, thin, quiet authority. For the cycle day,
+    /// countdowns, and scores. Monospaced digits so layouts never shift as numbers change.
+    static func data(_ size: CGFloat) -> Font {
+        .system(size: size, weight: .thin).monospacedDigit()
+    }
+
+    /// Small caps-style label in the system sans: semibold, gentle tracking. The workhorse label
+    /// voice; replaces tracked-out mono for most labels.
+    static func label(_ size: CGFloat = 11) -> Font {
+        .system(size: size, weight: .semibold)
     }
 
     /// Letterspacing in points for a given size and em value (CSS `letter-spacing` ported).
@@ -600,4 +622,33 @@ struct LilithCard: ViewModifier {
 
 extension View {
     func lilithCard() -> some View { modifier(LilithCard()) }
+}
+
+// MARK: - The soft card (the Oura register, July 2 2026)
+
+/// A calm opaque surface: lifted warm black, continuous soft corners, one soft shadow, and a
+/// hairline of light only along the top edge (fading out). No glass, no full borders, no hollow
+/// outlines. Content breathes on it. This is the app's standard container now.
+struct SoftCard: ViewModifier {
+    var padding: CGFloat = 24
+    func body(content: Content) -> some View {
+        content
+            .padding(padding)
+            .background(
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .fill(Theme.surface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                            .strokeBorder(
+                                LinearGradient(colors: [Theme.bone.opacity(0.08), .clear],
+                                               startPoint: .top, endPoint: .bottom),
+                                lineWidth: 0.75)
+                    )
+                    .shadow(color: .black.opacity(0.35), radius: 24, y: 10)
+            )
+    }
+}
+
+extension View {
+    func softCard(padding: CGFloat = 24) -> some View { modifier(SoftCard(padding: padding)) }
 }
