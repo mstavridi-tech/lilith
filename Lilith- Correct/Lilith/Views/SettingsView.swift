@@ -36,7 +36,7 @@ struct SettingsView: View {
             }
             .padding(.horizontal, 28)
             .padding(.top, 16)
-            .padding(.bottom, 40)
+            .padding(.bottom, 120) // clears the floating tab bar
         }
         .scrollIndicators(.hidden)
         .cosmicScreen(bloomAlignment: .top, bloomIntensity: 0.5)

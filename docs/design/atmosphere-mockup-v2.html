@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LILITH · Atmosphere Pass · Mockup v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #070605;
+    --bone: #E8E2D6;
+    --gold: #C9A867;
+    --ember: #D9663B;
+    --blood: #8E3B46;
+    --teal: #7FBFA5;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0B0908; color: var(--bone);
+    font-family: Georgia, 'Times New Roman', serif;
+    padding: 56px 24px 80px;
+    display: flex; flex-direction: column; align-items: center; gap: 44px;
+  }
+  .intro { max-width: 720px; text-align: center; }
+  .intro h1 { font-family:'Cormorant Garamond',Georgia,serif; font-weight:500; font-size:22px; letter-spacing:.38em; color:var(--gold); text-transform:uppercase; }
+  .intro p { margin-top:16px; font-size:15px; line-height:1.75; color:rgba(232,226,214,.68); }
+
+  .frames { display:flex; gap:48px; flex-wrap:wrap; justify-content:center; align-items:flex-start; }
+  .col { display:flex; flex-direction:column; gap:18px; align-items:center; }
+  .caption { max-width:380px; font-size:13px; line-height:1.65; color:rgba(232,226,214,.55); text-align:center; }
+  .caption b { color:rgba(232,226,214,.8); font-weight:normal; }
+
+  .phone {
+    width:393px; height:852px; border-radius:56px; background:var(--void);
+    position:relative; overflow:hidden; flex-shrink:0;
+    border:1px solid rgba(232,226,214,.09);
+    box-shadow:0 40px 90px rgba(0,0,0,.7);
+  }
+  .grain {
+    position:absolute; inset:0; pointer-events:none; mix-blend-mode:screen; opacity:.8; z-index:20;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  }
+  .vignette { position:absolute; inset:0; z-index:15; pointer-events:none;
+    background:radial-gradient(120% 100% at 50% 45%, transparent 55%, rgba(7,6,5,.72) 100%); }
+
+  .abs { position:absolute; }
+  .mono { font-family:ui-monospace,'SF Mono',Menlo,monospace; }
+  .display { font-family:'Cormorant Garamond',Georgia,serif; font-weight:500; text-transform:uppercase; }
+
+  /* THE ATMOSPHERE: giant planet limb + color masses bleeding along its rim */
+  .blob { position:absolute; border-radius:50%; filter:blur(60px) saturate(1.15); pointer-events:none; z-index:1;
+          animation:breathe 11s ease-in-out infinite; }
+  .flare { position:absolute; border-radius:50%; filter:blur(10px); z-index:3; pointer-events:none;
+           animation:breathe 7s ease-in-out infinite; }
+  .planet { position:absolute; border-radius:50%; z-index:2; pointer-events:none;
+            background:radial-gradient(circle at 50% 42%, #0C0A08 55%, #080706 78%, #070605 100%);
+            box-shadow:inset 0 0 120px rgba(0,0,0,.8); }
+  .planet::after { content:""; position:absolute; inset:0; border-radius:50%;
+                   border:1px solid rgba(232,226,214,.05); }
+  @keyframes breathe { 0%,100% { opacity:.82; } 50% { opacity:1; } }
+
+  /* annotation layer */
+  .edge { font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:9px; letter-spacing:.34em;
+          color:rgba(232,226,214,.38); white-space:nowrap; z-index:10; }
+  .edge.r { right:-24px; transform:rotate(90deg); }
+  .micro { font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:9px; letter-spacing:.26em;
+           color:rgba(232,226,214,.5); line-height:2; z-index:10; }
+  .micro .dim { color:rgba(232,226,214,.32); }
+  .microbox { width:30px; height:30px; border:.75px solid rgba(232,226,214,.35); display:flex;
+              align-items:center; justify-content:center; font-size:13px; color:rgba(232,226,214,.75);
+              margin-bottom:8px; z-index:10; }
+  .hairline-d { position:absolute; height:.5px; background:rgba(232,226,214,.09); z-index:9; pointer-events:none; }
+  .dots { display:flex; gap:14px; z-index:10; }
+  .dots i { width:4px; height:4px; border-radius:50%; border:.75px solid rgba(232,226,214,.4); }
+  .dia { width:6px; height:6px; background:var(--gold); transform:rotate(45deg); box-shadow:0 0 10px rgba(201,168,103,.7); z-index:10; }
+  .tick { position:absolute; width:1px; height:9px; background:rgba(232,226,214,.4); z-index:8; }
+
+  /* staggered editorial headline */
+  .stagger { z-index:10; }
+  .stagger .ln { font-family:'Cormorant Garamond',Georgia,serif; font-weight:500; text-transform:uppercase;
+                 font-size:27px; letter-spacing:.3em; line-height:1.9; color:var(--bone);
+                 text-shadow:0 2px 24px rgba(7,6,5,.6); white-space:nowrap; }
+  .eyebrow { font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:10px; letter-spacing:.32em; z-index:10; }
+
+  .bodycol { font-size:14.5px; line-height:1.72; color:rgba(232,226,214,.86); z-index:10;
+             text-shadow:0 1px 16px rgba(7,6,5,.7); }
+
+  /* quiet controls that live ON the poster */
+  .scoperow { display:flex; gap:26px; align-items:center; z-index:10;
+              font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:10.5px; letter-spacing:.26em; }
+  .scoperow span { color:rgba(232,226,214,.35); }
+  .scoperow span.on { color:var(--gold); text-shadow:0 0 16px rgba(201,168,103,.6); }
+  .scoperow .d { width:4px; height:4px; background:var(--gold); transform:rotate(45deg); }
+
+  .lineBtn { font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:11.5px; letter-spacing:.28em;
+             text-align:center; padding:15px 0 14px; z-index:10;
+             border:.75px solid rgba(232,226,214,.28); color:var(--bone);
+             background:rgba(7,6,5,.25); backdrop-filter:blur(4px); }
+  .lineBtn.blood { border-color:rgba(190,95,110,.55); color:#EFC9CE;
+                   background:linear-gradient(180deg, rgba(142,59,70,.30), rgba(142,59,70,.14));
+                   box-shadow:0 0 30px rgba(142,59,70,.18); }
+  .lineBtn.goldln { border-color:rgba(201,168,103,.4); color:var(--gold); }
+
+  .rule { display:flex; align-items:center; gap:10px; z-index:10; }
+  .rule .l { flex:1; height:.5px; background:rgba(201,168,103,.4); }
+
+  .tabbar {
+    position:absolute; left:24px; right:24px; bottom:18px; z-index:18;
+    display:flex; justify-content:space-around; align-items:center;
+    padding:13px 10px 12px; border-radius:999px;
+    background:linear-gradient(180deg, rgba(16,14,12,.78), rgba(9,8,7,.86));
+    border:1px solid rgba(232,226,214,.09);
+    box-shadow:inset 0 1px 0 rgba(232,226,214,.05), 0 18px 40px rgba(0,0,0,.55);
+    backdrop-filter:blur(18px);
+  }
+  .tab { display:flex; flex-direction:column; align-items:center; gap:4px; color:rgba(232,226,214,.35); width:72px; }
+  .tab .ic { font-size:15px; line-height:1; }
+  .tab .lb { font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:8px; letter-spacing:.24em; }
+  .tab.on { color:var(--gold); text-shadow:0 0 18px rgba(201,168,103,.55); }
+
+  .moon { border-radius:50%; z-index:6;
+    background:radial-gradient(circle at 40% 34%, #d8d4cc, #a09c94 48%, #6d6a64 74%, #47453f 96%);
+    box-shadow:0 0 60px 6px rgba(216,196,160,.22), 0 0 140px 40px rgba(217,102,59,.12); position:absolute; }
+  .moon::before { content:""; position:absolute; inset:0; border-radius:50%;
+    background:radial-gradient(circle at 62% 40%, rgba(70,68,62,.5) 0 9%, transparent 11%),
+               radial-gradient(circle at 38% 58%, rgba(70,68,62,.42) 0 13%, transparent 15%),
+               radial-gradient(circle at 55% 68%, rgba(70,68,62,.35) 0 7%, transparent 9%); }
+  .moon::after { content:""; position:absolute; inset:0; border-radius:50%;
+    background:radial-gradient(circle at 128% 50%, transparent 62%, rgba(7,6,5,.92) 78%); }
+
+  .wordmark { font-family:'Cormorant Garamond',Georgia,serif; font-weight:500; letter-spacing:.5em;
+              color:rgba(201,168,103,.5); font-size:11px; text-transform:uppercase; z-index:10; }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Lilith · Atmosphere Pass · v2</h1>
+  <p>The poster language, worn by the app. The gradient is no longer behind the screen, it IS the screen: a planetary limb sweeping through the frame with the atmosphere burning along its edge. Type goes staggered and asymmetric. And every screen is dressed in the annotation layer: rotated coordinates, specimen boxes, hairlines, one gold diamond. The sky kept receipts, and these are the receipts.</p>
+</div>
+
+<div class="frames">
+
+  <!-- ══════════════ TODAY ══════════════ -->
+  <div class="col">
+    <div class="phone">
+      <!-- atmosphere: limb sweeping from top-left, ember burning to teal to deep blue -->
+      <div class="blob" style="width:520px;height:520px;top:-120px;left:-180px;background:radial-gradient(circle, rgba(217,102,59,.75), transparent 68%);"></div>
+      <div class="blob" style="width:420px;height:420px;top:60px;left:-40px;background:radial-gradient(circle, rgba(240,160,90,.5), transparent 66%);"></div>
+      <div class="blob" style="width:640px;height:640px;top:60px;left:60px;background:radial-gradient(circle, rgba(62,125,102,.55), transparent 66%);"></div>
+      <div class="blob" style="width:720px;height:720px;top:280px;left:120px;background:radial-gradient(circle, rgba(44,93,124,.5), transparent 66%);"></div>
+      <div class="flare" style="width:26px;height:26px;top:196px;left:148px;background:radial-gradient(circle, rgba(255,228,180,.95), rgba(232,194,122,.4) 60%, transparent);box-shadow:0 0 40px 8px rgba(232,194,122,.5);"></div>
+      <div class="planet" style="width:1100px;height:1100px;top:-760px;left:-500px;"></div>
+
+      <!-- annotation layer -->
+      <div class="abs mono" style="top:64px;left:26px;font-size:10px;letter-spacing:.24em;color:rgba(201,168,103,.85);z-index:10;">02 . 07 . 2026</div>
+      <div class="abs dots" style="top:66px;right:30px;"><i></i><i></i><i></i></div>
+      <div class="abs edge r" style="top:300px;">51.5074° N</div>
+      <div class="abs edge r" style="top:560px;">0.1278° W</div>
+      <div class="hairline-d" style="top:150px;left:220px;width:200px;transform:rotate(-32deg);"></div>
+      <div class="hairline-d" style="top:700px;left:-40px;width:180px;transform:rotate(18deg);"></div>
+
+      <!-- the moon rides the dark side of the limb -->
+      <div class="moon" style="width:132px;height:132px;top:104px;left:34px;"></div>
+
+      <!-- specimen boxes, right column -->
+      <div class="abs" style="top:320px;right:28px;text-align:right;z-index:10;">
+        <div class="microbox" style="margin-left:auto;">☽</div>
+        <div class="micro">WANING GIBBOUS<br><span class="dim">93% LIT · 10° AQU</span></div>
+      </div>
+
+      <!-- staggered headline -->
+      <div class="abs eyebrow" style="top:392px;left:26px;color:var(--ember);text-shadow:0 0 14px rgba(217,102,59,.5);">THE MOON IS UP.</div>
+      <div class="abs stagger" style="top:412px;left:26px;">
+        <div class="ln">Mercury</div>
+        <div class="ln" style="margin-left:34px;">Retrograde</div>
+        <div class="ln" style="margin-left:12px;">Wants Your</div>
+        <div class="ln" style="margin-left:58px;">Drafts<span style="color:var(--gold);">.</span></div>
+      </div>
+
+      <!-- body as an off-axis reading column -->
+      <div class="abs bodycol" style="top:634px;left:120px;width:246px;">Mercury is moving backward through Cancer, which means your inbox is a liar and your brain is rewriting old conversations. Today is for observing, not responding.</div>
+
+      <div class="abs scoperow" style="top:756px;left:26px;">
+        <span class="on">DAILY</span><div class="d"></div><span>WEEKLY</span><span>MONTHLY</span>
+      </div>
+      <div class="abs mono" style="top:754px;right:26px;font-size:10.5px;letter-spacing:.3em;color:var(--bone);z-index:10;">OBSERVE. DO NOT SEND.</div>
+
+      <div class="vignette"></div>
+      <div class="grain"></div>
+    </div>
+    <div class="caption"><b>Today.</b> The limb burns ember into teal into deep blue across the whole frame, the moon rides its dark side, the headline staggers down like film credits, and the mantra sits at the bottom edge like the poster's tagline.</div>
+  </div>
+
+  <!-- ══════════════ CYCLE ══════════════ -->
+  <div class="col">
+    <div class="phone">
+      <!-- atmosphere: horizon rising from the bottom, follicular colors along the rim -->
+      <div class="blob" style="width:520px;height:520px;top:230px;left:-60px;background:radial-gradient(circle, rgba(127,191,165,.55), transparent 66%);"></div>
+      <div class="blob" style="width:420px;height:420px;top:330px;left:130px;background:radial-gradient(circle, rgba(196,110,140,.45), transparent 66%);"></div>
+      <div class="blob" style="width:360px;height:360px;top:300px;left:-120px;background:radial-gradient(circle, rgba(201,168,103,.4), transparent 66%);"></div>
+      <div class="flare" style="width:20px;height:20px;top:490px;left:296px;background:radial-gradient(circle, rgba(210,255,235,.95), rgba(127,191,165,.5) 60%, transparent);box-shadow:0 0 34px 8px rgba(127,191,165,.55);"></div>
+      <div class="planet" style="width:1300px;height:1300px;top:482px;left:-453px;"></div>
+      <!-- day ticks along the horizon -->
+      <div class="tick" style="top:508px;left:80px;transform:rotate(-12deg);"></div>
+      <div class="tick" style="top:494px;left:140px;transform:rotate(-6deg);"></div>
+      <div class="tick" style="top:488px;left:200px;transform:rotate(0deg);"></div>
+      <div class="tick" style="top:492px;left:260px;transform:rotate(6deg);"></div>
+      <div class="tick" style="top:504px;left:320px;transform:rotate(12deg);"></div>
+
+      <!-- annotations -->
+      <div class="abs edge r" style="top:330px;">KEPT ON YOUR PHONE ALONE</div>
+      <div class="abs dots" style="top:66px;right:30px;"><i></i><i></i><i></i></div>
+      <div class="hairline-d" style="top:120px;left:240px;width:220px;transform:rotate(24deg);"></div>
+      <div class="abs mono" style="top:64px;left:26px;font-size:10px;letter-spacing:.24em;color:rgba(201,168,103,.85);z-index:10;">YOUR CYCLE</div>
+
+      <!-- the day, worn huge -->
+      <div class="abs eyebrow" style="top:120px;left:28px;color:rgba(232,226,214,.55);">DAY</div>
+      <div class="abs display" style="top:128px;left:24px;font-size:150px;line-height:1;color:var(--bone);text-shadow:0 0 50px rgba(232,226,214,.25);z-index:10;">10</div>
+      <div class="abs" style="top:158px;left:210px;z-index:10;">
+        <div class="microbox">◗</div>
+        <div class="micro" style="color:var(--teal);text-shadow:0 0 14px rgba(127,191,165,.5);letter-spacing:.3em;">FOLLICULAR</div>
+        <div class="micro dim" style="margin-top:2px;">SAMPLE · ESTROGEN ↑</div>
+      </div>
+      <div class="abs" style="top:308px;left:28px;font-style:italic;font-size:16px;color:rgba(232,226,214,.75);z-index:10;">green light, building energy</div>
+      <div class="abs mono" style="top:344px;left:28px;font-size:10px;letter-spacing:.28em;color:var(--gold);z-index:10;">PERIOD EXPECTED IN ~20 DAYS</div>
+
+      <div class="abs lineBtn blood" style="top:388px;left:26px;right:26px;">MY PERIOD STARTED TODAY</div>
+      <div class="abs lineBtn goldln" style="top:446px;left:26px;right:26px;">LOG TODAY IN DETAIL</div>
+
+      <!-- below the horizon: hormone weather on the planet's dark side -->
+      <div class="abs rule" style="top:568px;left:26px;right:26px;">
+        <span class="eyebrow" style="color:var(--gold);">HORMONE WEATHER</span><div class="l"></div><div class="dia" style="box-shadow:none;width:5px;height:5px;"></div>
+      </div>
+      <div class="abs bodycol" style="top:600px;left:26px;width:330px;">Estrogen is climbing back up, so your energy, focus, and appetite for starting things are all rising with it. This is your green light. Begin the thing you've been circling.</div>
+      <div class="abs micro dim" style="top:724px;left:26px;">MOON WEATHER · WANING GIBBOUS</div>
+
+      <div class="tabbar">
+        <div class="tab"><span class="ic">☾</span><span class="lb">TODAY</span></div>
+        <div class="tab on"><span class="ic">◗</span><span class="lb">CYCLE</span></div>
+        <div class="tab"><span class="ic">✶</span><span class="lb">CHART</span></div>
+        <div class="tab"><span class="ic">✦</span><span class="lb">YOU</span></div>
+      </div>
+
+      <div class="vignette"></div>
+      <div class="grain"></div>
+    </div>
+    <div class="caption"><b>Cycle.</b> Her cycle becomes a planet: the horizon rises from the bottom glowing in follicular teal, a flare marks today on the rim, the day number goes huge, and hormone weather lives on the dark side below the horizon.</div>
+  </div>
+
+  <!-- ══════════════ CHART ══════════════ -->
+  <div class="col">
+    <div class="phone">
+      <!-- atmosphere: limb entering from the right, gold and ember, the birth sky -->
+      <div class="blob" style="width:460px;height:460px;top:80px;left:180px;background:radial-gradient(circle, rgba(201,168,103,.5), transparent 66%);"></div>
+      <div class="blob" style="width:520px;height:520px;top:340px;left:160px;background:radial-gradient(circle, rgba(217,102,59,.5), transparent 66%);"></div>
+      <div class="blob" style="width:520px;height:520px;top:600px;left:200px;background:radial-gradient(circle, rgba(44,93,124,.45), transparent 66%);"></div>
+      <div class="planet" style="width:1200px;height:1200px;top:-100px;left:253px;"></div>
+
+      <!-- annotations -->
+      <div class="abs edge r" style="top:300px;">51.5074° N</div>
+      <div class="abs edge r" style="top:600px;">0.1278° W</div>
+      <div class="abs dots" style="top:66px;right:30px;"><i></i><i></i><i></i></div>
+      <div class="hairline-d" style="top:640px;left:-30px;width:200px;transform:rotate(-20deg);"></div>
+
+      <div class="abs mono" style="top:64px;left:26px;font-size:10px;letter-spacing:.24em;color:rgba(201,168,103,.85);z-index:10;">YOUR CHART</div>
+      <div class="abs stagger" style="top:96px;left:26px;">
+        <div class="ln" style="font-size:24px;">The Sky</div>
+        <div class="ln" style="font-size:24px;margin-left:40px;">Kept Receipts<span style="color:var(--gold);">.</span></div>
+      </div>
+      <div class="abs" style="top:208px;left:26px;font-style:italic;font-size:15px;color:rgba(201,168,103,.75);z-index:10;">Born London, United Kingdom.</div>
+
+      <!-- the wheel, floating on the limb -->
+      <div class="abs" style="top:246px;left:32px;z-index:10;">
+        <svg width="300" height="300" viewBox="0 0 330 330">
+          <circle cx="165" cy="165" r="158" fill="none" stroke="rgba(201,168,103,.45)" stroke-width=".75"/>
+          <circle cx="165" cy="165" r="128" fill="none" stroke="rgba(201,168,103,.3)" stroke-width=".5"/>
+          <circle cx="165" cy="165" r="86" fill="none" stroke="rgba(201,168,103,.22)" stroke-width=".5"/>
+          <g stroke="rgba(201,168,103,.18)" stroke-width=".5">
+            <line x1="165" y1="7" x2="165" y2="37"/><line x1="165" y1="293" x2="165" y2="323"/>
+            <line x1="7" y1="165" x2="37" y2="165"/><line x1="293" y1="165" x2="323" y2="165"/>
+            <line x1="53" y1="53" x2="74" y2="74"/><line x1="256" y1="256" x2="277" y2="277"/>
+            <line x1="277" y1="53" x2="256" y2="74"/><line x1="74" y1="256" x2="53" y2="277"/>
+          </g>
+          <g stroke="rgba(217,102,59,.55)" stroke-width=".6">
+            <line x1="120" y1="88" x2="238" y2="150"/>
+            <line x1="238" y1="150" x2="150" y2="248"/>
+            <line x1="120" y1="88" x2="150" y2="248"/>
+            <line x1="93" y1="165" x2="238" y2="150"/>
+          </g>
+          <g fill="#E8E2D6" font-size="15" font-family="Georgia">
+            <text x="112" y="86">☽</text><text x="240" y="148">♀</text>
+            <text x="252" y="188">☉</text><text x="142" y="258">☊</text>
+            <text x="86" y="170" fill="#D9663B">⚸</text>
+          </g>
+          <g fill="rgba(201,168,103,.8)" font-size="12" font-family="Georgia">
+            <text x="160" y="26">♈</text><text x="238" y="52">♓</text><text x="292" y="120">♒</text>
+            <text x="296" y="212">♑</text><text x="252" y="284">♐</text><text x="164" y="312">♏</text>
+            <text x="78" y="284">♎</text><text x="28" y="212">♍</text><text x="24" y="120">♌</text>
+            <text x="80" y="52">♋</text>
+          </g>
+        </svg>
+      </div>
+
+      <!-- big three: editorial ledger, not cards -->
+      <div class="abs" style="top:578px;left:26px;right:26px;z-index:10;">
+        <div class="rule"><span class="eyebrow" style="color:var(--gold);">THE BIG THREE</span><div class="l"></div></div>
+        <div style="display:flex;align-items:baseline;gap:16px;padding:16px 0 12px;border-bottom:.5px solid rgba(232,226,214,.12);">
+          <span class="mono" style="font-size:9.5px;letter-spacing:.3em;color:rgba(232,226,214,.5);width:52px;">SUN</span>
+          <span class="display" style="font-size:25px;text-transform:none;">Capricorn</span>
+          <span class="mono" style="margin-left:auto;font-size:10px;letter-spacing:.2em;color:var(--ember);">READ →</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:16px;padding:14px 0 12px;border-bottom:.5px solid rgba(232,226,214,.12);">
+          <span class="mono" style="font-size:9.5px;letter-spacing:.3em;color:rgba(232,226,214,.5);width:52px;">MOON</span>
+          <span class="display" style="font-size:25px;text-transform:none;">Taurus</span>
+          <span class="mono" style="margin-left:auto;font-size:10px;letter-spacing:.2em;color:var(--ember);">READ →</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:16px;padding:14px 0 12px;">
+          <span class="mono" style="font-size:9.5px;letter-spacing:.3em;color:rgba(232,226,214,.5);width:52px;">RISING</span>
+          <span class="display" style="font-size:25px;text-transform:none;">Cancer</span>
+          <span class="mono" style="margin-left:auto;font-size:10px;letter-spacing:.2em;color:var(--ember);">READ →</span>
+        </div>
+      </div>
+      <div class="abs wordmark" style="bottom:34px;left:0;right:0;text-align:center;">Lilith</div>
+
+      <div class="vignette"></div>
+      <div class="grain"></div>
+    </div>
+    <div class="caption"><b>Chart.</b> The birth sky enters from the right in gold and ember, her coordinates are printed on the frame's edge like a specimen label, and the Big Three become a ledger of receipts instead of floating cards.</div>
+  </div>
+
+</div>
+
+</body>
+</html>

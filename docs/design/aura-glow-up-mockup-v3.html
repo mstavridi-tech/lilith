@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LILITH · The Aura Glow-Up · Mockup v3 · Off Maria's Actual Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #070605;
+    --bone: #E8E2D6;
+    --gold: #C9A867;
+    --ember: #D9663B;
+    --blood: #8E3B46;
+    --teal: #7FBFA5;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #050403;
+    color: var(--bone);
+    font-family: Georgia, 'Times New Roman', serif;
+    padding: 56px 24px 90px;
+    display: flex; flex-direction: column; align-items: center; gap: 44px;
+  }
+  .intro { max-width: 780px; text-align: center; }
+  .intro h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600;
+    font-size: 23px; letter-spacing: .4em; color: var(--gold); text-transform: uppercase;
+  }
+  .intro p { margin-top: 16px; font-size: 15px; line-height: 1.75; color: rgba(232,226,214,.68); }
+  .intro .note { margin-top: 10px; font-size: 12.5px; color: rgba(232,226,214,.4); font-style: italic; }
+  .intro .tags { margin-top: 18px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .intro .tags span {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 9.5px; letter-spacing: .2em;
+    color: var(--gold); padding: 7px 12px 6px; border-radius: 999px;
+    background: rgba(201,168,103,.07); border: 1px solid rgba(201,168,103,.24);
+  }
+
+  .frames { display: flex; gap: 48px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .col { display: flex; flex-direction: column; gap: 18px; align-items: center; }
+  .caption { max-width: 380px; font-size: 13px; line-height: 1.65; color: rgba(232,226,214,.55); text-align: center; }
+  .caption b { color: rgba(232,226,214,.85); font-weight: normal; }
+
+  .phone {
+    width: 393px; height: 852px; border-radius: 56px; background: var(--void);
+    position: relative; overflow: hidden; flex-shrink: 0;
+    border: 1px solid rgba(232,226,214,.10);
+    box-shadow: 0 50px 110px rgba(0,0,0,.78);
+  }
+  .grain {
+    position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; opacity: .6; z-index: 10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+  }
+  .stars { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+  .stars i {
+    position: absolute; width: 2px; height: 2px; border-radius: 50%;
+    background: rgba(232,226,214,.5); box-shadow: 0 0 6px rgba(232,226,214,.35);
+  }
+  .stars i.g { background: rgba(201,168,103,.65); box-shadow: 0 0 7px rgba(201,168,103,.45); }
+
+  /* comet streak, not a symmetric blob. Mars poster's move */
+  .comet {
+    position: absolute; z-index: 0; pointer-events: none;
+    filter: blur(50px) saturate(1.4) contrast(1.1);
+    animation: drift 12s ease-in-out infinite;
+  }
+  @keyframes drift {
+    0%, 100% { opacity: .95; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.045); }
+  }
+  .flood {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  }
+  .vignette {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(ellipse 85% 70% at 50% 42%, transparent 42%, rgba(4,3,2,.6) 100%);
+  }
+
+  /* corner marks, closer to the poster's coordinate credits than app chrome */
+  .marks span {
+    position: absolute; z-index: 7; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 9px; letter-spacing: .14em; color: rgba(201,168,103,.42);
+  }
+  .marks .tl { top: 22px; left: 24px; } .marks .tr { top: 22px; right: 24px; text-align: right; }
+  .marks .bl { bottom: 30px; left: 24px; } .marks .br { bottom: 30px; right: 24px; text-align: right; }
+  .marks i { display: inline-block; width: 3px; height: 3px; border-radius: 50%; border: 1px solid rgba(201,168,103,.5); margin-right: 5px; vertical-align: middle; }
+
+  .screen { position: absolute; inset: 0; z-index: 3; padding: 58px 26px 0; display: flex; flex-direction: column; align-items: center; }
+  .mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+  .display { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; text-transform: uppercase; }
+  .eyebrow { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 10px; letter-spacing: .36em; }
+
+  .card {
+    width: 100%; border-radius: 26px; padding: 24px 22px;
+    background: linear-gradient(180deg, rgba(232,226,214,.05), rgba(232,226,214,.016));
+    border: 1px solid rgba(232,226,214,.08);
+    box-shadow: inset 0 1px 0 rgba(232,226,214,.07), 0 20px 46px rgba(0,0,0,.38);
+    backdrop-filter: blur(13px);
+  }
+
+  .topline { width: 100%; display: flex; justify-content: space-between; font-size: 10.5px; letter-spacing: .22em; color: rgba(201,168,103,.85); }
+
+  .moonwrap { position: relative; }
+  .moon {
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 34%, #e2ddd3, #a5a199 46%, #6a675f 74%, #403d37 97%);
+    position: relative;
+  }
+  .moon::before {
+    content: ""; position: absolute; inset: 0; border-radius: 50%;
+    background:
+      radial-gradient(circle at 62% 40%, rgba(64,61,55,.55) 0 9%, transparent 11%),
+      radial-gradient(circle at 38% 58%, rgba(64,61,55,.46) 0 13%, transparent 15%),
+      radial-gradient(circle at 55% 68%, rgba(64,61,55,.38) 0 7%, transparent 9%),
+      radial-gradient(circle at 30% 32%, rgba(64,61,55,.32) 0 6%, transparent 8%);
+  }
+  .moon::after {
+    content: ""; position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(circle at 130% 50%, transparent 60%, rgba(7,6,5,.95) 78%);
+  }
+
+  .scope {
+    display: flex; gap: 6px; padding: 4px;
+    border-radius: 999px; background: rgba(232,226,214,.04);
+    border: 1px solid rgba(232,226,214,.06);
+  }
+  .scope span { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 10px; letter-spacing: .22em; padding: 7px 13px 6px; border-radius: 999px; color: rgba(232,226,214,.4); }
+  .scope span.on { color: var(--void); background: linear-gradient(180deg, #ddc189, var(--gold)); }
+
+  .headline { font-size: 26px; letter-spacing: .1em; text-align: center; line-height: 1.34; color: var(--bone); font-weight: 500; }
+  .bodytext { font-size: 14.5px; line-height: 1.68; text-align: center; color: rgba(232,226,214,.82); }
+
+  .divider { display: flex; align-items: center; gap: 12px; width: 140px; margin: 17px auto 14px; }
+  .divider .line { flex: 1; height: .5px; background: rgba(201,168,103,.5); }
+  .divider .dia { width: 5px; height: 5px; border: .5px solid rgba(201,168,103,.85); transform: rotate(45deg); }
+  .mantra { font-size: 15px; letter-spacing: .32em; text-align: center; color: var(--bone); font-weight: 600; }
+
+  .tabbar {
+    position: absolute; left: 24px; right: 24px; bottom: 20px; z-index: 8;
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 12px 10px 10px; border-radius: 999px;
+    background: linear-gradient(180deg, rgba(22,19,16,.86), rgba(11,9,7,.92));
+    border: 1px solid rgba(232,226,214,.09);
+    box-shadow: inset 0 1px 0 rgba(232,226,214,.07), 0 20px 44px rgba(0,0,0,.6);
+    backdrop-filter: blur(20px);
+  }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: rgba(232,226,214,.4); width: 72px; }
+  .tab .ic { font-size: 17px; line-height: 1; }
+  .tab .lb { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 8.5px; letter-spacing: .22em; }
+  .tab.on { color: var(--gold); text-shadow: 0 0 20px rgba(201,168,103,.6); }
+  .tab.on::after { content: ""; width: 3px; height: 3px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 9px rgba(201,168,103,1); }
+
+  .h-row { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+  .h1 { font-size: 30px; letter-spacing: .12em; }
+  .chip {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 9px; letter-spacing: .22em; color: var(--gold);
+    padding: 8px 13px 7px; border-radius: 999px;
+    background: rgba(0,0,0,.18); border: 1px solid rgba(232,226,214,.18);
+  }
+  .sub { width: 100%; font-style: italic; font-size: 15px; color: rgba(232,226,214,.68); }
+
+  .status { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 10.5px; letter-spacing: .26em; color: rgba(232,226,214,.85); }
+
+  .btn {
+    width: 100%; text-align: center; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 11.5px; letter-spacing: .24em; padding: 16px 0 15px; border-radius: 999px;
+  }
+  .btn.primary {
+    color: #F5E6E0;
+    background: rgba(7,6,5,.28);
+    border: 1px solid rgba(255,255,255,.32);
+    backdrop-filter: blur(6px);
+  }
+  .btn.quiet {
+    color: rgba(255,255,255,.85);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.2);
+  }
+
+  .wheelwrap { position: relative; }
+  .coords { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 9px; letter-spacing: .16em; color: rgba(201,168,103,.5); text-align: center; }
+  .bigthree { width: 100%; display: flex; flex-direction: column; gap: 9px; }
+  .row { display: flex; align-items: center; gap: 15px; padding: 15px 17px; border-radius: 20px;
+    background: linear-gradient(180deg, rgba(232,226,214,.045), rgba(232,226,214,.015));
+    border: 1px solid rgba(232,226,214,.07);
+  }
+  .row .glyph {
+    width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold); font-size: 16px;
+    border: 1px solid rgba(201,168,103,.4);
+    background: radial-gradient(circle at 50% 30%, rgba(201,168,103,.18), transparent 70%);
+  }
+  .row .txt { flex: 1; }
+  .row .lbl { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 9px; letter-spacing: .3em; color: rgba(232,226,214,.5); }
+  .row .sign { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; font-weight: 500; color: var(--bone); }
+  .row .go { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 10px; letter-spacing: .2em; color: var(--ember); }
+
+  /* launch mark */
+  .lilithmark { position: relative; width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; }
+  .corona { position: absolute; inset: 0; border-radius: 50%; }
+  .glyphbig { position: relative; z-index: 2; font-size: 76px; color: #050403; font-family: Georgia, serif; text-shadow: 0 0 1px rgba(232,226,214,.4); }
+  .flare { position: absolute; z-index: 3; width: 3px; height: 3px; background: #fff; border-radius: 50%; box-shadow: 0 0 24px 6px #fff, 0 0 60px 20px rgba(217,102,59,.7); }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Lilith · The Aura Glow-Up · v3</h1>
+  <p>Rebuilt off the actual board this time, not just turned up. The comet aura now sweeps diagonally instead of sitting as a centered blob. Today gets real breathing room around the moon, like the eclipse poster gives its hero object. Cycle drops the corner-glow trick entirely for a full saturated color flood, closer to the Interstellar cards. Corner marks read like the Mars poster's coordinate credits, tiny circles and micro labels, not app chrome. And there's a fourth screen: a launch mark exploration, straight off the eclipse and black hole references, because that's the clearest place to prove this language works.</p>
+  <p class="note">Open on a laptop. Comets drift on a slow loop.</p>
+  <div class="tags"><span>COMET NOT BLOB</span><span>FULL COLOR FLOOD</span><span>ROOM TO BREATHE</span><span>ONE HERO OBJECT</span></div>
+</div>
+
+<div class="frames">
+
+  <!-- ══════════════ TODAY ══════════════ -->
+  <div class="col">
+    <div class="phone">
+      <div class="comet" style="width:220px;height:640px;top:-160px;left:-40px;border-radius:50%;background:linear-gradient(200deg, rgba(150,178,214,.62), rgba(217,102,59,.5) 55%, transparent 85%);transform:rotate(24deg);"></div>
+      <div class="vignette"></div>
+      <div class="stars">
+        <i style="top:14%;left:78%" class="g"></i><i style="top:9%;left:55%"></i>
+        <i style="top:63%;left:87%"></i><i style="top:76%;left:14%"></i><i style="top:83%;left:80%" class="g"></i>
+      </div>
+      <div class="marks">
+        <span class="tl"><i></i>02.07.26</span>
+        <span class="tr">10° AQU · 93%</span>
+        <span class="bl"><i></i>WANING GIBBOUS</span>
+        <span class="br">SCROLL FOR THE READ</span>
+      </div>
+      <div class="screen" style="justify-content:center;gap:38px;">
+        <div class="moonwrap" style="align-self:center;">
+          <div class="moon" style="width:230px;height:230px;box-shadow:0 0 2px 1px rgba(160,190,220,.4), 0 0 100px 14px rgba(150,175,210,.22), 0 0 260px 90px rgba(217,102,59,.16);"></div>
+        </div>
+        <div class="card">
+          <div class="eyebrow" style="color:var(--ember);text-align:center;text-shadow:0 0 16px rgba(217,102,59,.55);">THE MOON IS UP.</div>
+          <div class="display headline" style="margin:13px 0 11px;">Mercury Retrograde<br>Wants Your Drafts</div>
+          <div class="bodytext">Your inbox is a liar right now, and your Capricorn placements notice every edit. Today is for observing, not responding.</div>
+          <div class="divider"><div class="line"></div><div class="dia"></div><div class="line"></div></div>
+          <div class="display mantra">Observe. Do Not Send.</div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab on"><span class="ic">☾</span><span class="lb">TODAY</span></div>
+        <div class="tab"><span class="ic">◗</span><span class="lb">CYCLE</span></div>
+        <div class="tab"><span class="ic">✶</span><span class="lb">CHART</span></div>
+        <div class="tab"><span class="ic">✦</span><span class="lb">YOU</span></div>
+      </div>
+      <div class="grain"></div>
+    </div>
+    <div class="caption"><b>Today.</b> The blob is gone. In its place, a diagonal comet streak of color, the Mars poster's move. The moon got bigger and got room around it instead of fighting the scope switcher and topline for space. Corner marks are now coordinate-style credits, not app icons.</div>
+  </div>
+
+  <!-- ══════════════ CYCLE ══════════════ -->
+  <div class="col">
+    <div class="phone">
+      <div class="flood" style="background:linear-gradient(175deg, #163832 0%, #0c211d 30%, #070605 62%, #070605 100%);"></div>
+      <div class="flood" style="background:radial-gradient(60% 45% at 50% 20%, rgba(127,191,165,.35), transparent 70%);"></div>
+      <div class="vignette"></div>
+      <div class="stars">
+        <i style="top:11%;left:88%"></i><i style="top:24%;left:8%" class="g"></i>
+        <i style="top:60%;left:9%"></i><i style="top:72%;left:86%" class="g"></i>
+      </div>
+      <div class="marks">
+        <span class="tl"><i></i>DAY 10</span>
+        <span class="tr">FOLLICULAR</span>
+        <span class="bl"><i></i>~20 DAYS OUT</span>
+        <span class="br">PRIVATE, ON-DEVICE</span>
+      </div>
+      <div class="screen" style="justify-content:center;align-items:center;gap:34px;">
+        <div style="text-align:center;">
+          <div class="mono" style="font-size:11px;letter-spacing:.4em;color:rgba(232,226,214,.55);">DAY</div>
+          <div class="display" style="font-size:110px;font-weight:600;line-height:.95;text-shadow:0 0 50px rgba(127,191,165,.4);">10</div>
+          <div class="mono" style="font-size:12px;letter-spacing:.36em;color:var(--teal);margin-top:6px;text-shadow:0 0 18px rgba(127,191,165,.55);">FOLLICULAR</div>
+        </div>
+        <div class="display" style="font-size:22px;letter-spacing:.08em;line-height:1.5;max-width:280px;">Estrogen's Climbing.<br>Start The Thing.</div>
+        <div style="width:100%;display:flex;flex-direction:column;gap:11px;">
+          <div class="btn primary">MY PERIOD STARTED TODAY</div>
+          <div class="btn quiet">LOG TODAY IN DETAIL</div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><span class="ic">☾</span><span class="lb">TODAY</span></div>
+        <div class="tab on"><span class="ic">◗</span><span class="lb">CYCLE</span></div>
+        <div class="tab"><span class="ic">✶</span><span class="lb">CHART</span></div>
+        <div class="tab"><span class="ic">✦</span><span class="lb">YOU</span></div>
+      </div>
+      <div class="grain"></div>
+    </div>
+    <div class="caption"><b>Cycle.</b> This is the real swing: no more black-with-a-glow-in-the-corner. The whole screen floods teal to void, like the Interstellar cards. The orb is gone entirely, the day number just gets to be huge. Glass buttons sit on top of the color like the "[Listen]" pill in your reference.</div>
+  </div>
+
+  <!-- ══════════════ CHART ══════════════ -->
+  <div class="col">
+    <div class="phone">
+      <div class="comet" style="width:200px;height:560px;top:-120px;right:-60px;left:auto;border-radius:50%;background:linear-gradient(160deg, rgba(201,168,103,.55), rgba(217,102,59,.4) 60%, transparent 88%);transform:rotate(-18deg);"></div>
+      <div class="vignette"></div>
+      <div class="stars">
+        <i style="top:10%;left:86%" class="g"></i><i style="top:26%;left:7%"></i>
+        <i style="top:70%;left:12%" class="g"></i>
+      </div>
+      <div class="marks">
+        <span class="tl"><i></i>LONDON, UK</span>
+        <span class="tr">51.50°N 0.12°W</span>
+        <span class="bl"><i></i>THE BIG THREE</span>
+        <span class="br">TAP TO READ</span>
+      </div>
+      <div class="screen" style="justify-content:center;gap:26px;">
+        <div class="wheelwrap" style="align-self:center;">
+          <svg width="320" height="320" viewBox="0 0 330 330">
+            <circle cx="165" cy="165" r="158" fill="none" stroke="rgba(201,168,103,.45)" stroke-width=".75"/>
+            <circle cx="165" cy="165" r="128" fill="none" stroke="rgba(201,168,103,.3)" stroke-width=".5"/>
+            <circle cx="165" cy="165" r="86" fill="none" stroke="rgba(201,168,103,.22)" stroke-width=".5"/>
+            <g stroke="rgba(201,168,103,.18)" stroke-width=".5">
+              <line x1="165" y1="7" x2="165" y2="37"/><line x1="165" y1="293" x2="165" y2="323"/>
+              <line x1="7" y1="165" x2="37" y2="165"/><line x1="293" y1="165" x2="323" y2="165"/>
+              <line x1="53" y1="53" x2="74" y2="74"/><line x1="256" y1="256" x2="277" y2="277"/>
+              <line x1="277" y1="53" x2="256" y2="74"/><line x1="74" y1="256" x2="53" y2="277"/>
+            </g>
+            <g stroke="rgba(217,102,59,.55)" stroke-width=".65">
+              <line x1="120" y1="88" x2="238" y2="150"/>
+              <line x1="238" y1="150" x2="150" y2="248"/>
+              <line x1="120" y1="88" x2="150" y2="248"/>
+              <line x1="93" y1="165" x2="238" y2="150"/>
+            </g>
+            <g fill="#E8E2D6" font-size="15" font-family="Georgia">
+              <text x="112" y="86">☽</text><text x="240" y="148">♀</text>
+              <text x="252" y="188">☉</text><text x="142" y="258">☊</text>
+              <text x="86" y="170" fill="#D9663B">⚸</text>
+            </g>
+            <g fill="rgba(201,168,103,.8)" font-size="12" font-family="Georgia">
+              <text x="160" y="26">♈</text><text x="238" y="52">♓</text><text x="292" y="120">♒</text>
+              <text x="296" y="212">♑</text><text x="252" y="284">♐</text><text x="164" y="312">♏</text>
+              <text x="78" y="284">♎</text><text x="28" y="212">♍</text><text x="24" y="120">♌</text>
+              <text x="80" y="52">♋</text>
+            </g>
+          </svg>
+        </div>
+        <div class="bigthree">
+          <div class="row">
+            <div class="glyph">☉</div>
+            <div class="txt"><div class="lbl">SUN</div><div class="sign">Capricorn</div></div>
+            <div class="go">READ →</div>
+          </div>
+          <div class="row">
+            <div class="glyph">☽</div>
+            <div class="txt"><div class="lbl">MOON</div><div class="sign">Taurus</div></div>
+            <div class="go">READ →</div>
+          </div>
+          <div class="row">
+            <div class="glyph" style="font-size:10px;">ASC</div>
+            <div class="txt"><div class="lbl">RISING</div><div class="sign">Cancer</div></div>
+            <div class="go">READ →</div>
+          </div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><span class="ic">☾</span><span class="lb">TODAY</span></div>
+        <div class="tab"><span class="ic">◗</span><span class="lb">CYCLE</span></div>
+        <div class="tab on"><span class="ic">✶</span><span class="lb">CHART</span></div>
+        <div class="tab"><span class="ic">✦</span><span class="lb">YOU</span></div>
+      </div>
+      <div class="grain"></div>
+    </div>
+    <div class="caption"><b>Chart.</b> The page header is gone, the wheel and the coordinates ARE the header now, same trick the Mars poster uses (data in the margins, no literal title). Comet sweeps in from the opposite corner this time so the set doesn't feel repetitive.</div>
+  </div>
+
+  <!-- ══════════════ LAUNCH MARK (new, exploration) ══════════════ -->
+  <div class="col">
+    <div class="phone">
+      <div class="stars">
+        <i style="top:8%;left:20%"></i><i style="top:14%;left:82%" class="g"></i><i style="top:22%;left:60%"></i>
+        <i style="top:78%;left:15%" class="g"></i><i style="top:88%;left:70%"></i><i style="top:92%;left:35%"></i>
+      </div>
+      <div class="marks">
+        <span class="tl"><i></i>LILITH</span>
+        <span class="tr">⚸</span>
+      </div>
+      <div class="screen" style="justify-content:center;align-items:center;gap:30px;">
+        <div class="lilithmark">
+          <div class="corona" style="background:radial-gradient(circle, transparent 46%, rgba(217,102,59,.16) 58%, rgba(217,102,59,.05) 72%, transparent 84%);width:340px;height:340px;top:-60px;left:-60px;"></div>
+          <div class="corona" style="background:radial-gradient(circle, #050403 44%, rgba(5,4,3,.0) 46%);"></div>
+          <div class="glyphbig">⚸</div>
+          <div class="flare" style="top:18px;right:22px;"></div>
+        </div>
+        <div>
+          <div class="display" style="font-size:15px;letter-spacing:.5em;text-align:center;color:var(--gold);">LILITH</div>
+        </div>
+        <div class="bodytext" style="max-width:250px;font-style:italic;font-size:13.5px;color:rgba(232,226,214,.6);margin-top:10px;">You're not behind. You're in pre-production.</div>
+      </div>
+      <div class="grain"></div>
+    </div>
+    <div class="caption"><b>Launch mark (new).</b> Straight off the eclipse and black hole references: one glowing object, enormous negative space, a wordmark, one italic caption line at the bottom. No tab bar, no card, nothing else. This is what "one hero object" looks like taken all the way.</div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -492,6 +492,87 @@ extension View {
     }
 }
 
+// MARK: - The atmosphere (the Marte poster language, Maria's chosen direction, July 2 2026)
+
+/// A vast planetary limb just off the top of the frame, with colour bleeding along its rim:
+/// one warm mass (the aura, phase-tinted when the cycle is known) falling into cool teal and
+/// deep blue. ONE luminous region per screen; everything else stays calm near-black. This is
+/// the "ease to your eyes" rule: giant blurs, low opacities, no competing elements.
+struct LimbAtmosphere: View {
+    /// The warm mass riding the limb. Pass the cycle phase's aura on Today.
+    var aura: Color = Theme.ember
+    var intensity: Double = 1
+    var alive: Bool = true
+
+    private let teal = Color(red: 0.24, green: 0.45, blue: 0.40)
+    private let deep = Color(red: 0.16, green: 0.32, blue: 0.44)
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width
+            TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: !alive)) { tl in
+                let t = tl.date.timeIntervalSinceReferenceDate
+                let pulse = alive ? 1.0 + sin(t * (2 * .pi / 11.0)) * 0.09 : 1.0
+
+                ZStack {
+                    // Colour masses, hand-placed along the limb's arc. They sit half-under the
+                    // planet disc, so what survives is a glow band tracing the curve.
+                    Circle().fill(aura)
+                        .frame(width: w * 1.35, height: w * 1.35)
+                        .position(x: w * 0.18, y: w * 0.34)
+                        .blur(radius: 80)
+                        .opacity(0.30 * intensity * pulse)
+                    Circle().fill(teal)
+                        .frame(width: w * 1.6, height: w * 1.6)
+                        .position(x: w * 0.95, y: w * 0.95)
+                        .blur(radius: 95)
+                        .opacity(0.22 * intensity * pulse)
+                    Circle().fill(deep)
+                        .frame(width: w * 1.8, height: w * 1.8)
+                        .position(x: w * 1.2, y: w * 1.6)
+                        .blur(radius: 105)
+                        .opacity(0.20 * intensity)
+
+                    // The planet itself: a vast dark disc whose edge turns the glow into a limb.
+                    Circle()
+                        .fill(RadialGradient(
+                            colors: [Color(red: 0.050, green: 0.042, blue: 0.035), Theme.void],
+                            center: .center, startRadius: 0, endRadius: w * 1.4))
+                        .frame(width: w * 2.8, height: w * 2.8)
+                        .position(x: w * 0.13, y: -w * 0.53)
+                    // The faintest hairline along the limb's edge, catching the light.
+                    Circle()
+                        .stroke(Theme.bone.opacity(0.05), lineWidth: 1)
+                        .frame(width: w * 2.8, height: w * 2.8)
+                        .position(x: w * 0.13, y: -w * 0.53)
+                }
+            }
+        }
+        .allowsHitTesting(false)
+        .ignoresSafeArea()
+    }
+}
+
+extension View {
+    /// The poster stage: void, sparse stars, the limb atmosphere, vignette, grain on top.
+    /// Successor to cosmicScreen; screens migrate here as they get the atmosphere pass.
+    func atmosphereScreen(aura: Color = Theme.ember,
+                          intensity: Double = 1,
+                          alive: Bool = true) -> some View {
+        self
+            .background(
+                ZStack {
+                    Theme.void
+                    StarField(count: 90, live: alive)
+                    LimbAtmosphere(aura: aura, intensity: intensity, alive: alive)
+                    EdgeVignette()
+                }
+                .ignoresSafeArea()
+            )
+            .overlay(GrainOverlay())
+    }
+}
+
 extension Text {
     /// A letterspaced serif display headline. The celestial editorial register, in one call.
     func displayCaps(_ size: CGFloat, em: CGFloat = 0.15, color: Color = Theme.bone) -> some View {

@@ -15,22 +15,26 @@ struct CycleView: View {
             VStack(alignment: .leading, spacing: 0) {
                 topBar.cascadeIn(0, trigger: developToken)
 
+                if let state = store.today {
+                    quickGlance(state).cascadeIn(1, trigger: developToken)
+                }
+
                 CycleOrb(state: store.today, expectingDays: store.expectingDays)
                     .frame(maxWidth: .infinity)
                     .padding(.top, 22)
-                    .cascadeIn(1, trigger: developToken)
+                    .cascadeIn(2, trigger: developToken)
 
                 if let state = store.today {
-                    orbCaption(state).cascadeIn(2, trigger: developToken)
-                    logActions.cascadeIn(3, trigger: developToken)
-                    hormoneWeather(state).cascadeIn(4, trigger: developToken)
-                    moonWeather(state).cascadeIn(5, trigger: developToken)
+                    orbCaption(state).cascadeIn(3, trigger: developToken)
+                    logActions.cascadeIn(4, trigger: developToken)
+                    hormoneWeather(state).cascadeIn(5, trigger: developToken)
+                    moonWeather(state).cascadeIn(6, trigger: developToken)
                 } else {
                     invite.cascadeIn(2, trigger: developToken)
                     logActions.cascadeIn(3, trigger: developToken)
                 }
 
-                disclaimer.cascadeIn(6, trigger: developToken)
+                disclaimer.cascadeIn(7, trigger: developToken)
 
                 Wordmark()
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -38,7 +42,7 @@ struct CycleView: View {
             }
             .padding(.horizontal, 28)
             .padding(.top, 16)
-            .padding(.bottom, 40)
+            .padding(.bottom, 120) // clears the floating tab bar
         }
         .scrollIndicators(.hidden)
         .cosmicScreen(bloomAlignment: .top, bloomIntensity: 0.7)
@@ -77,6 +81,40 @@ struct CycleView: View {
             }
             .buttonStyle(.plain)
         }
+    }
+
+    // MARK: Quick glance (v10, "more health, less astrology" per Oura's move: real numbers, up
+    // front, before any narrative or mystic framing. Three plain stats, no glow, no aura, just data.)
+
+    private func quickGlance(_ state: CycleState) -> some View {
+        HStack(spacing: 0) {
+            glanceStat("CYCLE", "\(state.cycleLength)", "DAY AVG")
+            glanceDivider
+            glanceStat("TODAY", "\(state.cycleDay)", "OF \(state.cycleLength)")
+            glanceDivider
+            glanceStat("NEXT", state.nextPeriodInDays == 0 ? "TODAY" : "\(state.nextPeriodInDays)",
+                       state.nextPeriodInDays == 0 ? "PERIOD DUE" : "DAYS OUT")
+        }
+        .padding(.top, 22)
+    }
+
+    private func glanceStat(_ label: String, _ value: String, _ unit: String) -> some View {
+        VStack(spacing: 5) {
+            Text(value)
+                .font(Theme.display(26).weight(.medium))
+                .foregroundStyle(Theme.bone)
+            Text(label)
+                .font(Theme.mono(8.5)).tracking(Theme.tracking(8.5, em: 0.2))
+                .foregroundStyle(Theme.gold.opacity(0.75))
+            Text(unit)
+                .font(Theme.mono(8)).tracking(Theme.tracking(8, em: 0.1))
+                .foregroundStyle(Theme.bone.opacity(0.4))
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var glanceDivider: some View {
+        Rectangle().fill(Theme.gold.opacity(0.15)).frame(width: 0.5, height: 40)
     }
 
     // A single line under the orb: when her next period is expected.

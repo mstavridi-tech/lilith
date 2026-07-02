@@ -102,20 +102,21 @@ struct LaunchRitual: View {
 
 struct MainTabView: View {
     let chart: NatalChart
+    @State private var selection: MainTab = .today
 
     var body: some View {
-        TabView {
-            TodayView(chart: chart)
-                .tabItem { Label("Today", systemImage: "moon.stars.fill") }
-            CycleView()
-                .tabItem { Label("Cycle", systemImage: "drop.fill") }
-            ChartView(chart: chart)
-                .tabItem { Label("Chart", systemImage: "circle.hexagongrid") }
-            SettingsView()
-                .tabItem { Label("You", systemImage: "sparkles") }
-            // Phase 3: CompatibilityView, LifeAreasView
+        ZStack(alignment: .bottom) {
+            Group {
+                switch selection {
+                case .today: TodayView(chart: chart)
+                case .cycle: CycleView()
+                case .chart: ChartView(chart: chart)
+                case .you: SettingsView()
+                // Phase 3: CompatibilityView, LifeAreasView
+                }
+            }
+            FloatingTabBar(selection: $selection)
         }
-        .tint(Theme.gold)
         .background(Theme.void)
     }
 }
