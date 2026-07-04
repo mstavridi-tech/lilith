@@ -19,7 +19,8 @@ struct CycleView: View {
                     quickGlance(state).cascadeIn(1, trigger: developToken)
                 }
 
-                CycleOrb(state: store.today, expectingDays: store.expectingDays)
+                CycleOrb(state: store.today, expectingDays: store.expectingDays,
+                         bleedDays: bleedDaysThisCycle)
                     .frame(maxWidth: .infinity)
                     .padding(.top, 22)
                     .cascadeIn(2, trigger: developToken)
@@ -28,7 +29,10 @@ struct CycleView: View {
                     // orbCaption removed July 4: "period expected in N days" already lives in the
                     // quick-glance row; saying it twice on one screen read as filler (Maria).
                     logActions.cascadeIn(4, trigger: developToken)
+                    MoonCycleStrip(days: MoonCycleDay.currentCycle(entries: store.entries, state: state))
+                        .cascadeIn(5, trigger: developToken)
                     hormoneWeather(state).cascadeIn(5, trigger: developToken)
+                    HormoneCurveCard(state: state).cascadeIn(6, trigger: developToken)
                     moonWeather(state).cascadeIn(6, trigger: developToken)
                 } else {
                     invite.cascadeIn(2, trigger: developToken)
@@ -261,6 +265,19 @@ struct CycleView: View {
     }
 
     private var bleedingToday: Bool { store.entry(on: Date())?.isBleeding ?? false }
+
+    /// Cycle-day numbers (1-based) she actually logged blood on within the current cycle, for the
+    /// exact markers on the ring. Empty when she isn't tracking yet.
+    private var bleedDaysThisCycle: [Int] {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date())
+        guard let lastStart = CycleMath.periodStarts(store.entries).filter({ $0 <= today }).last
+        else { return [] }
+        return store.entries.filter(\.isBleeding).compactMap {
+            let d = cal.dateComponents([.day], from: lastStart, to: cal.startOfDay(for: $0.date)).day ?? -1
+            return d >= 0 ? d + 1 : nil
+        }
+    }
 
     // MARK: Disclaimer (the mandatory bridge, in voice)
 

@@ -50,6 +50,7 @@ struct TodayView: View {
                     scopeSwitcher.cascadeIn(4, trigger: developToken)
                     readingCard.cascadeIn(5, trigger: developToken)
                     glanceGrid.cascadeIn(6, trigger: developToken)
+                    ExploreGrid(phase: cycle.today?.phase).cascadeIn(7, trigger: developToken)
                     transitSection.cascadeIn(7, trigger: developToken)
                     Spacer(minLength: 30)
                     footer.cascadeIn(8, trigger: developToken)

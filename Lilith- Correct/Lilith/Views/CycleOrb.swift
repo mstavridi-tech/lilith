@@ -10,6 +10,7 @@ import SwiftUI
 struct CycleOrb: View {
     let state: CycleState?
     var expectingDays: Int? = nil
+    var bleedDays: [Int] = []   // cycle days she ACTUALLY logged blood on, for the exact markers
     var size: CGFloat = 320
 
     private var length: Int { state?.cycleLength ?? 28 }
@@ -27,11 +28,53 @@ struct CycleOrb: View {
 
     var body: some View {
         ZStack {
+            moonTexture
             track
-            if state != nil { progressArc }
+            if state != nil {
+                progressArc
+                periodMarkers
+            }
             center
         }
         .frame(width: size, height: size)
+    }
+
+    // The real moon photo, faint inside the ring (Maria's master list: moon texture in the ring).
+    // Texture, not a sky claim: no phase shadow, kept quiet so the day numeral stays the loudest
+    // thing on the screen (the readability system).
+    private var moonTexture: some View {
+        Group {
+            if let photo = UIImage(named: "moon-nasa") {
+                Image(uiImage: photo)
+                    .resizable().scaledToFill()
+                    .frame(width: ringD - ringWidth, height: ringD - ringWidth)
+                    .clipShape(Circle())
+                    .opacity(0.16)
+                    .overlay(
+                        // sink the texture toward the rim so the center stays dark under the numeral
+                        RadialGradient(colors: [Theme.void.opacity(0.85), .clear],
+                                       center: .center,
+                                       startRadius: 0, endRadius: (ringD - ringWidth) / 2)
+                            .clipShape(Circle())
+                    )
+            }
+        }
+        .allowsHitTesting(false)
+    }
+
+    // Exact period markers (Maria's master list): a dot on every day she actually logged blood,
+    // sitting on the ring itself, so the averaged menstrual band and her real bleed stop being the
+    // same claim. Days beyond the drawn cycle are skipped rather than wrapped into a lie.
+    private var periodMarkers: some View {
+        ForEach(bleedDays.filter { $0 >= 1 && $0 <= length }, id: \.self) { day in
+            Circle()
+                .fill(Theme.bone.opacity(0.9))
+                .frame(width: 4.5, height: 4.5)
+                .shadow(color: Theme.blood.opacity(0.8), radius: 3)
+                .offset(y: -ringD / 2)
+                .rotationEffect(.degrees(360 * (Double(day) - 0.5) / Double(length)))
+        }
+        .allowsHitTesting(false)
     }
 
     // The full cycle mapped in phase color, always visible but quiet: context before progress.
