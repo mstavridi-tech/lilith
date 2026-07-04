@@ -110,6 +110,7 @@ struct MainTabView: View {
                 switch selection {
                 case .today: TodayView(chart: chart)
                 case .cycle: CycleView()
+                case .trends: TrendsView()
                 case .chart: ChartView(chart: chart)
                 case .you: SettingsView()
                 // Phase 3: CompatibilityView, LifeAreasView

@@ -46,6 +46,8 @@ struct ChartView: View {
 
                 aspectsSection
 
+                transitSection
+
                 Wordmark()
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, 44)
@@ -55,7 +57,7 @@ struct ChartView: View {
             .padding(.bottom, 120) // clears the floating tab bar
         }
         .scrollIndicators(.hidden)
-        .cosmicScreen(bloomAlignment: .top, bloomIntensity: 0.6)
+        .auraScreen(.chart) // midnight and gold silk; the wheel is the star, the room is regal
         .sheet(item: $openReading) { ReadingSheet(selection: $0) }
     }
 
@@ -175,6 +177,20 @@ struct ChartView: View {
                     }
                 }
             }
+        }
+        .padding(.top, 36)
+    }
+
+    /// The full live-sky feed (Today shows the top 3; this is everything hitting her chart now).
+    private var transitSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HairlineDivider(width: 110)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.bottom, 4)
+            Text("THE SKY RIGHT NOW").displayCaps(20, em: 0.16)
+            Text("Live, against your chart. This is why today feels like today.")
+                .font(Theme.body(14)).foregroundStyle(Theme.gold.opacity(0.85))
+            TransitFeed(transits: TransitEngine.current(for: chart))
         }
         .padding(.top, 36)
     }

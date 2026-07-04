@@ -4,7 +4,7 @@ import SwiftUI
 /// be icons are the single fastest amateur tell. LILITH's character lives in the gold, the glow,
 /// and the dark glass, not in unicode characters.
 enum MainTab: Int, CaseIterable, Identifiable {
-    case today, cycle, chart, you
+    case today, cycle, trends, chart, you
     var id: Int { rawValue }
 
     /// Resting icon, thin and quiet.
@@ -12,16 +12,19 @@ enum MainTab: Int, CaseIterable, Identifiable {
         switch self {
         case .today: "moon.stars"
         case .cycle: "drop"
+        case .trends: "chart.line.uptrend.xyaxis"
         case .chart: "sparkles"
         case .you: "person"
         }
     }
 
     /// The active tab fills in, so selection reads by shape as well as color (never color alone).
+    /// Trends' chart symbol has no fill variant; like sparkles, it leans on the color + dot.
     var symbolActive: String {
         switch self {
         case .today: "moon.stars.fill"
         case .cycle: "drop.fill"
+        case .trends: "chart.line.uptrend.xyaxis"
         case .chart: "sparkles"
         case .you: "person.fill"
         }
@@ -31,6 +34,7 @@ enum MainTab: Int, CaseIterable, Identifiable {
         switch self {
         case .today: "TODAY"
         case .cycle: "CYCLE"
+        case .trends: "TRENDS"
         case .chart: "CHART"
         case .you: "YOU"
         }

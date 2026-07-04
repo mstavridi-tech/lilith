@@ -24,3 +24,7 @@ node_modules/
 
 # Dead pre-Xcode scaffold (kept on disk, never in repo)
 _archive-starter-DO-NOT-EDIT/
+
+# Kimi reference build (design inspo only, not our source; has its own node_modules)
+Kimi_Agent_Aura Health App Design/
+Kimi_Agent_Aura Health App Design.zip

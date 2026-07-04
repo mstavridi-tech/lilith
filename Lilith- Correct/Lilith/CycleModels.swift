@@ -96,7 +96,7 @@ enum CyclePhase: String, Codable, CaseIterable {
     var aura: Color {
         switch self {
         case .menstrual:  Color(red: 0.82, green: 0.34, blue: 0.42) // deep rose
-        case .follicular: Color(red: 0.38, green: 0.65, blue: 0.57) // fresh teal
+        case .follicular: Color(red: 0.32, green: 0.54, blue: 0.50) // muted seafoam (v2: the old fresh teal read harsh on the atmosphere, Maria July 4)
         case .ovulatory:  Color(red: 0.89, green: 0.49, blue: 0.31) // ember peach
         case .luteal:     Color(red: 0.60, green: 0.45, blue: 0.66) // soft mauve
         }

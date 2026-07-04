@@ -23,6 +23,8 @@ struct TodayView: View {
     @State private var displayScope: HoroscopeService.Scope = .daily // what the reading shows
     @State private var showMoonSheet = false
 
+    @State private var transits: [Transit] = [] // computed once per load, never per frame
+
     // Lure-pass state
     @State private var developToken = 0       // bumps once per fresh load; drives the cascade
     @State private var scrollY: CGFloat = 0    // top offset, for the custom pull-to-refresh
@@ -41,10 +43,13 @@ struct TodayView: View {
                     greeting.cascadeIn(1, trigger: developToken)
                     heroBlock.cascadeIn(2, trigger: developToken)
                     skyCard.moonSettle(trigger: developToken)
-                    scopeSwitcher.cascadeIn(3, trigger: developToken)
-                    readingCard.cascadeIn(4, trigger: developToken)
+                    vibeSection.cascadeIn(3, trigger: developToken)
+                    glanceGrid.cascadeIn(4, trigger: developToken)
+                    scopeSwitcher.cascadeIn(5, trigger: developToken)
+                    readingCard.cascadeIn(6, trigger: developToken)
+                    transitSection.cascadeIn(7, trigger: developToken)
                     Spacer(minLength: 30)
-                    footer.cascadeIn(5, trigger: developToken)
+                    footer.cascadeIn(8, trigger: developToken)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 8)
@@ -56,7 +61,7 @@ struct TodayView: View {
             .coordinateSpace(name: Self.space)
             .onPreferenceChange(ScrollOffsetKey.self) { handleScroll($0) }
         }
-        .atmosphereScreen(aura: cycle.today?.phase.aura ?? Theme.ember, intensity: 0.8)
+        .auraScreen(.moonlight) // Today reads calm; the phase speaks through chip, ring, numbers
         .task { await load() }
         .sheet(isPresented: $showMoonSheet) { MoonSheet(chart: chart) }
     }
@@ -231,6 +236,110 @@ struct TodayView: View {
         }
         .frame(width: moonDiameter, height: moonDiameter)
         .allowsHitTesting(false)
+    }
+
+    // MARK: The vibe ring — body and sky merged into one honest estimate
+
+    /// The Kimi-synergy piece (Maria, July 4): the ring she liked, filled from what we can
+    /// actually know (cycle phase + tonight's moon), never fake biometrics. Sits between the sky
+    /// card and the reading because it IS the bridge: body above, stars below.
+    private var vibeSection: some View {
+        VibeCheck(
+            cycle: cycle.today,
+            moon: (try? ChartEngine.moonPhase()) ?? .fullMoon,
+            illumination: Double(moonIllumPct) / 100)
+        .padding(.top, 14)
+    }
+
+    // MARK: At a glance — the Kimi stat-card grid, on numbers we actually have
+
+    /// Four glanceable cards (Maria approved the full section stack, July 4). Each one is real:
+    /// next period from her learned cycle, her last logged mood, tonight's moon, and how much
+    /// she's fed the log this week. Missing data gets an invite in voice, never a fake number.
+    private var glanceGrid: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("AT A GLANCE")
+                .font(Theme.label(10))
+                .tracking(1.4)
+                .foregroundStyle(Theme.gold.opacity(0.8))
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())],
+                      spacing: 12) {
+                if let state = cycle.today {
+                    glanceCard("NEXT PERIOD",
+                               value: state.nextPeriodInDays == 0 ? "TODAY" : "~\(state.nextPeriodInDays)d",
+                               sub: state.nextPeriodInDays == 0 ? "SO IT BEGINS" : "EXPECTED")
+                } else {
+                    glanceCard("NEXT PERIOD", value: "?", sub: "LOG TO UNLOCK")
+                }
+                if let last = lastMood {
+                    glanceCard("LAST MOOD", value: last.mood.label, sub: last.when.uppercased())
+                } else {
+                    glanceCard("LAST MOOD", value: "—", sub: "TELL ME THINGS")
+                }
+                glanceCard("MOON", value: "\(moonIllumPct)%", sub: moonPhaseFull.uppercased())
+                glanceCard("THIS WEEK", value: "\(logsThisWeek)",
+                           sub: logsThisWeek == 0 ? "ZERO LOGS, BABE" : "DAYS LOGGED")
+            }
+        }
+        .padding(.top, 26)
+    }
+
+    private func glanceCard(_ label: String, value: String, sub: String) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(label)
+                .font(Theme.label(9))
+                .tracking(1.2)
+                .foregroundStyle(Theme.textTertiary)
+            Text(value)
+                .font(value.count > 5 ? Theme.display(19).weight(.medium) : Theme.data(24))
+                .foregroundStyle(Theme.textPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            Text(sub)
+                .font(Theme.label(8.5))
+                .tracking(0.8)
+                .foregroundStyle(Theme.textTertiary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .softCard(padding: 16)
+    }
+
+    private var lastMood: (mood: CycleMood, when: String)? {
+        guard let entry = cycle.recent(30).first(where: { $0.mood != nil }),
+              let mood = entry.mood else { return nil }
+        let days = Calendar.current.dateComponents([.day],
+            from: Calendar.current.startOfDay(for: entry.date),
+            to: Calendar.current.startOfDay(for: Date())).day ?? 0
+        let when = days == 0 ? "today" : days == 1 ? "yesterday" : "\(days)d ago"
+        return (mood, when)
+    }
+
+    private var logsThisWeek: Int {
+        let cal = Calendar.current
+        let cutoff = cal.date(byAdding: .day, value: -6, to: cal.startOfDay(for: Date())) ?? Date()
+        return cycle.entries.filter { $0.date >= cutoff }.count
+    }
+
+    // MARK: The sky is doing things — top transits, computed live (full feed on Chart)
+
+    private var transitSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("THE SKY IS DOING THINGS")
+                    .font(Theme.label(10))
+                    .tracking(1.4)
+                    .foregroundStyle(Theme.gold.opacity(0.8))
+                Spacer()
+                Text("FULL LIST ON CHART")
+                    .font(Theme.label(8.5))
+                    .tracking(0.8)
+                    .foregroundStyle(Theme.textTertiary)
+            }
+            TransitFeed(transits: transits, limit: 3)
+        }
+        .padding(.top, 26)
     }
 
     // MARK: Scope — DAILY / WEEKLY / MONTHLY (all hit the same backend, docs/06)
@@ -417,6 +526,7 @@ struct TodayView: View {
 
     /// Tonight's moon status and phase. Pure local math, never a network call.
     private func updateSky() {
+        transits = TransitEngine.current(for: chart)
         if let moon = (try? ChartEngine.currentSky())?.first(where: { $0.body == .moon }),
            let phase = try? ChartEngine.moonPhase() {
             moonStatus = "☽ \(phase.shortLabel) · \(Int(moon.degreeInSign))° \(moon.sign.name.prefix(3).uppercased())"
@@ -442,11 +552,15 @@ struct PressableCardStyle: ButtonStyle {
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(configuration.isPressed ? Theme.surfaceHigh : Theme.surface)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                            .fill(Theme.void.opacity(configuration.isPressed ? 0.15 : 0.30))
+                    )
                     .overlay(
                         RoundedRectangle(cornerRadius: 24, style: .continuous)
                             .strokeBorder(
-                                LinearGradient(colors: [Theme.bone.opacity(0.08), .clear],
+                                LinearGradient(colors: [Theme.bone.opacity(0.10), .clear],
                                                startPoint: .top, endPoint: .bottom),
                                 lineWidth: 0.75)
                     )

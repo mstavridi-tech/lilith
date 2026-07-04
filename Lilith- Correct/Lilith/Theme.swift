@@ -576,16 +576,18 @@ struct LimbAtmosphere: View {
 }
 
 extension View {
-    /// The poster stage: void, sparse stars, the limb atmosphere, vignette, grain on top.
-    /// Successor to cosmicScreen; screens migrate here as they get the atmosphere pass.
+    /// The poster stage: void, the limb atmosphere, vignette, grain on top. Stars are optional
+    /// (Maria, July 4: Cycle reads as pure aura, no star field). Successor to cosmicScreen;
+    /// screens migrate here as they get the atmosphere pass.
     func atmosphereScreen(aura: Color = Theme.ember,
                           intensity: Double = 1,
-                          alive: Bool = true) -> some View {
+                          alive: Bool = true,
+                          stars: Bool = true) -> some View {
         self
             .background(
                 ZStack {
                     Theme.void
-                    StarField(count: 90, live: alive)
+                    if stars { StarField(count: 90, live: alive) }
                     LimbAtmosphere(aura: aura, intensity: intensity, alive: alive)
                     EdgeVignette()
                 }
@@ -595,12 +597,107 @@ extension View {
     }
 }
 
+// MARK: - The aura stage (July 4 2026, Maria's aura pass)
+
+/// The real-photograph atmosphere backdrops. Generated aura-photography plates, one per cycle
+/// phase plus the moonlight neutral and the halo hero, art-directed to the approved brief: bright
+/// luminous bloom in the upper third, melting to warm charcoal below so cards and text always sit
+/// on calm ground. These replace the code-drawn LimbAtmosphere wherever they're present; if an
+/// asset is missing the stage falls back to the painted atmosphere so nothing ever renders blank.
+enum AuraBackdrop: String {
+    case moonlight = "aura-moonlight"  // Today's neutral, and anywhere calm
+    case menstrual = "aura-menstrual"
+    case follicular = "aura-follicular"
+    case ovulatory = "aura-ovulatory"
+    case luteal = "aura-luteal"
+    case gold = "aura-gold"            // champagne silk: Trends, data on warm lux ground
+    case chart = "aura-chart"          // midnight blue and gold shimmer: the astrology room
+    case you = "aura-you"              // pearl and champagne: the quiet back room
+    case halo = "aura-halo"            // the crown jewel: vibe moments, onboarding
+
+    /// The backdrop a cycle phase wears; the moonlight neutral when she isn't tracking yet.
+    static func of(_ phase: CyclePhase?) -> AuraBackdrop {
+        switch phase {
+        case .menstrual: .menstrual
+        case .follicular: .follicular
+        case .ovulatory: .ovulatory
+        case .luteal: .luteal
+        case nil: .moonlight
+        }
+    }
+
+    /// The accent the painted fallback glows in, matching the plate's palette.
+    var fallbackAura: Color {
+        switch self {
+        case .moonlight: Color(red: 0.55, green: 0.62, blue: 0.75)
+        case .menstrual: CyclePhase.menstrual.aura
+        case .follicular: CyclePhase.follicular.aura
+        case .ovulatory: CyclePhase.ovulatory.aura
+        case .luteal: CyclePhase.luteal.aura
+        case .gold, .halo: Theme.ember
+        case .chart: Color(red: 0.30, green: 0.38, blue: 0.60)
+        case .you: Color(red: 0.72, green: 0.66, blue: 0.55)
+        }
+    }
+}
+
+/// The photographic stage: the aura plate breathing almost imperceptibly, vignetted at the frame.
+struct AuraStage: View {
+    let backdrop: AuraBackdrop
+    var alive: Bool = true
+    @State private var breath = false
+
+    var body: some View {
+        ZStack {
+            Theme.void
+            if UIImage(named: backdrop.rawValue) != nil {
+                GeometryReader { geo in
+                    Image(backdrop.rawValue)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .clipped()
+                        .scaleEffect(breath && alive ? 1.035 : 1.0)
+                        .animation(.easeInOut(duration: 9).repeatForever(autoreverses: true),
+                                   value: breath)
+                }
+                .onAppear { breath = true }
+            } else {
+                LimbAtmosphere(aura: backdrop.fallbackAura, intensity: 0.8, alive: alive)
+            }
+            // The tint (v3, July 4: "I love it but it's hard to read", Maria). A firmer global
+            // dim so type always wins over the glow, plus a deeper, taller scrim where the
+            // status bar, page title, and credits live.
+            Theme.void.opacity(0.30)
+            VStack(spacing: 0) {
+                LinearGradient(colors: [Theme.void.opacity(0.68), Theme.void.opacity(0.0)],
+                               startPoint: .top, endPoint: .bottom)
+                    .frame(height: 230)
+                Spacer()
+            }
+            EdgeVignette()
+        }
+        .ignoresSafeArea()
+    }
+}
+
+extension View {
+    /// Lay a screen on its aura plate. The successor to atmosphereScreen for migrated screens.
+    func auraScreen(_ backdrop: AuraBackdrop, alive: Bool = true) -> some View {
+        self
+            .background(AuraStage(backdrop: backdrop, alive: alive))
+            .overlay(GrainOverlay())
+    }
+}
+
 extension Text {
     /// A letterspaced serif display headline. The celestial editorial register, in one call.
+    /// The soft shadow grounds titles against the liquid-light plates (readability pass, July 4).
     func displayCaps(_ size: CGFloat, em: CGFloat = 0.15, color: Color = Theme.bone) -> some View {
         self.font(Theme.display(size).weight(.medium))
             .tracking(Theme.tracking(size, em: em))
             .foregroundStyle(color)
+            .shadow(color: .black.opacity(0.55), radius: 10, y: 2)
     }
 }
 
@@ -626,9 +723,10 @@ extension View {
 
 // MARK: - The soft card (the Oura register, July 2 2026)
 
-/// A calm opaque surface: lifted warm black, continuous soft corners, one soft shadow, and a
-/// hairline of light only along the top edge (fading out). No glass, no full borders, no hollow
-/// outlines. Content breathes on it. This is the app's standard container now.
+/// Frosted glass (Maria, July 4 2026: "more frosted glass, more modern and sleek"). Real
+/// material, not painted opacity: the card blurs whatever aura sits behind it, deepened with a
+/// void tint so text stays high-contrast, finished with the light hairline along the top edge.
+/// This is the app's standard container; every card and pill rides this one style.
 struct SoftCard: ViewModifier {
     var padding: CGFloat = 24
     func body(content: Content) -> some View {
@@ -636,11 +734,15 @@ struct SoftCard: ViewModifier {
             .padding(padding)
             .background(
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(Theme.surface)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                            .fill(Theme.void.opacity(0.30))
+                    )
                     .overlay(
                         RoundedRectangle(cornerRadius: 24, style: .continuous)
                             .strokeBorder(
-                                LinearGradient(colors: [Theme.bone.opacity(0.08), .clear],
+                                LinearGradient(colors: [Theme.bone.opacity(0.10), .clear],
                                                startPoint: .top, endPoint: .bottom),
                                 lineWidth: 0.75)
                     )

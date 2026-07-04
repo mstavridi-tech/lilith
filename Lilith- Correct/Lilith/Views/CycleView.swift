@@ -25,7 +25,8 @@ struct CycleView: View {
                     .cascadeIn(2, trigger: developToken)
 
                 if let state = store.today {
-                    orbCaption(state).cascadeIn(3, trigger: developToken)
+                    // orbCaption removed July 4: "period expected in N days" already lives in the
+                    // quick-glance row; saying it twice on one screen read as filler (Maria).
                     logActions.cascadeIn(4, trigger: developToken)
                     hormoneWeather(state).cascadeIn(5, trigger: developToken)
                     moonWeather(state).cascadeIn(6, trigger: developToken)
@@ -45,7 +46,7 @@ struct CycleView: View {
             .padding(.bottom, 120) // clears the floating tab bar
         }
         .scrollIndicators(.hidden)
-        .cosmicScreen(bloomAlignment: .top, bloomIntensity: 0.7)
+        .auraScreen(AuraBackdrop.of(store.today?.phase)) // the real aura plate, no stars (Maria, July 4)
         .sheet(isPresented: $showLog) {
             CycleLogSheet(date: Date(), store: store)
         }
@@ -95,6 +96,7 @@ struct CycleView: View {
             glanceStat("NEXT", state.nextPeriodInDays == 0 ? "TODAY" : "\(state.nextPeriodInDays)",
                        state.nextPeriodInDays == 0 ? "PERIOD DUE" : "DAYS OUT")
         }
+        .softCard(padding: 16) // glass under the numbers so they never fight the glow (July 4)
         .padding(.top, 22)
     }
 
@@ -237,7 +239,8 @@ struct CycleView: View {
         .padding(.top, 30)
     }
 
-    /// A soft, glowing capsule. The aura comes from a blurred colour halo bleeding out behind it.
+    /// Frosted glass pill (July 4: the glow-halo version read heavy; Maria wants glass). Real
+    /// material blurring the aura behind it, a whisper of the accent inside, hairline edge.
     private func auraPill(_ title: String, color: Color, filled: Bool,
                           action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -248,14 +251,10 @@ struct CycleView: View {
                 .padding(.vertical, 15)
                 .background(
                     ZStack {
-                        Capsule().fill(color.opacity(filled ? 0.30 : 0.0))
-                        Capsule().strokeBorder(color.opacity(filled ? 0.9 : 0.55), lineWidth: 1)
+                        Capsule().fill(.ultraThinMaterial)
+                        Capsule().fill(color.opacity(filled ? 0.22 : 0.05))
+                        Capsule().strokeBorder(color.opacity(filled ? 0.65 : 0.35), lineWidth: 0.75)
                     }
-                )
-                .background(
-                    Capsule().fill(color)
-                        .opacity(filled ? 0.40 : 0.20)
-                        .blur(radius: 20) // the aura halo
                 )
         }
         .buttonStyle(.plain)

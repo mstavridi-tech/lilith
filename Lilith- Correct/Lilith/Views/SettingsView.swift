@@ -39,7 +39,7 @@ struct SettingsView: View {
             .padding(.bottom, 120) // clears the floating tab bar
         }
         .scrollIndicators(.hidden)
-        .cosmicScreen(bloomAlignment: .top, bloomIntensity: 0.5)
+        .auraScreen(.you) // pearl and champagne; the quiet back room
         .sheet(isPresented: $editingBirth) {
             OnboardingView(startStep: 2) { birth in
                 if let data = try? JSONEncoder().encode(birth) {

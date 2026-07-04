@@ -67,14 +67,19 @@ struct CycleOrb: View {
     }
 
     // The center read-out: tracking a current cycle, counting down to an expected one, or not yet.
+    // The soft shadow keeps the numeral legible over the brightest patch of the liquid-light plate.
     private var center: some View {
+        centerContent.shadow(color: .black.opacity(0.45), radius: 12, y: 2)
+    }
+
+    private var centerContent: some View {
         VStack(spacing: 6) {
             if let state {
                 Text("DAY")
                     .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.4))
                     .foregroundStyle(Theme.bone.opacity(0.55))
                 Text("\(state.cycleDay)")
-                    .font(Theme.display(64).weight(.medium))
+                    .font(Theme.data(64)) // jewelry numeral; the serif figures read weird here (Maria)
                     .foregroundStyle(Theme.bone)
                 Text(state.phase.name)
                     .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.3))
@@ -87,7 +92,7 @@ struct CycleOrb: View {
                     .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.4))
                     .foregroundStyle(Theme.bone.opacity(0.55))
                 Text("\(days)")
-                    .font(Theme.display(64).weight(.medium))
+                    .font(Theme.data(64))
                     .foregroundStyle(Theme.bone)
                 Text(days == 1 ? "DAY" : "DAYS")
                     .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.3))
