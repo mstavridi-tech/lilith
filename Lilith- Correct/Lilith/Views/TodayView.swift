@@ -146,27 +146,30 @@ struct TodayView: View {
 
     // MARK: The hero — her body, first, in jewelry numerals
 
-    /// The cycle day as a giant thin numeral with the phase worn as a soft chip beside it.
+    /// The cycle day as a compact glass row (July 4 v2: the giant 84pt numeral read as too much
+    /// on the main page, Maria; the full-size day lives on Cycle where it belongs).
     /// When no cycle is logged yet, a one-line invite points at the Cycle tab instead.
     @ViewBuilder
     private var heroBlock: some View {
         if let state = cycle.today {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("CYCLE DAY")
-                    .font(Theme.label(11))
-                    .tracking(1.6)
-                    .foregroundStyle(Theme.textSecondary)
-                HStack(alignment: .firstTextBaseline, spacing: 16) {
-                    Text("\(state.cycleDay)")
-                        .font(Theme.data(84))
-                        .foregroundStyle(Theme.textPrimary)
-                    phaseChip(state)
+            HStack(spacing: 16) {
+                Text("\(state.cycleDay)")
+                    .font(Theme.data(38))
+                    .foregroundStyle(Theme.textPrimary)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("CYCLE DAY")
+                        .font(Theme.label(10))
+                        .tracking(1.4)
+                        .foregroundStyle(Theme.gold.opacity(0.8))
+                    Text(state.phase.tagline)
+                        .font(Theme.body(14).italic())
+                        .foregroundStyle(Theme.textSecondary)
                 }
-                Text(state.phase.tagline)
-                    .font(Theme.body(16).italic())
-                    .foregroundStyle(Theme.textSecondary)
+                Spacer()
+                phaseChip(state)
             }
-            .padding(.top, 12)
+            .softCard(padding: 18)
+            .padding(.top, 14)
         } else {
             Text("Half the answer lives in your cycle. Log it in the Cycle tab and I'll read the whole you.")
                 .font(Theme.body(15).italic())

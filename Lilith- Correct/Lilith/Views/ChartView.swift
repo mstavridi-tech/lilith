@@ -57,7 +57,7 @@ struct ChartView: View {
             .padding(.bottom, 120) // clears the floating tab bar
         }
         .scrollIndicators(.hidden)
-        .auraScreen(.chart) // midnight and gold silk; the wheel is the star, the room is regal
+        .auraScreen(.moonlight) // cool silver so the GOLD wheel and gold text pop (July 4: the champagne plate clashed with them, Maria)
         .sheet(item: $openReading) { ReadingSheet(selection: $0) }
     }
 

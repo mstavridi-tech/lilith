@@ -94,7 +94,7 @@ struct WelcomeBack: View {
         .auraScreen(.halo)
         .task {
             withAnimation(.easeOut(duration: 0.8)) { shown = true }
-            try? await Task.sleep(nanoseconds: 1_900_000_000)
+            try? await Task.sleep(nanoseconds: 3_300_000_000) // longer hold (Maria, July 4): let the moment land
             onDone()
         }
     }
