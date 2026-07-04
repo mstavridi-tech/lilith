@@ -233,6 +233,20 @@ struct ChartEngine {
 
     /// Ascendant from local sidereal time and latitude — standard formula.
     /// `geoLon` is east-positive (the convention CLGeocoder returns), so LST = GST + longitude.
+    /// The midheaven (MC) ecliptic longitude at a moment and geographic longitude. Latitude
+    /// plays no part in the MC. Used by astrocartography relocation readings: same RAMC as the
+    /// ascendant, projected through the true obliquity. Verify against astro.com like everything.
+    static func midheaven(at date: Date, longitude geoLon: Double) throws -> Double {
+        let jd = JulianDay(date)
+        let d2r = Double.pi / 180
+        let gstDegrees = jd.apparentGreenwichSiderealTime().value * 15
+        let lst = normalizeDegrees(gstDegrees + geoLon) * d2r
+        let eps = jd.obliquityOfEcliptic(mean: false).value * d2r
+        // tan λMC = tan(RAMC)/cos ε, kept in the right quadrant by atan2.
+        let mc = atan2(sin(lst), cos(lst) * cos(eps))
+        return normalizeDegrees(mc / d2r)
+    }
+
     private static func ascendant(at date: Date, latitude: Double, longitude geoLon: Double) throws -> Double {
         let jd = JulianDay(date)
         let d2r = Double.pi / 180

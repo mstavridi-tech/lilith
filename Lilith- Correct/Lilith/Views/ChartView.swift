@@ -6,6 +6,7 @@ import SwiftUI
 struct ChartView: View {
     let chart: NatalChart
     @State private var openReading: ReadingSelection?
+    @State private var showMap = false
 
     var body: some View {
         ScrollView {
@@ -46,6 +47,8 @@ struct ChartView: View {
 
                 aspectsSection
 
+                mapSection
+
                 transitSection
 
                 Wordmark()
@@ -59,6 +62,7 @@ struct ChartView: View {
         .scrollIndicators(.hidden)
         .auraScreen(.moonlight) // cool silver so the GOLD wheel and gold text pop (July 4: the champagne plate clashed with them, Maria)
         .sheet(item: $openReading) { ReadingSheet(selection: $0) }
+        .sheet(isPresented: $showMap) { AstroMapSheet(chart: chart) }
     }
 
     // MARK: The big three — tappable, each opens its reading
@@ -177,6 +181,39 @@ struct ChartView: View {
                     }
                 }
             }
+        }
+        .padding(.top, 36)
+    }
+
+    /// Astrocartography's front door: one row, the sheet does the work.
+    private var mapSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HairlineDivider(width: 110)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.bottom, 4)
+            Text("YOUR MAP").displayCaps(20, em: 0.16)
+            Text("Where on Earth your chart hits different. Type a city, get the weather.")
+                .font(Theme.body(14)).foregroundStyle(Theme.gold.opacity(0.85))
+            Button {
+                Haptics.open()
+                showMap = true
+            } label: {
+                HStack {
+                    Image(systemName: "globe.europe.africa")
+                        .font(.system(size: 15, weight: .light))
+                        .foregroundStyle(Theme.gold)
+                    Text("OPEN THE MAP")
+                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .foregroundStyle(Theme.gold)
+                    Spacer()
+                    Text("→").font(Theme.body(18)).foregroundStyle(Theme.gold)
+                }
+                .padding(.horizontal, 18).padding(.vertical, 15)
+                .background(Capsule().fill(.ultraThinMaterial)
+                    .overlay(Capsule().strokeBorder(Theme.gold.opacity(0.35), lineWidth: 0.5)))
+                .contentShape(Capsule())
+            }
+            .buttonStyle(.plain)
         }
         .padding(.top, 36)
     }

@@ -169,25 +169,24 @@ struct HormoneCurveCard: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             chart
-                .frame(height: 170)
-                .padding(.top, 4)
+                .frame(height: 225) // room to breathe (Maria, July 4 evening: it felt cramped)
+                .padding(.top, 14)
 
             legend
+                .padding(.top, 4)
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 16) {
                 explainer("ESTROGEN", "The hype girl. She climbs all through your follicular phase, peaks right before the egg drops, and that peak is why main character week feels like that.")
                 explainer("PROGESTERONE", "The cozy one. She only shows up after ovulation, runs the luteal show, and slows everything down on purpose. When she leaves, your period arrives.")
                 explainer("LH", "The starting gun. One sharp spike out of nowhere and ovulation happens about a day later. Blink and you miss her.")
             }
-            .padding(.top, 6)
+            .padding(.top, 14)
 
-            Text("This is the textbook shape, not your levels. No app can measure hormones from a phone, and anyone claiming otherwise is lying to you. If your months feel wildly off this script, that's a real doctor conversation.")
-                .font(Theme.body(12)).foregroundStyle(Theme.gold.opacity(0.7))
-                .lineSpacing(4)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 8)
+            Text("The textbook shape, never your levels.")
+                .font(Theme.body(12).italic()).foregroundStyle(Theme.gold.opacity(0.65))
+                .padding(.top, 10)
         }
-        .softCard(padding: 18)
+        .softCard(padding: 22)
         .padding(.top, 30)
     }
 

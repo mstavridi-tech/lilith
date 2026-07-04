@@ -227,10 +227,9 @@ struct PhasePlaybookSheet: View {
                 exploreBody(p.love).padding(.top, 8)
             }
 
-            Text("Typical patterns, not prescriptions. Your body sets the real schedule, and it's allowed to disagree with the textbook.")
-                .font(Theme.body(12)).foregroundStyle(Theme.gold.opacity(0.7))
-                .lineSpacing(4)
-                .padding(.top, 24)
+            Text("Typical patterns, not prescriptions.")
+                .font(Theme.body(12).italic()).foregroundStyle(Theme.gold.opacity(0.65))
+                .padding(.top, 20)
         }
     }
 }
@@ -452,10 +451,6 @@ struct SymptomDecoderSheet: View {
                 .padding(.top, 26)
             }
 
-            Text("Pattern talk, never diagnosis. I describe what's classic; your body and your provider hold the actual facts.")
-                .font(Theme.body(12)).foregroundStyle(Theme.gold.opacity(0.7))
-                .lineSpacing(4)
-                .padding(.top, 26)
         }
     }
 }

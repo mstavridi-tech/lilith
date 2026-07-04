@@ -81,8 +81,10 @@ enum Theme {
 
     /// Degrees, dates, ephemeris numbers. Monospaced = authority. Use in small doses: tiny
     /// telemetry only, never as the app's main label voice (the Oura pass).
+    /// Semibold since July 4 evening: at the tiny sizes this ships at, medium read thin and the
+    /// gold eyebrows were disappearing into the plates (Maria).
     static func mono(_ size: CGFloat = 15) -> Font {
-        .system(size: size, weight: .medium, design: .monospaced)
+        .system(size: size, weight: .semibold, design: .monospaced)
     }
 
     /// Jewelry numerals (the Oura register): huge, thin, quiet authority. For the cycle day,

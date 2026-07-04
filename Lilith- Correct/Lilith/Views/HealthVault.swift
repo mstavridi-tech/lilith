@@ -270,11 +270,10 @@ struct HealthVaultView: View {
     }
 
     private var honesty: some View {
-        Text("Everything on this shelf stays on this phone, never syncs anywhere, and never shows up in a notification. And none of it is a diagnosis: when something needs looking at, book it with your provider.")
-            .font(Theme.body(12)).foregroundStyle(Theme.gold.opacity(0.7))
-            .lineSpacing(4)
-            .fixedSize(horizontal: false, vertical: true)
-            .padding(.top, 26)
+        Text("On this phone only. Never synced, never in a notification.")
+            .font(Theme.body(12).italic()).foregroundStyle(Theme.gold.opacity(0.65))
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.top, 22)
     }
 
     private static let short: DateFormatter = {

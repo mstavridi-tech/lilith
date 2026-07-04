@@ -48,69 +48,68 @@ struct TrendsView: View {
 
     // MARK: The composite chart
 
+    /// REDONE July 4 evening (Maria: "trends graph kills me i hate it"). The five-series pileup
+    /// (moon wash + vibe line + mood line + two kinds of bars) is gone. Now it's one calm gold
+    /// line: her month, drawn once, with a soft light pooled under it. Moods she logged sit on
+    /// the line as jewels, bleed days rest on the floor as wine dots. Nothing else competes.
     private var chartCard: some View {
         VStack(alignment: .leading, spacing: 14) {
+            Text("THE MONTH, ONE LINE")
+                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.24))
+                .foregroundStyle(Theme.ember)
+            let curve = Self.smoothedVibe(points)
             Chart {
-                // The moon: a soft wash behind everything, the sky she lives under.
-                ForEach(points) { p in
-                    AreaMark(x: .value("Day", p.date), y: .value("Moon", p.moon),
-                             series: .value("Series", "MOON"))
-                        .foregroundStyle(Theme.gold.opacity(0.07))
+                // The line: the cycle + moon estimate, smoothed over a five-day window for the
+                // drawing only. The raw vibe moves in plateaus (phases and moon octants are
+                // discrete), and the resulting cliffs were the ugliness (July 4 evening). Her
+                // logged moods sit AGAINST the line as dots, never spliced into it.
+                ForEach(Array(curve.enumerated()), id: \.offset) { _, p in
+                    AreaMark(x: .value("Day", p.date), y: .value("Level", p.value))
+                        .foregroundStyle(
+                            LinearGradient(colors: [Theme.gold.opacity(0.22), .clear],
+                                           startPoint: .top, endPoint: .bottom))
+                        .interpolationMethod(.catmullRom)
+                    LineMark(x: .value("Day", p.date), y: .value("Level", p.value))
+                        .foregroundStyle(Theme.gold)
+                        .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round))
                         .interpolationMethod(.catmullRom)
                 }
-                // The vibe: our computed cycle + moon estimate, always drawable.
-                ForEach(points) { p in
-                    LineMark(x: .value("Day", p.date), y: .value("Vibe", p.vibe),
-                             series: .value("Series", "VIBE"))
-                        .foregroundStyle(Theme.gold.opacity(0.85))
-                        .lineStyle(StrokeStyle(lineWidth: 2))
-                        .interpolationMethod(.catmullRom)
-                }
-                // Her mood, only where she logged one. The line SHE draws.
+                // Her logged moods, sitting on the line as the receipts.
                 ForEach(points.filter { $0.mood != nil }) { p in
-                    LineMark(x: .value("Day", p.date), y: .value("Mood", p.mood ?? 0),
-                             series: .value("Series", "MOOD"))
-                        .foregroundStyle(CyclePhase.follicular.aura)
-                        .lineStyle(StrokeStyle(lineWidth: 2))
-                        .interpolationMethod(.catmullRom)
-                    PointMark(x: .value("Day", p.date), y: .value("Mood", p.mood ?? 0))
-                        .foregroundStyle(CyclePhase.follicular.aura)
-                        .symbolSize(22)
+                    PointMark(x: .value("Day", p.date), y: .value("Level", p.mood ?? 0))
+                        .foregroundStyle(Theme.bone)
+                        .symbolSize(34)
                 }
-                // Bleed days and symptom load: small honest bars along the floor.
+                // Bleed days: quiet wine dots along the floor, not bars stabbing the line.
                 ForEach(points.filter(\.bleeding)) { p in
-                    BarMark(x: .value("Day", p.date), y: .value("Bleed", 7), width: 3)
-                        .foregroundStyle(Theme.blood.opacity(0.75))
-                }
-                ForEach(points.filter { $0.symptomLoad > 0 && !$0.bleeding }) { p in
-                    BarMark(x: .value("Day", p.date), y: .value("Load", p.symptomLoad * 4), width: 3)
-                        .foregroundStyle(Theme.ember.opacity(0.45))
+                    PointMark(x: .value("Day", p.date), y: .value("Level", 3))
+                        .foregroundStyle(Theme.blood.opacity(0.9))
+                        .symbolSize(22)
                 }
             }
             .chartYScale(domain: 0...100)
             .chartYAxis(.hidden)
             .chartXAxis {
                 AxisMarks(values: .stride(by: .day, count: 7)) { _ in
+                    AxisGridLine().foregroundStyle(Theme.bone.opacity(0.06))
                     AxisValueLabel(format: .dateTime.day().month(.abbreviated))
-                        .font(Theme.label(8.5))
+                        .font(Theme.label(9))
                         .foregroundStyle(Theme.textTertiary)
                 }
             }
-            .frame(height: 200)
+            .frame(height: 210)
 
             legend
         }
-        .softCard(padding: 20)
+        .softCard(padding: 22)
         .padding(.top, 22)
     }
 
     private var legend: some View {
         HStack(spacing: 14) {
-            legendDot(Theme.gold, "VIBE")
-            legendDot(CyclePhase.follicular.aura, "MOOD")
+            legendDot(Theme.gold, "THE VIBE")
+            legendDot(Theme.bone, "YOUR MOOD")
             legendDot(Theme.blood, "BLEED")
-            legendDot(Theme.ember.opacity(0.6), "SYMPTOMS")
-            legendDot(Theme.gold.opacity(0.25), "MOON")
         }
     }
 
@@ -249,6 +248,22 @@ struct TrendsView: View {
     private static let shortDay: DateFormatter = {
         let f = DateFormatter(); f.dateFormat = "d MMM"; return f
     }()
+
+    /// The vibe series with a centered, weighted five-day average, display only. Stats and
+    /// averages stay on the raw values; this exists purely so the line flows instead of stepping.
+    static func smoothedVibe(_ points: [DayPoint]) -> [(date: Date, value: Double)] {
+        let weights: [Double] = [1, 2, 3, 2, 1]
+        return points.indices.map { i in
+            var total = 0.0, weightSum = 0.0
+            for (k, w) in weights.enumerated() {
+                let j = i + k - 2
+                guard points.indices.contains(j) else { continue }
+                total += points[j].vibe * w
+                weightSum += w
+            }
+            return (points[i].date, total / max(1, weightSum))
+        }
+    }
 
     // MARK: Data
 

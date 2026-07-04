@@ -279,17 +279,15 @@ struct CycleView: View {
         }
     }
 
-    // MARK: Disclaimer (the mandatory bridge, in voice)
+    // MARK: Disclaimer (the mandatory bridge per hard rule 7, consolidated July 4 evening:
+    // one quiet line here, the full real talk lives on THE FINE PRINT page in YOU)
 
     private var disclaimer: some View {
-        Text("LILITH reads patterns, it doesn't diagnose. It can't measure your hormones, only describe what's typical for each phase. If something feels extreme month after month, that's worth a real doctor conversation, and it's not you being dramatic.")
-            .font(Theme.body(13)).foregroundStyle(Theme.gold.opacity(0.7))
-            .lineSpacing(5)
+        Text("Patterns, never diagnosis. The full real talk lives in YOU, under THE FINE PRINT.")
+            .font(Theme.body(12)).foregroundStyle(Theme.gold.opacity(0.65))
             .fixedSize(horizontal: false, vertical: true)
-            .padding(.vertical, 18)
-            .padding(.horizontal, 18)
-            .overlay(Rectangle().fill(Theme.gold.opacity(0.4)).frame(width: 0.5), alignment: .leading)
-            .padding(.top, 40)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.top, 36)
     }
 }
 

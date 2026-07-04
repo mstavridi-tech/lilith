@@ -85,10 +85,11 @@ struct ChartWheel: View {
             stroke(ctx, path, color, w)
         }
 
-        // 1) Rings draw in.
-        ringArc(signOuter, Theme.gold.opacity(0.55), 0.75, ring1)
-        ringArc(signInner, Theme.gold.opacity(0.45), 0.5, ring2)
-        ringArc(aspectR, Theme.gold.opacity(0.22), 0.5, ring3)
+        // 1) Rings draw in. Thickened July 4 evening (Maria: the hairlines were too thin to see
+        // on the plate). The geometry is still fine-line by app standards, just visible now.
+        ringArc(signOuter, Theme.gold.opacity(0.75), 1.5, ring1)
+        ringArc(signInner, Theme.gold.opacity(0.6), 1.0, ring2)
+        ringArc(aspectR, Theme.gold.opacity(0.35), 0.9, ring3)
 
         // 2) Spokes fade in.
         if spokeP > 0.001 {
@@ -98,7 +99,7 @@ struct ChartWheel: View {
                 var spoke = Path()
                 spoke.move(to: point(boundary, signInner))
                 spoke.addLine(to: point(boundary, signOuter))
-                stroke(g, spoke, Theme.gold.opacity(0.30), 0.5)
+                stroke(g, spoke, Theme.gold.opacity(0.45), 0.9)
             }
         }
 
@@ -124,7 +125,7 @@ struct ChartWheel: View {
             var ascLine = Path()
             ascLine.move(to: point(anchor, aspectR))
             ascLine.addLine(to: point(anchor, signOuter))
-            stroke(g, ascLine, Theme.ember.opacity(0.7), 1)
+            stroke(g, ascLine, Theme.ember.opacity(0.85), 1.6)
             glyph(g, "ASC", at: point(anchor, signInner * 0.90),
                   font: Theme.mono(8), color: Theme.ember.opacity(0.9))
         }
@@ -143,7 +144,7 @@ struct ChartWheel: View {
             var tick = Path()
             tick.move(to: point(placement.longitude, signInner))
             tick.addLine(to: point(placement.longitude, signInner * 0.94))
-            stroke(g, tick, Theme.gold.opacity(0.5), 0.5)
+            stroke(g, tick, Theme.gold.opacity(0.75), 1.0)
 
             let isLilith = placement.body == .blackMoonLilith
             glyph(g, placement.body.glyph, at: point(placement.longitude, planetRing),
@@ -154,9 +155,9 @@ struct ChartWheel: View {
     /// Hard aspects glow ember, flowing aspects sit in gold, conjunctions whisper.
     private func aspectStyle(_ type: AspectType) -> (Color, CGFloat) {
         switch type {
-        case .square, .opposition: (Theme.ember.opacity(0.45), 0.6)
-        case .trine, .sextile: (Theme.gold.opacity(0.45), 0.6)
-        case .conjunction: (Theme.gold.opacity(0.28), 0.5)
+        case .square, .opposition: (Theme.ember.opacity(0.6), 1.1)
+        case .trine, .sextile: (Theme.gold.opacity(0.6), 1.1)
+        case .conjunction: (Theme.gold.opacity(0.4), 0.9)
         }
     }
 }
