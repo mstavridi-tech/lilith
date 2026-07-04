@@ -56,13 +56,13 @@ enum CyclePhase: String, Codable, CaseIterable {
 
     var name: String { rawValue.uppercased() }
 
-    /// One-line vibe for the big label area.
+    /// One-line vibe for the big label area (copy pass July 4: album-title energy, no weather-report speak).
     var tagline: String {
         switch self {
         case .menstrual:  "rest is the assignment"
-        case .follicular: "green light, building energy"
-        case .ovulatory:  "peak, magnetic, on"
-        case .luteal:     "slow down on purpose"
+        case .follicular: "the comeback era"
+        case .ovulatory:  "main character week"
+        case .luteal:     "protect your peace"
         }
     }
 

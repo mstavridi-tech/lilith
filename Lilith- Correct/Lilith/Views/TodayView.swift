@@ -39,14 +39,17 @@ struct TodayView: View {
         GeometryReader { geo in
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
+                    // Maria's order (July 4): how she feels and the sky FIRST, then which day
+                    // of her cycle, then what the moon says (with tomorrow/week/month), then
+                    // the glanceable numbers, then what the sky is doing to her chart.
                     credits.cascadeIn(0, trigger: developToken)
                     greeting.cascadeIn(1, trigger: developToken)
-                    heroBlock.cascadeIn(2, trigger: developToken)
+                    vibeSection.cascadeIn(2, trigger: developToken)
                     skyCard.moonSettle(trigger: developToken)
-                    vibeSection.cascadeIn(3, trigger: developToken)
-                    glanceGrid.cascadeIn(4, trigger: developToken)
-                    scopeSwitcher.cascadeIn(5, trigger: developToken)
-                    readingCard.cascadeIn(6, trigger: developToken)
+                    heroBlock.cascadeIn(3, trigger: developToken)
+                    scopeSwitcher.cascadeIn(4, trigger: developToken)
+                    readingCard.cascadeIn(5, trigger: developToken)
+                    glanceGrid.cascadeIn(6, trigger: developToken)
                     transitSection.cascadeIn(7, trigger: developToken)
                     Spacer(minLength: 30)
                     footer.cascadeIn(8, trigger: developToken)
@@ -117,7 +120,7 @@ struct TodayView: View {
         switch hour {
         case 5...11:  slot = ["GOOD MORNING, SUNSHINE.", "RISE AND SHINE."]
         case 12...16: slot = ["TODAY, FOR YOU.", "STILL YOUR DAY."]
-        case 17...21: slot = ["GOOD EVENING, GORGEOUS.", "THE MOON IS UP."]
+        case 17...21: slot = ["GOOD EVENING, GORGEOUS.", "THE NIGHT IS YOURS."] // "THE MOON IS UP." retired July 4 (Maria: reads weird at 7pm)
         default:      slot = ["UP LATE, I SEE.", "THE STARS DON'T SLEEP EITHER."]
         }
         return slot[((dayIndex % slot.count) + slot.count) % slot.count]
@@ -248,7 +251,7 @@ struct TodayView: View {
             cycle: cycle.today,
             moon: (try? ChartEngine.moonPhase()) ?? .fullMoon,
             illumination: Double(moonIllumPct) / 100)
-        .padding(.top, 14)
+        .padding(.top, 20)
     }
 
     // MARK: At a glance — the Kimi stat-card grid, on numbers we actually have
@@ -355,9 +358,11 @@ struct TodayView: View {
                 } label: {
                     Text(s.label)
                         .font(Theme.label(11))
-                        .tracking(1.0)
+                        .tracking(0.8)
+                        .lineLimit(1)
+                        .fixedSize() // four pills now; TOMORROW must never wrap
                         .foregroundStyle(scope == s ? Theme.void : Theme.textSecondary)
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, 13)
                         .padding(.vertical, 10) // a real 44pt-class target
                         .background(
                             Capsule().fill(scope == s ? Theme.gold : Theme.surfaceHigh)
@@ -555,7 +560,7 @@ struct PressableCardStyle: ButtonStyle {
                     .fill(.ultraThinMaterial)
                     .overlay(
                         RoundedRectangle(cornerRadius: 24, style: .continuous)
-                            .fill(Theme.void.opacity(configuration.isPressed ? 0.15 : 0.30))
+                            .fill(Theme.void.opacity(configuration.isPressed ? 0.42 : 0.58))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 24, style: .continuous)

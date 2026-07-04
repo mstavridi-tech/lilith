@@ -21,8 +21,8 @@ enum Theme {
     static let surface = Color(red: 0.075, green: 0.066, blue: 0.055)     // lifted warm black, cards
     static let surfaceHigh = Color(red: 0.105, green: 0.093, blue: 0.078) // chips and pressed states
     static let textPrimary = bone
-    static let textSecondary = bone.opacity(0.76) // lifted July 4: readable over the liquid plates
-    static let textTertiary = bone.opacity(0.58)
+    static let textSecondary = bone.opacity(0.84) // lifted twice July 4: legibility beats subtlety
+    static let textTertiary = bone.opacity(0.66)
 
     // MARK: - Typography
     //
@@ -671,10 +671,10 @@ struct AuraStage: View {
             // ground exactly where dense content reads. Art is a crown, not a carpet. The plate
             // stays radiant in the hero zone; below the fold the page is effectively solid.
             LinearGradient(stops: [
-                .init(color: Theme.void.opacity(0.26), location: 0.00),
-                .init(color: Theme.void.opacity(0.28), location: 0.32),
-                .init(color: Theme.void.opacity(0.78), location: 0.58),
-                .init(color: Theme.void.opacity(0.94), location: 1.00),
+                .init(color: Theme.void.opacity(0.36), location: 0.00),
+                .init(color: Theme.void.opacity(0.38), location: 0.30),
+                .init(color: Theme.void.opacity(0.84), location: 0.56),
+                .init(color: Theme.void.opacity(0.96), location: 1.00),
             ], startPoint: .top, endPoint: .bottom)
             // And the status-bar scrim so credits and titles never fight the bloom's crown.
             VStack(spacing: 0) {
@@ -744,8 +744,12 @@ struct SoftCard: ViewModifier {
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
                     .fill(.ultraThinMaterial)
                     .overlay(
+                        // v2 (July 4): reading surfaces are NEAR-SOLID. Apple's materials are for
+                        // chrome; content-dense cards in Oura/Spotify/Health are effectively
+                        // opaque. The glass survives as a whisper at the lit edges, but the
+                        // ground under text is reliably dark on every plate.
                         RoundedRectangle(cornerRadius: 24, style: .continuous)
-                            .fill(Theme.void.opacity(0.30))
+                            .fill(Theme.void.opacity(0.58))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 24, style: .continuous)

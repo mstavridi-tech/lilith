@@ -14,10 +14,10 @@ struct HoroscopeService {
     /// The reading's time horizon. All three hit the same backend with the `scope` field
     /// (docs/06); until the backend exists each has its own in-voice offline fallback.
     enum Scope: String, CaseIterable, Identifiable {
-        case daily, weekly, monthly
+        case daily, tomorrow, weekly, monthly
         var id: String { rawValue }
-        /// Small-caps tab label.
-        var label: String { rawValue.uppercased() }
+        /// Small-caps tab label. Daily reads as TODAY now that TOMORROW sits beside it.
+        var label: String { self == .daily ? "TODAY" : rawValue.uppercased() }
     }
 
     struct DailyRequest: Codable {
@@ -92,8 +92,12 @@ struct HoroscopeService {
     /// The network call. Throws on any failure so the caller decides whether to fall back; it does
     /// NOT substitute a fallback itself, because a fallback must never be written to the cache.
     private static func fetchFromBackend(chart: NatalChart, scope: Scope) async throws -> HoroscopeResponse {
-        let sky = try ChartEngine.currentSky()
-        let phase = try ChartEngine.moonPhase()
+        // TOMORROW sends tomorrow's actual sky; the backend writes the preview from it.
+        let skyDate = scope == .tomorrow
+            ? Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+            : Date()
+        let sky = try ChartEngine.currentSky(at: skyDate)
+        let phase = try ChartEngine.moonPhase(at: skyDate)
 
         let request = DailyRequest(
             bigThree: chart.bigThree,
@@ -193,6 +197,13 @@ struct HoroscopeService {
                 reading: "The \(phase) is doing its thing and so are you, \(chart.bigThree). Full reading is loading. The cosmos respects your patience exactly as much as you respect other people's, so. Pull to refresh in a minute.",
                 affirmation: "Even offline, you are the moment.",
                 mantra: "STILL THE MOMENT."
+            )
+        case .tomorrow:
+            return HoroscopeResponse(
+                headline: "TOMORROW IS STILL COOKING.",
+                reading: "Tomorrow's sky is rendering, \(chart.bigThree). The \(phase) already hints at the mood, and the full preview lands in a second. Spoilers take a moment when they're accurate. Pull to refresh.",
+                affirmation: "Tomorrow arrives on your schedule, not the other way around.",
+                mantra: "SPOILERS LOADING."
             )
         case .weekly:
             return HoroscopeResponse(

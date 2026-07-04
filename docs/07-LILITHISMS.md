@@ -14,7 +14,7 @@ The eyebrow line on the Today card adapts to the hour. Morning uses Maria's two 
 |---|---|---|
 | 05:00 to 11:59 | GOOD MORNING, SUNSHINE. / RISE AND SHINE. | Maria's signatures, locked |
 | 12:00 to 16:59 | TODAY, FOR YOU. / STILL YOUR DAY. | draft, replace with Maria's |
-| 17:00 to 21:59 | GOOD EVENING, GORGEOUS. / THE MOON IS UP. | draft, replace with Maria's |
+| 17:00 to 21:59 | GOOD EVENING, GORGEOUS. / THE NIGHT IS YOURS. | draft ("THE MOON IS UP." retired July 4, 2026, read weird at 7pm, Maria) |
 | 22:00 to 04:59 | UP LATE, I SEE. / THE STARS DON'T SLEEP EITHER. | draft, replace with Maria's |
 
 Implementation note: this is app-side logic (works offline), a simple hour check in TodayView feeding the eyebrow text. The greeting replaces the static "TODAY, FOR YOU" eyebrow.

@@ -14,6 +14,7 @@ const ANTHROPIC_VERSION = "2023-06-01";
 // Fast and cheap for the daily; a stronger model for the longer weekly and monthly arcs (docs/02).
 const MODEL_BY_SCOPE = {
   daily: "claude-haiku-4-5-20251001",
+  tomorrow: "claude-haiku-4-5-20251001",
   weekly: "claude-sonnet-4-6",
   monthly: "claude-sonnet-4-6",
 };
@@ -22,6 +23,7 @@ const MODEL_BY_SCOPE = {
 // so it needs real headroom: too small and the JSON truncates mid-string and fails to parse.
 const MAX_TOKENS_BY_SCOPE = {
   daily: 700,
+  tomorrow: 700,
   weekly: 1200,
   monthly: 2048,
 };
@@ -151,7 +153,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const scope = ["daily", "weekly", "monthly"].includes(body.scope) ? body.scope : "daily";
+  const scope = ["daily", "tomorrow", "weekly", "monthly"].includes(body.scope) ? body.scope : "daily";
 
   // Cache by (big three + date + scope). bigThree already encodes sun + moon + rising.
   const today = new Date().toISOString().slice(0, 10);
@@ -229,9 +231,12 @@ async function callClaude(key, model, userMessage, maxTokens) {
 function buildUserMessage(b, scope) {
   const lines = [];
   lines.push(`Scope: ${scope}`);
+  if (scope === "tomorrow") {
+    lines.push(`This is the TOMORROW tab: a heads-up written today about tomorrow. The sky data below IS tomorrow's sky. Write it as a preview ("tomorrow, ..."), future tense where natural, same length rules as daily.`);
+  }
   lines.push(`Her big three: ${b.bigThree || "unknown"}`);
   lines.push(`Her natal placements: ${(b.natalSummary || []).join("; ") || "none provided"}`);
-  lines.push(`Today's sky right now: ${(b.currentTransits || []).join("; ") || "none provided"}`);
+  lines.push(`${scope === "tomorrow" ? "Tomorrow's sky" : "Today's sky right now"}: ${(b.currentTransits || []).join("; ") || "none provided"}`);
   lines.push(`Moon phase: ${b.moonPhase || "unknown"}`);
   if (b.yesterdayHeadline) {
     lines.push(`Do NOT reuse the structure or central metaphor of yesterday's headline: "${b.yesterdayHeadline}"`);
@@ -317,9 +322,9 @@ function validationError(o, scope) {
   // so a good reading running slightly long or short is not blanked to the offline fallback.
   const rw = words(o.reading).length;
   const paragraphs = String(o.reading).split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean).length;
-  if (scope === "daily") {
+  if (scope === "daily" || scope === "tomorrow") {
     const s = countSentences(o.reading);
-    if (s > 5) return `daily ${s} sentences`;
+    if (s > 5) return `${scope} ${s} sentences`;
   } else if (scope === "weekly") {
     // Target 150 to 220 (docs/06); generous ceiling so a sass-rich multi-paragraph weekly is not
     // blanked. The validator catches broken output, it does not enforce the brand word count.

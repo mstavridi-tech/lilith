@@ -47,9 +47,10 @@ struct ChartEngine {
         )
     }
 
-    /// Today's sky — same placements structure, used for transits and the daily horoscope.
-    static func currentSky() throws -> [Placement] {
-        try allPlacements(at: Date())
+    /// The sky at any moment (today by default) — same placements structure, used for transits,
+    /// the daily horoscope, and the TOMORROW preview scope.
+    static func currentSky(at date: Date = Date()) throws -> [Placement] {
+        try allPlacements(at: date)
     }
 
     /// Moon phase right now (or any date). Pure math, no library needed.
