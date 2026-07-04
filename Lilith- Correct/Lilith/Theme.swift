@@ -21,8 +21,8 @@ enum Theme {
     static let surface = Color(red: 0.075, green: 0.066, blue: 0.055)     // lifted warm black, cards
     static let surfaceHigh = Color(red: 0.105, green: 0.093, blue: 0.078) // chips and pressed states
     static let textPrimary = bone
-    static let textSecondary = bone.opacity(0.66)
-    static let textTertiary = bone.opacity(0.48)
+    static let textSecondary = bone.opacity(0.76) // lifted July 4: readable over the liquid plates
+    static let textTertiary = bone.opacity(0.58)
 
     // MARK: - Typography
     //
@@ -665,14 +665,22 @@ struct AuraStage: View {
             } else {
                 LimbAtmosphere(aura: backdrop.fallbackAura, intensity: 0.8, alive: alive)
             }
-            // The tint (v3, July 4: "I love it but it's hard to read", Maria). A firmer global
-            // dim so type always wins over the glow, plus a deeper, taller scrim where the
-            // status bar, page title, and credits live.
-            Theme.void.opacity(0.30)
+            // The crown gradient (v4, July 4, the definitive readability fix). The industry
+            // pattern (Netflix hero fade, Spotify's art-melts-to-surface, Apple Music's blurred
+            // wash): art lives gloriously in the TOP of the screen and melts to near-solid
+            // ground exactly where dense content reads. Art is a crown, not a carpet. The plate
+            // stays radiant in the hero zone; below the fold the page is effectively solid.
+            LinearGradient(stops: [
+                .init(color: Theme.void.opacity(0.26), location: 0.00),
+                .init(color: Theme.void.opacity(0.28), location: 0.32),
+                .init(color: Theme.void.opacity(0.78), location: 0.58),
+                .init(color: Theme.void.opacity(0.94), location: 1.00),
+            ], startPoint: .top, endPoint: .bottom)
+            // And the status-bar scrim so credits and titles never fight the bloom's crown.
             VStack(spacing: 0) {
-                LinearGradient(colors: [Theme.void.opacity(0.68), Theme.void.opacity(0.0)],
+                LinearGradient(colors: [Theme.void.opacity(0.62), Theme.void.opacity(0.0)],
                                startPoint: .top, endPoint: .bottom)
-                    .frame(height: 230)
+                    .frame(height: 220)
                 Spacer()
             }
             EdgeVignette()
