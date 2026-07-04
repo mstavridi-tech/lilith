@@ -14,7 +14,7 @@ struct LilithApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootContainer {
+            RootContainer(returning: storedChart != nil) {
                 Group {
                     if let chart = storedChart {
                         MainTabView(chart: chart)
@@ -41,21 +41,61 @@ struct LilithApp: App {
 }
 
 /// Holds the app and, on a cold launch, the launch ritual on top of it. Two seconds of theater
-/// (docs/08): pure void with grain, the wordmark fading in letterspaced, then a crossfade to the app.
+/// (docs/08): pure void with grain, the wordmark fading in letterspaced, then a crossfade to the
+/// app. Returning users get the welcome-back beat after the ritual (Maria's spec, July 4):
+/// the friend at the door, not a splash screen.
 struct RootContainer<Content: View>: View {
+    var returning: Bool = false
     @ViewBuilder var content: Content
     @State private var showLaunch = true
+    @State private var showWelcome = false
 
     var body: some View {
         ZStack {
             content
+            if showWelcome {
+                WelcomeBack {
+                    withAnimation(.easeInOut(duration: 0.6)) { showWelcome = false }
+                }
+                .transition(.opacity)
+                .zIndex(2)
+            }
             if showLaunch {
                 LaunchRitual {
-                    withAnimation(.easeInOut(duration: 0.7)) { showLaunch = false }
+                    withAnimation(.easeInOut(duration: 0.7)) {
+                        showLaunch = false
+                        if returning { showWelcome = true }
+                    }
                 }
                 .transition(.opacity)
                 .zIndex(1)
             }
+        }
+    }
+}
+
+/// The returning-user beat: two lines on the halo plate, then it gets out of her way.
+struct WelcomeBack: View {
+    var onDone: () -> Void
+    @State private var shown = false
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Text("WELCOME BACK, GIRL.")
+                .displayCaps(26, em: 0.14)
+                .multilineTextAlignment(.center)
+            Text("Let's see what your body is saying.")
+                .font(Theme.body(17).italic())
+                .foregroundStyle(Theme.gold)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .opacity(shown ? 1 : 0)
+        .scaleEffect(shown ? 1 : 0.98)
+        .auraScreen(.halo)
+        .task {
+            withAnimation(.easeOut(duration: 0.8)) { shown = true }
+            try? await Task.sleep(nanoseconds: 1_900_000_000)
+            onDone()
         }
     }
 }

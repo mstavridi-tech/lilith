@@ -4,22 +4,26 @@ import CoreLocation
 import MapKit
 import AuthenticationServices
 
-/// Onboarding: account → name → birth date → time → place. Under 90 seconds.
+/// Onboarding (July 4 glow-up, Maria's spec): account → name → birth date → time → place →
+/// last period → tracker ask. Still under two minutes, and every question sounds like a friend
+/// asking, not a form. Editing birth data from Settings runs only the birth steps.
 /// Account = Sign in with Apple only (one tap, zero typing). See docs/02 "Accounts".
-/// Tone: we're not collecting data, we're preparing her reading.
 struct OnboardingView: View {
     let onComplete: (BirthData) -> Void
 
     /// First run starts at 0 (the account step). Editing birth data from Settings jumps
-    /// straight to the date step (2), skipping account and name.
+    /// straight to the date step (2) and finishes after place: no period/tracker re-ask.
     init(startStep: Int = 0, onComplete: @escaping (BirthData) -> Void) {
         self.onComplete = onComplete
         _step = State(initialValue: startStep)
+        isEditing = startStep >= 2
     }
 
     @AppStorage("userName") private var userName = ""
     @AppStorage("appleUserID") private var appleUserID = ""
+    @AppStorage("wantsHealthKit") private var wantsHealthKit = false
 
+    private let isEditing: Bool
     @State private var step: Int
     @State private var nameDraft = ""
     @State private var birthDate = Date(timeIntervalSince1970: 820_454_400) // ~1996, flattering default
@@ -31,6 +35,8 @@ struct OnboardingView: View {
     @StateObject private var cities = CityCompleter()
     @State private var selectingCity = false
     @FocusState private var placeFocused: Bool
+    @State private var periodDate = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+    @State private var knowsPeriod = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
@@ -39,14 +45,16 @@ struct OnboardingView: View {
             case 1: nameStep
             case 2: dateStep
             case 3: timeStep
-            default: placeStep
+            case 4: placeStep
+            case 5: periodStep
+            default: trackerStep
             }
             Spacer()
-            if step > 0 { continueButton }
+            if step > 0 && step < 6 { continueButton }
         }
         .padding(28)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .cosmicScreen(bloomAlignment: .top, bloomIntensity: 0.85)
+        .auraScreen(.halo) // the crown-jewel plate; first impressions wear the best light
     }
 
     // MARK: Step 0 — the account (one tap)
@@ -198,20 +206,105 @@ struct OnboardingView: View {
         }
     }
 
+    // MARK: Step 5 — the last period (optional, one date, logs straight into CycleStore)
+
+    private var periodStep: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("WHEN DID YOUR LAST\nPERIOD START").displayCaps(34, em: 0.12)
+            Text("Roughly is fine. This wakes up your cycle from day one, and it never leaves this phone.")
+                .font(Theme.body()).foregroundStyle(Theme.gold).lineSpacing(4)
+            if knowsPeriod {
+                DatePicker("", selection: $periodDate,
+                           in: (Calendar.current.date(byAdding: .day, value: -60, to: Date()) ?? Date())...Date(),
+                           displayedComponents: .date)
+                    .datePickerStyle(.wheel)
+                    .colorScheme(.dark)
+            }
+            Toggle(isOn: $knowsPeriod) {
+                Text(knowsPeriod ? "I remember (ish)" : "No idea, skip it. Log it later in Cycle.")
+                    .font(Theme.body(15)).foregroundStyle(Theme.bone.opacity(0.7))
+            }
+            .tint(Theme.ember)
+        }
+    }
+
+    // MARK: Step 6 — the tracker ask (one switch covers Oura, Whoop, Garmin, Apple Watch)
+
+    private var trackerStep: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text("GOT A RING\nOR A WATCH?").displayCaps(34, em: 0.12)
+            Text("Oura, Whoop, Garmin, Apple Watch: they all talk to Apple Health. Say yes and I'll read the receipts (sleep, recovery, the truth). Everything stays on this phone.")
+                .font(Theme.body()).foregroundStyle(Theme.gold).lineSpacing(4)
+
+            Button {
+                wantsHealthKit = true
+                Haptics.soft()
+                completeFlow()
+            } label: {
+                Text("YES, SYNC MY TRACKER")
+                    .font(Theme.display(17).weight(.medium))
+                    .tracking(Theme.tracking(17, em: 0.14))
+                    .frame(maxWidth: .infinity).padding(.vertical, 18)
+                    .background(Theme.bone).foregroundStyle(Theme.void)
+            }
+            .padding(.top, 12)
+
+            Button {
+                wantsHealthKit = false
+                Haptics.light()
+                completeFlow()
+            } label: {
+                Text("NOT NOW")
+                    .font(Theme.mono(13)).tracking(Theme.tracking(13, em: 0.18))
+                    .foregroundStyle(Theme.bone.opacity(0.7))
+                    .frame(maxWidth: .infinity).padding(.vertical, 14)
+                    .overlay(Capsule().strokeBorder(Theme.bone.opacity(0.25), lineWidth: 0.75))
+            }
+
+            Text("Either way, your chart is ready. You can flip this any time in YOU.")
+                .font(Theme.body(13)).foregroundStyle(Theme.bone.opacity(0.5))
+        }
+    }
+
     private var continueButton: some View {
         Button {
             if step == 1 { userName = nameDraft.isEmpty ? "babe" : nameDraft }
-            if step < 4 { step += 1 }
-            else if let place = resolvedPlace { finish(place) }
-            else { geoStatus = "Tap your city in the list first, babe." }
+            switch step {
+            case 1, 2, 3:
+                step += 1
+            case 4:
+                guard resolvedPlace != nil else {
+                    geoStatus = "Tap your city in the list first, babe."
+                    return
+                }
+                // Editing from Settings ends here; first run continues to period + tracker.
+                if isEditing, let place = resolvedPlace { finish(place) } else { step = 5 }
+            case 5:
+                if knowsPeriod { CycleStore.shared.logPeriodStart(on: periodDate) }
+                step = 6
+            default:
+                break
+            }
         } label: {
-            Text(step < 4 ? "NEXT" : "READ MY CHART")
+            Text(buttonLabel)
                 .font(Theme.display(18).weight(.medium))
                 .tracking(Theme.tracking(18, em: 0.16))
                 .frame(maxWidth: .infinity).padding(.vertical, 18)
                 .background(Theme.bone).foregroundStyle(Theme.void)
         }
         .disabled(step == 1 && nameDraft.isEmpty)
+    }
+
+    private var buttonLabel: String {
+        switch step {
+        case 4: isEditing ? "READ MY CHART" : "NEXT"
+        case 5: knowsPeriod ? "LOG IT" : "SKIP"
+        default: "NEXT"
+        }
+    }
+
+    private func completeFlow() {
+        if let place = resolvedPlace { finish(place) }
     }
 
     /// A tapped suggestion becomes a real location: MKLocalSearch resolves it to
