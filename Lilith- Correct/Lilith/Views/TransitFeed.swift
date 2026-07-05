@@ -61,16 +61,17 @@ struct TransitFeed: View {
         return transits
     }
 
+    // July 5 v3 (Maria: one thing in a card and the rest not read as inconsistent, and she's
+    // right: mixed containment breaks the gestalt). Now NOTHING is boxed; the hero leads by
+    // scale and weight alone (bigger glyph, serif title, fuller line), the rest follow smaller
+    // on hairlines. One visual system, three sizes: how a magazine does hierarchy.
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             if let hero = shown.first {
-                TransitCard(transit: hero)
-                    .padding(.bottom, 6)
+                heroRow(hero)
             }
             ForEach(Array(shown.dropFirst().enumerated()), id: \.element.id) { index, transit in
-                if index > 0 {
-                    Rectangle().fill(Theme.gold.opacity(0.12)).frame(height: 0.5)
-                }
+                Rectangle().fill(Theme.gold.opacity(0.12)).frame(height: 0.5)
                 compactRow(transit)
             }
             if transits.isEmpty {
@@ -78,9 +79,36 @@ struct TransitFeed: View {
                     .font(Theme.body(14).italic())
                     .foregroundStyle(Theme.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .softCard(padding: 18)
             }
         }
+        .shadow(color: .black.opacity(0.35), radius: 8, y: 1) // legible straight on the plate
+    }
+
+    private func heroRow(_ transit: Transit) -> some View {
+        let hard = transit.type == .square || transit.type == .opposition
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 12) {
+                Text(transit.transiting.body.glyph)
+                    .font(Theme.display(24))
+                    .foregroundStyle(Theme.gold)
+                Text(transit.title)
+                    .font(Theme.display(20).weight(.medium))
+                    .foregroundStyle(Theme.textPrimary)
+                Spacer()
+                Text(transit.tag)
+                    .font(Theme.label(8.5))
+                    .tracking(1.0)
+                    .foregroundStyle(hard ? Theme.ember : Theme.gold)
+                    .padding(.horizontal, 10).padding(.vertical, 5)
+                    .background(Capsule().fill((hard ? Theme.ember : Theme.gold).opacity(0.12)))
+            }
+            Text(transit.line)
+                .font(Theme.body(15))
+                .foregroundStyle(Theme.textSecondary)
+                .lineSpacing(5)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.bottom, 14)
     }
 
     private func compactRow(_ transit: Transit) -> some View {

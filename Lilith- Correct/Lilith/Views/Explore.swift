@@ -274,10 +274,12 @@ enum CalmVoice {
         return all.max { rank($0) < rank($1) }
     }()
 
-    /// Speak a line. If a cast recording for `key` ships in the bundle (VoiceLines/<key>.mp3,
-    /// generated once Maria picks LILITH's voice), that plays instead of any synthesis.
+    /// Speak a line. Cast recordings (Roxie, chosen by Maria July 5) ship in the bundle as
+    /// <key>.m4a; when one exists it plays and no synthesis happens. TTS remains only as the
+    /// fallback for lines that don't have a recording yet.
     static func say(_ text: String, key: String? = nil) {
-        if let key, let url = Bundle.main.url(forResource: key, withExtension: "mp3") {
+        if let key, let url = Bundle.main.url(forResource: key, withExtension: "m4a")
+            ?? Bundle.main.url(forResource: key, withExtension: "mp3") {
             player = try? AVAudioPlayer(contentsOf: url)
             player?.play()
             return
@@ -412,7 +414,7 @@ struct ReliefSheet: View {
                         raging = false
                         // she really let it out: the friend says so, out loud
                         if let start = rageHeldAt, Date().timeIntervalSince(start) >= 1.2 {
-                            CalmVoice.say("Great girl. You needed that.")
+                            CalmVoice.say("Great girl. You needed that.", key: "rage-praise")
                             ragePraise = true
                             Task {
                                 try? await Task.sleep(nanoseconds: 4_000_000_000)
@@ -439,26 +441,40 @@ struct ReliefSheet: View {
                 .animation(.easeInOut(duration: 0.3), value: ragePraise)
 
             // The real-world handoff: Apple Maps searches, never a specific business (yet:
-            // partner placements are a future, clearly-labelled call of Maria's).
-            exploreLabel("TAKE IT OUTSIDE · LET IT OUT").padding(.top, 30)
-            VStack(spacing: 12) {
-                mapsButton("RAGE ROOMS NEAR ME", query: "rage room")
-                mapsButton("AXE THROWING NEAR ME", query: "axe throwing")
-                mapsButton("BOXING & KICKBOXING NEAR ME", query: "boxing gym")
-            }
-            .padding(.top, 12)
+            // partner placements are a future, clearly-labelled call of Maria's). July 5: the
+            // seven stacked capsules read as Minecraft blocks (Maria); now they're two quiet
+            // chip constellations.
+            exploreLabel("TAKE IT OUTSIDE").padding(.top, 30)
+            Text("Tap one and Apple Maps finds it near you.")
+                .font(Theme.body(13)).foregroundStyle(Theme.bone.opacity(0.6))
+                .padding(.top, 6)
 
-            exploreLabel("TAKE IT OUTSIDE · COOL IT DOWN").padding(.top, 22)
-            VStack(spacing: 12) {
-                mapsButton("SPAS NEAR ME", query: "spa")
-                mapsButton("SAUNA & COLD PLUNGE NEAR ME", query: "sauna")
-                mapsButton("HOT YOGA NEAR ME", query: "hot yoga")
-                mapsButton("POTTERY PAINTING NEAR ME", query: "pottery painting studio")
+            Text("LET IT OUT")
+                .font(Theme.mono(8.5)).tracking(Theme.tracking(8.5, em: 0.24))
+                .foregroundStyle(Theme.blood.opacity(0.9))
+                .padding(.top, 16)
+            FlowLayout(spacing: 9) {
+                mapsChip("RAGE ROOMS", query: "rage room")
+                mapsChip("AXE THROWING", query: "axe throwing")
+                mapsChip("BOXING", query: "boxing gym")
             }
-            .padding(.top, 12)
-            Text("Apple Maps shows you what's nearby. I don't pick businesses and I never know where you went.")
-                .font(Theme.body(12)).foregroundStyle(Theme.bone.opacity(0.5))
-                .padding(.top, 10)
+            .padding(.top, 8)
+
+            Text("COOL IT DOWN")
+                .font(Theme.mono(8.5)).tracking(Theme.tracking(8.5, em: 0.24))
+                .foregroundStyle(Theme.gold.opacity(0.85))
+                .padding(.top, 16)
+            FlowLayout(spacing: 9) {
+                mapsChip("SPA DAY", query: "spa")
+                mapsChip("SAUNA & PLUNGE", query: "sauna")
+                mapsChip("HOT YOGA", query: "hot yoga")
+                mapsChip("POTTERY PAINTING", query: "pottery painting studio")
+            }
+            .padding(.top, 8)
+
+            Text("I don't pick businesses and I never know where you went.")
+                .font(Theme.body(12).italic()).foregroundStyle(Theme.bone.opacity(0.5))
+                .padding(.top, 12)
 
             Text("If the anger feels bigger than a bad week and it keeps coming back, that's worth a real conversation with a professional. That's not weakness, that's maintenance.")
                 .font(Theme.body(12)).foregroundStyle(Theme.gold.opacity(0.7))
@@ -467,20 +483,19 @@ struct ReliefSheet: View {
         }
     }
 
-    private func mapsButton(_ title: String, query: String) -> some View {
+    private func mapsChip(_ title: String, query: String) -> some View {
         Link(destination: URL(string: "maps://?q=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query)")!) {
-            HStack {
+            HStack(spacing: 6) {
                 Text(title)
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.14))
-                    .foregroundStyle(Theme.gold)
-                Spacer()
+                    .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.12))
+                    .foregroundStyle(Theme.bone.opacity(0.9))
                 Image(systemName: "arrow.up.right")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(Theme.gold.opacity(0.7))
+                    .font(.system(size: 8, weight: .semibold))
+                    .foregroundStyle(Theme.gold.opacity(0.8))
             }
-            .padding(.horizontal, 18).padding(.vertical, 14)
+            .padding(.horizontal, 14).padding(.vertical, 10)
             .background(Capsule().fill(.ultraThinMaterial)
-                .overlay(Capsule().strokeBorder(Theme.gold.opacity(0.35), lineWidth: 0.5)))
+                .overlay(Capsule().strokeBorder(Theme.gold.opacity(0.3), lineWidth: 0.5)))
             .contentShape(Capsule())
         }
         .buttonStyle(.plain)
@@ -731,22 +746,23 @@ struct GuidedBreathSheet: View {
         let total = minutes * 60
         secondsLeft = total
         let started = Date()
-        CalmVoice.say("Settle in. Shoulders down from your ears. We breathe together now.")
+        CalmVoice.say("Settle in. Shoulders down from your ears. We breathe together now.",
+                      key: "breath-settle")
         try? await Task.sleep(nanoseconds: 3_500_000_000)
 
-        let script: [(BreathPhase, Double, [String])] = [
-            (.inhale, 4, ["Breathe in. Slow and deep.", "In through the nose. Fill all the way up."]),
-            (.hold, 4, ["Hold it right there.", "Hold. You're safe."]),
-            (.exhale, 6, ["Exhale. Release every bit of negative energy.", "Out, slow. Let all of it go."]),
+        let script: [(BreathPhase, Double, [String], String)] = [
+            (.inhale, 4, ["Breathe in. Slow and deep.", "In through the nose. Fill all the way up."], "breath-in"),
+            (.hold, 4, ["Hold it right there.", "Hold. You're safe."], "breath-hold"),
+            (.exhale, 6, ["Exhale. Release every bit of negative energy.", "Out, slow. Let all of it go."], "breath-out"),
         ]
         var round = 0
         while !Task.isCancelled, Date().timeIntervalSince(started) < Double(total) {
-            for (p, dur, lines) in script {
+            for (p, dur, lines, keyPrefix) in script {
                 guard !Task.isCancelled else { return }
                 phase = p
                 if p == .inhale { withAnimation(.easeInOut(duration: dur)) { full = true } }
                 if p == .exhale { withAnimation(.easeInOut(duration: dur)) { full = false } }
-                CalmVoice.say(lines[round % lines.count])
+                CalmVoice.say(lines[round % lines.count], key: "\(keyPrefix)-\(round % lines.count)")
                 try? await Task.sleep(nanoseconds: UInt64(dur * 1_000_000_000))
                 secondsLeft = max(0, total - Int(Date().timeIntervalSince(started)))
             }
@@ -755,7 +771,7 @@ struct GuidedBreathSheet: View {
         guard !Task.isCancelled else { return }
         stage = .done
         Haptics.soft()
-        CalmVoice.say("That's it. Lighter already. Great girl.")
+        CalmVoice.say("That's it. Lighter already. Great girl.", key: "breath-done")
     }
 }
 

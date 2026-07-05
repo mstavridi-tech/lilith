@@ -315,6 +315,7 @@ struct SettingsView: View {
         bodyHeight = ""
         CycleStore.shared.deleteAll()  // the promise means ALL of her, not just the chart
         VaultStore.shared.deleteAll()
+        PeopleStore.shared.deleteAll()
         HoroscopeService.clearCache() // wipe cached readings too; nothing of her stays behind
         // The app re-derives storedChart as nil and drops back to onboarding automatically.
     }

@@ -7,6 +7,7 @@ struct ChartView: View {
     let chart: NatalChart
     @State private var openReading: ReadingSelection?
     @State private var showMap = false
+    @State private var showPeople = false
 
     var body: some View {
         ScrollView {
@@ -49,6 +50,8 @@ struct ChartView: View {
 
                 mapSection
 
+                peopleSection
+
                 transitSection
 
                 Wordmark()
@@ -63,6 +66,7 @@ struct ChartView: View {
         .auraScreen(.moonlight) // cool silver so the GOLD wheel and gold text pop (July 4: the champagne plate clashed with them, Maria)
         .sheet(item: $openReading) { ReadingSheet(selection: $0) }
         .sheet(isPresented: $showMap) { AstroMapSheet(chart: chart) }
+        .sheet(isPresented: $showPeople) { PeopleSheet(chart: chart) }
     }
 
     // MARK: The big three — tappable, each opens its reading
@@ -203,6 +207,39 @@ struct ChartView: View {
                         .font(.system(size: 15, weight: .light))
                         .foregroundStyle(Theme.gold)
                     Text("OPEN THE MAP")
+                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .foregroundStyle(Theme.gold)
+                    Spacer()
+                    Text("→").font(Theme.body(18)).foregroundStyle(Theme.gold)
+                }
+                .padding(.horizontal, 18).padding(.vertical, 15)
+                .background(Capsule().fill(.ultraThinMaterial)
+                    .overlay(Capsule().strokeBorder(Theme.gold.opacity(0.35), lineWidth: 0.5)))
+                .contentShape(Capsule())
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.top, 36)
+    }
+
+    /// Compatibility's front door: the saved cast of her life, each checked against her chart.
+    private var peopleSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HairlineDivider(width: 110)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.bottom, 4)
+            Text("YOUR PEOPLE").displayCaps(20, em: 0.16)
+            Text("The bestie, the crush, the coworker. Checked against your chart, remembered forever.")
+                .font(Theme.body(14)).foregroundStyle(Theme.gold.opacity(0.85))
+            Button {
+                Haptics.open()
+                showPeople = true
+            } label: {
+                HStack {
+                    Image(systemName: "person.2")
+                        .font(.system(size: 15, weight: .light))
+                        .foregroundStyle(Theme.gold)
+                    Text("OPEN YOUR PEOPLE")
                         .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
                         .foregroundStyle(Theme.gold)
                     Spacer()
