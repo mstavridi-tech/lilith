@@ -8,6 +8,7 @@ struct CycleView: View {
     @ObservedObject private var store = CycleStore.shared
     @State private var showLog = false
     @State private var showCalendar = false
+    @State private var showRingHelp = false
     @State private var developToken = 0
 
     var body: some View {
@@ -24,6 +25,20 @@ struct CycleView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.top, 22)
                     .cascadeIn(2, trigger: developToken)
+
+                Button {
+                    Haptics.light(); showRingHelp = true
+                } label: {
+                    Text("HOW TO READ THE RING")
+                        .font(Theme.mono(9)).tracking(Theme.tracking(9, em: 0.2))
+                        .foregroundStyle(Theme.gold.opacity(0.7))
+                        .padding(.vertical, 8).padding(.horizontal, 14)
+                        .contentShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.top, 4)
+                .cascadeIn(3, trigger: developToken)
 
                 if let state = store.today {
                     // orbCaption removed July 4: "period expected in N days" already lives in the
@@ -57,6 +72,7 @@ struct CycleView: View {
         .sheet(isPresented: $showCalendar) {
             CycleCalendarSheet(store: store)
         }
+        .sheet(isPresented: $showRingHelp) { RingExplainerSheet() }
         .onAppear { if developToken == 0 { developToken = 1 } }
     }
 
@@ -303,6 +319,9 @@ struct CycleLogSheet: View {
     @State private var mood: CycleMood?
     @State private var symptoms: Set<CycleSymptom> = []
     @State private var note: String = ""
+    @State private var energy: EnergyLevel?
+    @State private var sleep: SleepQuality?
+    @State private var libido: Libido?
 
     init(date: Date, store: CycleStore) {
         self.date = date
@@ -312,6 +331,9 @@ struct CycleLogSheet: View {
         _mood = State(initialValue: existing?.mood)
         _symptoms = State(initialValue: Set(existing?.symptoms ?? []))
         _note = State(initialValue: existing?.note ?? "")
+        _energy = State(initialValue: existing?.energy)
+        _sleep = State(initialValue: existing?.sleep)
+        _libido = State(initialValue: existing?.libido)
     }
 
     var body: some View {
@@ -342,6 +364,21 @@ struct CycleLogSheet: View {
                 groupLabel("MOOD")
                 chips(CycleMood.allCases, accent: Theme.ember, isOn: { mood == $0 }) { picked in
                     mood = (mood == picked) ? nil : picked
+                }
+
+                groupLabel("ENERGY")
+                chips(EnergyLevel.allCases, accent: Theme.ember, isOn: { energy == $0 }) { picked in
+                    energy = (energy == picked) ? nil : picked
+                }
+
+                groupLabel("SLEEP, LAST NIGHT")
+                chips(SleepQuality.allCases, accent: Theme.gold, isOn: { sleep == $0 }) { picked in
+                    sleep = (sleep == picked) ? nil : picked
+                }
+
+                groupLabel("LIBIDO")
+                chips(Libido.allCases, accent: Theme.blood, isOn: { libido == $0 }) { picked in
+                    libido = (libido == picked) ? nil : picked
                 }
 
                 groupLabel("SYMPTOMS")
@@ -514,6 +551,9 @@ struct CycleLogSheet: View {
         case let f as FlowLevel: return f.label
         case let m as CycleMood: return m.label
         case let s as CycleSymptom: return s.label
+        case let e as EnergyLevel: return e.label
+        case let s as SleepQuality: return s.label
+        case let l as Libido: return l.label
         default: return "\(item)"
         }
     }
@@ -524,6 +564,9 @@ struct CycleLogSheet: View {
         entry.mood = mood
         entry.symptoms = Array(symptoms)
         entry.note = note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : note
+        entry.energy = energy
+        entry.sleep = sleep
+        entry.libido = libido
         store.save(entry)
     }
 
@@ -563,5 +606,74 @@ struct FlowLayout: Layout {
             x += size.width + spacing
             rowHeight = max(rowHeight, size.height)
         }
+    }
+}
+
+// MARK: - How to read the ring (July 5, Maria: "the circle part is confusing me")
+
+/// The ring, explained like a friend would: whole circle = your whole cycle, colors = the eras,
+/// bright arc = how far in you are, dots = days you actually bled, number = today.
+struct RingExplainerSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("THE RING")
+                    .displayCaps(26, em: 0.14)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.leading, Theme.tracking(26, em: 0.14))
+                    .padding(.top, 44)
+                Text("Your whole month, one circle.")
+                    .font(Theme.body(15).italic()).foregroundStyle(Theme.gold)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 8)
+
+                HairlineDivider(width: 120)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 22)
+
+                explainRow("THE CIRCLE", "is your whole cycle, start to finish. Day 1 sits at the top and the days run clockwise all the way around back to it.")
+                explainRow("THE COLORS", "are your four eras. Wine is your period, seafoam is the comeback, ember is main character week, mauve is protect-your-peace season.")
+                explainRow("THE BRIGHT ARC", "is how far into the month you are. It grows a little every day, like a battery filling with lived days.")
+                explainRow("THE WHITE DOTS", "are days you actually bled, exactly where they happened. The wine band is the average; your dots are the truth.")
+                explainRow("THE BIG NUMBER", "is simply which day of your cycle today is. That's it. No math homework.")
+
+                Text("So one glance says: where am I, what era is it, and how long until the next one. That's the whole trick.")
+                    .font(Theme.body(15)).foregroundStyle(Theme.bone.opacity(0.85))
+                    .lineSpacing(6)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 28)
+
+                Wordmark()
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 44)
+            }
+            .padding(.horizontal, 30)
+            .padding(.bottom, 40)
+        }
+        .scrollIndicators(.hidden)
+        .glassSheet(glyph: "◗", accent: Theme.blood)
+        .overlay(alignment: .topTrailing) {
+            Button { dismiss() } label: {
+                Text("CLOSE")
+                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .foregroundStyle(Theme.gold.opacity(0.75))
+                    .padding(20)
+            }
+        }
+    }
+
+    private func explainRow(_ title: String, _ body: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                .foregroundStyle(Theme.ember)
+            Text(body)
+                .font(Theme.body(15)).foregroundStyle(Theme.bone.opacity(0.85))
+                .lineSpacing(6)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.top, 24)
     }
 }

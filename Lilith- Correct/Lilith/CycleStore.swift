@@ -49,9 +49,7 @@ final class CycleStore: ObservableObject {
     func save(_ entry: CycleEntry) {
         let d = Calendar.current.startOfDay(for: entry.date)
         entries.removeAll { Calendar.current.startOfDay(for: $0.date) == d }
-        let isEmpty = entry.flow == nil && entry.mood == nil && entry.symptoms.isEmpty
-            && (entry.note?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
-        if !isEmpty {
+        if !entry.isEmpty {
             var e = entry
             e.date = d
             entries.append(e)

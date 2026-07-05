@@ -25,16 +25,43 @@ enum CycleMood: String, Codable, CaseIterable, Identifiable {
 /// Optional body signals. Pattern-tracking only, never a diagnosis.
 enum CycleSymptom: String, Codable, CaseIterable, Identifiable {
     case cramps, headache, bloating, tender, lowEnergy, breakout, nausea, insomnia
+    case cravings, backPain, dizzy // July 5: more detail so patterns sharpen (Maria)
     var id: String { rawValue }
     var label: String {
         switch self {
         case .lowEnergy: "LOW ENERGY"
+        case .backPain: "BACK PAIN"
         default: rawValue.uppercased()
         }
     }
 }
 
+// July 5 (Maria: "I need there to be more details, so the app can really start understanding
+// patterns"): three more optional signals, all in voice, all pattern fuel, never diagnosis.
+
+/// How charged she felt that day.
+enum EnergyLevel: String, Codable, CaseIterable, Identifiable {
+    case charged, fine, drained
+    var id: String { rawValue }
+    var label: String { rawValue.uppercased() }
+}
+
+/// How the night before treated her.
+enum SleepQuality: String, Codable, CaseIterable, Identifiable {
+    case dreamy, okay, rough
+    var id: String { rawValue }
+    var label: String { rawValue.uppercased() }
+}
+
+/// Where the libido was at. The vocabulary is the group chat's, on purpose.
+enum Libido: String, Codable, CaseIterable, Identifiable {
+    case feral, present, offline
+    var id: String { rawValue }
+    var label: String { rawValue.uppercased() }
+}
+
 /// One logged day. A day with `flow != nil` is a bleeding day; the rest is optional context.
+/// New optional fields decode as nil from older saved logs, so nothing she logged is ever lost.
 struct CycleEntry: Codable, Identifiable {
     var id: UUID = UUID()
     var date: Date                       // normalized to the start of the day
@@ -42,8 +69,15 @@ struct CycleEntry: Codable, Identifiable {
     var mood: CycleMood? = nil
     var symptoms: [CycleSymptom] = []
     var note: String? = nil
+    var energy: EnergyLevel? = nil
+    var sleep: SleepQuality? = nil
+    var libido: Libido? = nil
 
     var isBleeding: Bool { flow != nil }
+    var isEmpty: Bool {
+        flow == nil && mood == nil && symptoms.isEmpty && energy == nil && sleep == nil
+            && libido == nil && (note?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+    }
 }
 
 // MARK: - The four phases

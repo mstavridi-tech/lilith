@@ -10,17 +10,22 @@ struct TrendsView: View {
     @ObservedObject private var store = CycleStore.shared
     @State private var points: [DayPoint] = []
     @State private var developToken = 0
+    @State private var showFriends = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                // July 4 late round (Maria: "super ugly, too AI"): the dashboard grammar is gone.
-                // Voice leads, the one line follows, and the numbers read as an editorial list
-                // instead of boxed widgets. Boxes are what every AI dashboard looks like.
+                // July 5 rebuild (Maria: "the whole page doesn't make sense to me"). Every section
+                // now answers one plain question, stated in its own subtitle: how was the month
+                // (strip), how does each era treat you (eras), what are the exact numbers
+                // (receipts). The line graph is gone; the strip is the same visual language as
+                // THE SKY OVER YOUR CYCLE, which she already reads fluently.
                 header.cascadeIn(0, trigger: developToken)
                 insightCard.cascadeIn(1, trigger: developToken)
-                chartCard.cascadeIn(2, trigger: developToken)
-                receiptsSection.cascadeIn(3, trigger: developToken)
+                monthStrip.cascadeIn(2, trigger: developToken)
+                erasSection.cascadeIn(3, trigger: developToken)
+                receiptsSection.cascadeIn(4, trigger: developToken)
+                friendsDoor.cascadeIn(5, trigger: developToken)
                 Wordmark()
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, 40)
@@ -50,79 +55,153 @@ struct TrendsView: View {
 
     // MARK: The composite chart
 
-    /// REDONE July 4 evening (Maria: "trends graph kills me i hate it"). The five-series pileup
-    /// (moon wash + vibe line + mood line + two kinds of bars) is gone. Now it's one calm gold
-    /// line: her month, drawn once, with a soft light pooled under it. Moods she logged sit on
-    /// the line as jewels, bleed days rest on the floor as wine dots. Nothing else competes.
-    private var chartCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("THE SHAPE OF YOUR MONTH")
+    /// The month as thirty little days, colored by era, same language as THE SKY OVER YOUR CYCLE.
+    /// A bone dot on a day = she logged a mood (higher dot = better day). Wine cap = she bled.
+    private var monthStrip: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("YOUR LAST 30 DAYS")
                 .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.24))
                 .foregroundStyle(Theme.ember)
-            let curve = Self.smoothedVibe(points)
-            Chart {
-                // The line: the cycle + moon estimate, smoothed over a five-day window for the
-                // drawing only. The raw vibe moves in plateaus (phases and moon octants are
-                // discrete), and the resulting cliffs were the ugliness (July 4 evening). Her
-                // logged moods sit AGAINST the line as dots, never spliced into it.
-                ForEach(Array(curve.enumerated()), id: \.offset) { _, p in
-                    AreaMark(x: .value("Day", p.date), y: .value("Level", p.value))
-                        .foregroundStyle(
-                            LinearGradient(colors: [Theme.gold.opacity(0.22), .clear],
-                                           startPoint: .top, endPoint: .bottom))
-                        .interpolationMethod(.catmullRom)
-                    LineMark(x: .value("Day", p.date), y: .value("Level", p.value))
-                        .foregroundStyle(Theme.gold)
-                        .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round))
-                        .interpolationMethod(.catmullRom)
-                }
-                // Her logged moods, sitting on the line as the receipts.
-                ForEach(points.filter { $0.mood != nil }) { p in
-                    PointMark(x: .value("Day", p.date), y: .value("Level", p.mood ?? 0))
-                        .foregroundStyle(Theme.bone)
-                        .symbolSize(34)
-                }
-                // Bleed days: quiet wine dots along the floor, not bars stabbing the line.
-                ForEach(points.filter(\.bleeding)) { p in
-                    PointMark(x: .value("Day", p.date), y: .value("Level", 3))
-                        .foregroundStyle(Theme.blood.opacity(0.9))
-                        .symbolSize(22)
-                }
-            }
-            .chartYScale(domain: 0...100)
-            .chartYAxis(.hidden)
-            .chartXAxis {
-                AxisMarks(values: .stride(by: .day, count: 7)) { _ in
-                    AxisGridLine().foregroundStyle(Theme.bone.opacity(0.06))
-                    AxisValueLabel(format: .dateTime.day().month(.abbreviated))
-                        .font(Theme.label(9))
-                        .foregroundStyle(Theme.textTertiary)
-                }
-            }
-            .frame(height: 210)
+            Text("One bar per day, colored by which era you were in. Dots are moods you logged, higher is better. Wine at the base means you bled.")
+                .font(Theme.body(13)).foregroundStyle(Theme.bone.opacity(0.65))
+                .fixedSize(horizontal: false, vertical: true)
 
-            legend
+            HStack(alignment: .bottom, spacing: 3.5) {
+                ForEach(points) { p in dayBar(p) }
+            }
+            .frame(height: 88)
+            .padding(.top, 6)
+
+            HStack {
+                Text(Self.shortDay.string(from: points.first?.date ?? Date()).uppercased())
+                Spacer()
+                Text("TODAY")
+            }
+            .font(Theme.mono(8)).tracking(Theme.tracking(8, em: 0.14))
+            .foregroundStyle(Theme.bone.opacity(0.45))
+
+            HStack(spacing: 12) {
+                ForEach(CyclePhase.allCases, id: \.self) { phase in
+                    HStack(spacing: 4) {
+                        Circle().fill(phase.aura).frame(width: 5, height: 5)
+                        Text(phase.name)
+                            .font(Theme.mono(7.5)).tracking(Theme.tracking(7.5, em: 0.1))
+                            .foregroundStyle(Theme.bone.opacity(0.55))
+                    }
+                }
+            }
+            .padding(.top, 2)
         }
-        .softCard(padding: 22)
+        .softCard(padding: 18)
         .padding(.top, 22)
     }
 
-    private var legend: some View {
-        HStack(spacing: 14) {
-            legendDot(Theme.gold, "THE VIBE")
-            legendDot(Theme.bone, "YOUR MOOD")
-            legendDot(Theme.blood, "BLEED")
+    private func dayBar(_ p: DayPoint) -> some View {
+        let isToday = Calendar.current.isDateInToday(p.date)
+        return ZStack(alignment: .bottom) {
+            // the era bar
+            RoundedRectangle(cornerRadius: 2.5)
+                .fill((p.phase?.aura ?? Theme.bone).opacity(p.phase == nil ? 0.12 : 0.42))
+            // bled that day: wine at the base
+            if p.bleeding {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Theme.blood.opacity(0.95))
+                    .frame(height: 16)
+            }
+            // logged mood: a bone dot, its height = how the day felt
+            if let mood = p.mood {
+                Circle()
+                    .fill(Theme.bone)
+                    .frame(width: 5, height: 5)
+                    .offset(y: -CGFloat(8 + (mood / 100) * 64))
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+            }
         }
+        .frame(maxWidth: .infinity)
+        .overlay(
+            RoundedRectangle(cornerRadius: 2.5)
+                .strokeBorder(isToday ? Theme.gold : .clear, lineWidth: 1)
+        )
     }
 
-    private func legendDot(_ color: Color, _ label: String) -> some View {
-        HStack(spacing: 5) {
-            Circle().fill(color).frame(width: 5, height: 5)
-            Text(label)
-                .font(Theme.label(8))
-                .tracking(0.8)
-                .foregroundStyle(Theme.textTertiary)
+    /// How each era treats her, from her own logs. The four phases she lives through, one row
+    /// each, average logged mood on the right. This is the sentence version of the old graph.
+    private var erasSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HairlineDivider(width: 110)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.bottom, 18)
+            Text("HOW EACH ERA TREATS YOU").displayCaps(20, em: 0.14)
+                .padding(.bottom, 2)
+            Text("Your logged moods, averaged per phase. The more you log, the sharper this gets.")
+                .font(Theme.body(13)).foregroundStyle(Theme.bone.opacity(0.6))
+                .padding(.bottom, 8)
+
+            ForEach(CyclePhase.allCases, id: \.self) { phase in
+                if phase != CyclePhase.allCases.first {
+                    Rectangle().fill(Theme.gold.opacity(0.12)).frame(height: 0.5)
+                }
+                eraRow(phase)
+            }
         }
+        .padding(.top, 34)
+        .shadow(color: .black.opacity(0.35), radius: 8, y: 1)
+    }
+
+    private func eraRow(_ phase: CyclePhase) -> some View {
+        let moods = points.filter { $0.phase == phase }.compactMap(\.mood)
+        let avg = moods.isEmpty ? nil : moods.reduce(0, +) / Double(moods.count)
+        return HStack(alignment: .firstTextBaseline) {
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 8) {
+                    Circle().fill(phase.aura).frame(width: 6, height: 6)
+                    Text(phase.name)
+                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .foregroundStyle(Theme.bone)
+                }
+                Text(phase.tagline)
+                    .font(Theme.body(13).italic())
+                    .foregroundStyle(Theme.bone.opacity(0.55))
+                    .padding(.leading, 14)
+            }
+            Spacer()
+            Text(avg.map { "\(Int($0)) of 100" } ?? "no logs yet")
+                .font(avg == nil ? Theme.body(14).italic() : Theme.display(19).weight(.medium))
+                .foregroundStyle(avg == nil ? Theme.bone.opacity(0.45) : Theme.bone)
+        }
+        .padding(.vertical, 14)
+    }
+
+    /// The Friends door: the vision, honestly gated until accounts exist.
+    private var friendsDoor: some View {
+        Button {
+            Haptics.open(); showFriends = true
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "person.2")
+                    .font(.system(size: 17, weight: .light))
+                    .foregroundStyle(Theme.gold)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("FRIENDS")
+                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .foregroundStyle(Theme.bone)
+                    Text("Cycle-sync, moon twins, memes. Coming.")
+                        .font(Theme.body(13).italic()).foregroundStyle(Theme.bone.opacity(0.6))
+                }
+                Spacer()
+                Text("→").font(Theme.body(18)).foregroundStyle(Theme.gold)
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 18).fill(.ultraThinMaterial)
+                    .overlay(RoundedRectangle(cornerRadius: 18)
+                        .strokeBorder(Theme.gold.opacity(0.3), lineWidth: 0.5))
+            )
+            .contentShape(RoundedRectangle(cornerRadius: 18))
+        }
+        .buttonStyle(.plain)
+        .padding(.top, 30)
+        .sheet(isPresented: $showFriends) { FriendsTeaserSheet() }
     }
 
     // MARK: The receipts (editorial rows, no boxes: a ledger, not a dashboard)
@@ -214,22 +293,6 @@ struct TrendsView: View {
         let f = DateFormatter(); f.dateFormat = "d MMM"; return f
     }()
 
-    /// The vibe series with a centered, weighted five-day average, display only. Stats and
-    /// averages stay on the raw values; this exists purely so the line flows instead of stepping.
-    static func smoothedVibe(_ points: [DayPoint]) -> [(date: Date, value: Double)] {
-        let weights: [Double] = [1, 2, 3, 2, 1]
-        return points.indices.map { i in
-            var total = 0.0, weightSum = 0.0
-            for (k, w) in weights.enumerated() {
-                let j = i + k - 2
-                guard points.indices.contains(j) else { continue }
-                total += points[j].vibe * w
-                weightSum += w
-            }
-            return (points[i].date, total / max(1, weightSum))
-        }
-    }
-
     // MARK: Data
 
     struct DayPoint: Identifiable {
@@ -239,6 +302,7 @@ struct TrendsView: View {
         let mood: Double?     // 0...100 where logged
         let symptomLoad: Int  // count of logged symptoms
         let bleeding: Bool
+        var phase: CyclePhase? = nil // which era she was in that day, for the month strip
         var id: Date { date }
     }
 
@@ -273,7 +337,8 @@ struct TrendsView: View {
                 moon: illum * 100,
                 mood: entry?.mood.map(moodScore),
                 symptomLoad: entry?.symptoms.count ?? 0,
-                bleeding: entry?.isBleeding ?? false)
+                bleeding: entry?.isBleeding ?? false,
+                phase: state?.phase)
         }
     }
 
@@ -342,5 +407,75 @@ struct TrendsView: View {
             s.lutealDip = (pre.reduce(0, +) / Double(pre.count)) < (rest.reduce(0, +) / Double(rest.count)) - 8
         }
         return s
+    }
+}
+
+// MARK: - Friends (the honest teaser; the real thing needs accounts)
+
+/// The vision page for Friends, so the door exists and the promise is public: cycle-sync, moon
+/// twins, memes and gifs, and NEVER rankings. Actual friend data needs accounts and a backend,
+/// which are blocked until the paid Apple Developer enrollment lands, and the page says so.
+struct FriendsTeaserSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("FRIENDS")
+                    .displayCaps(26, em: 0.14)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.leading, Theme.tracking(26, em: 0.14))
+                    .padding(.top, 44)
+                Text("The group chat, but it knows your cycles.")
+                    .font(Theme.body(15).italic()).foregroundStyle(Theme.gold)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 8)
+
+                HairlineDivider(width: 120)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 22)
+
+                teaserRow("CYCLE-SYNC", "See whose luteal is colliding with whose main character week, so you know exactly why the group chat is like that today.")
+                teaserRow("MOON TWINS", "Find out which of your girls shares your moon sign. Instant lore.")
+                teaserRow("MEMES & GIFS", "Send the meme that says what words can't, straight from her trends to yours.")
+                teaserRow("NEVER RANKINGS", "Nobody gets scored against her friends here. Not now, not ever. That's a promise, not a feature flag.")
+
+                Text("This unlocks when LILITH gets accounts (the App Store version). Sharing will be opt-in per friend, and your logs stay yours; a friend only ever sees what you choose to show.")
+                    .font(Theme.body(13)).foregroundStyle(Theme.gold.opacity(0.75))
+                    .lineSpacing(5)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 28)
+
+                Wordmark()
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 44)
+            }
+            .padding(.horizontal, 30)
+            .padding(.bottom, 40)
+        }
+        .scrollIndicators(.hidden)
+        .glassSheet(glyph: "✶", accent: Theme.gold)
+        .overlay(alignment: .topTrailing) {
+            Button { dismiss() } label: {
+                Text("CLOSE")
+                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .foregroundStyle(Theme.gold.opacity(0.75))
+                    .padding(20)
+            }
+        }
+    }
+
+    private func teaserRow(_ title: String, _ body: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                .foregroundStyle(Theme.ember)
+            Text(body)
+                .font(Theme.body(15)).foregroundStyle(Theme.bone.opacity(0.85))
+                .lineSpacing(6)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.top, 26)
     }
 }

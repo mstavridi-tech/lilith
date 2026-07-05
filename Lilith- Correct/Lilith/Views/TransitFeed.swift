@@ -49,7 +49,9 @@ struct TransitCard: View {
     }
 }
 
-/// A titled stack of transit cards. `limit` trims it for Today; Chart shows the lot.
+/// The feed, restructured July 5 (the card-density verdict): ONE hero card for the loudest
+/// transit, then the rest as quiet hairline rows. Six identical boxes read as noise; one headline
+/// plus a list reads as a page. `limit` trims it for Today; Chart shows the lot.
 struct TransitFeed: View {
     let transits: [Transit]
     var limit: Int? = nil
@@ -60,8 +62,17 @@ struct TransitFeed: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            ForEach(shown) { TransitCard(transit: $0) }
+        VStack(alignment: .leading, spacing: 0) {
+            if let hero = shown.first {
+                TransitCard(transit: hero)
+                    .padding(.bottom, 6)
+            }
+            ForEach(Array(shown.dropFirst().enumerated()), id: \.element.id) { index, transit in
+                if index > 0 {
+                    Rectangle().fill(Theme.gold.opacity(0.12)).frame(height: 0.5)
+                }
+                compactRow(transit)
+            }
             if transits.isEmpty {
                 Text("The sky is quiet on your chart today. Rare. Enjoy it, or cause something yourself.")
                     .font(Theme.body(14).italic())
@@ -70,5 +81,32 @@ struct TransitFeed: View {
                     .softCard(padding: 18)
             }
         }
+    }
+
+    private func compactRow(_ transit: Transit) -> some View {
+        let hard = transit.type == .square || transit.type == .opposition
+        return VStack(alignment: .leading, spacing: 5) {
+            HStack(spacing: 10) {
+                Text(transit.transiting.body.glyph)
+                    .font(Theme.display(15))
+                    .foregroundStyle(Theme.gold.opacity(0.85))
+                    .frame(width: 22)
+                Text(transit.title)
+                    .font(Theme.body(15))
+                    .foregroundStyle(Theme.textPrimary)
+                Spacer()
+                Text(transit.tag)
+                    .font(Theme.label(8))
+                    .tracking(0.9)
+                    .foregroundStyle((hard ? Theme.ember : Theme.gold).opacity(0.85))
+            }
+            Text(transit.line)
+                .font(Theme.body(13))
+                .foregroundStyle(Theme.textTertiary)
+                .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.leading, 32)
+        }
+        .padding(.vertical, 13)
     }
 }

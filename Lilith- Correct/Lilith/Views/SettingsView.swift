@@ -14,6 +14,7 @@ struct SettingsView: View {
     @AppStorage("bodyHeight") private var bodyHeight = ""
 
     @State private var editingBirth = false
+    @State private var showingProfile = false
     @State private var showingVault = false
     @State private var showingFinePrint = false
     @State private var showingPremium = false
@@ -27,6 +28,12 @@ struct SettingsView: View {
                 Text(userName.isEmpty ? "Your corner of the app." : "Hey \(userName). Your corner of the app.")
                     .font(Theme.body(16)).foregroundStyle(Theme.gold)
                     .padding(.top, 8)
+
+                group("THE FILE ON YOU") {
+                    row(title: "READ YOUR FILE", note: "Everything I've figured out about you so far, in one sitting.") {
+                        showingProfile = true
+                    }
+                }
 
                 group("YOUR CHART") {
                     row(title: "EDIT BIRTH DATA", note: "Got the exact time from your mom? Update it here.") {
@@ -96,6 +103,7 @@ struct SettingsView: View {
                 editingBirth = false
             }
         }
+        .sheet(isPresented: $showingProfile) { YouProfileSheet(chart: storedChart) }
         .sheet(isPresented: $showingVault) { HealthVaultView() }
         .sheet(isPresented: $showingFinePrint) { DisclaimersView() }
         .sheet(isPresented: $showingPremium) { PremiumTeaser() }
@@ -140,7 +148,7 @@ struct SettingsView: View {
                         .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.12))
                         .foregroundStyle(Theme.bone)
                     Text(note)
-                        .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.5))
+                        .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.74))
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
@@ -159,7 +167,7 @@ struct SettingsView: View {
                     .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.12))
                     .foregroundStyle(Theme.bone)
                 Text(note)
-                    .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.5))
+                    .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.74))
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
@@ -179,7 +187,7 @@ struct SettingsView: View {
                     .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.12))
                     .foregroundStyle(Theme.bone)
                 Text("Optional, on this phone only. No goals, no judgment, ever.")
-                    .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.5))
+                    .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.74))
             }
             Spacer()
             HStack(spacing: 10) {
@@ -220,7 +228,7 @@ struct SettingsView: View {
                         .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.12))
                         .foregroundStyle(Theme.bone)
                     Text("The good ones get shared. So does LILITH.")
-                        .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.5))
+                        .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.74))
                 }
                 Spacer()
                 Text("→").font(Theme.body(18)).foregroundStyle(Theme.gold)
@@ -239,7 +247,7 @@ struct SettingsView: View {
                         .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.12))
                         .foregroundStyle(Theme.bone)
                     Text("Something broken, something weird, something on your mind. Write in.")
-                        .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.5))
+                        .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.74))
                 }
                 Spacer()
                 Text("→").font(Theme.body(18)).foregroundStyle(Theme.gold)
@@ -289,6 +297,14 @@ struct SettingsView: View {
                 .overlay(Rectangle().stroke(Theme.blood.opacity(0.5), lineWidth: 0.5))
         }
         .buttonStyle(.plain)
+    }
+
+    /// Her chart, decoded fresh from storage for the profile page (nil when no birth data).
+    private var storedChart: NatalChart? {
+        guard let data = birthDataJSON.data(using: .utf8),
+              let birth = try? JSONDecoder().decode(BirthData.self, from: data)
+        else { return nil }
+        return try? ChartEngine.natalChart(for: birth)
     }
 
     private func deleteEverything() {

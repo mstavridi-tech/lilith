@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 // MARK: - EXPLORE (Maria's master list, July 4; researched July 4)
 //
@@ -250,44 +251,74 @@ struct PhasePlaybookSheet: View {
     }
 }
 
+// MARK: - The calm voice (PLACEHOLDER: system speech until we record or generate LILITH's real
+// voice; the cues, timing, and lines are final, the voice actress is not. Maria decides her.)
+
+enum CalmVoice {
+    private static let synth = AVSpeechSynthesizer()
+
+    static func say(_ text: String) {
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.rate = 0.42
+        utterance.pitchMultiplier = 0.9
+        utterance.preUtteranceDelay = 0.1
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        synth.speak(utterance)
+    }
+
+    static func hush() { synth.stopSpeaking(at: .immediate) }
+}
+
 // MARK: - 2. Relief (incl. THE RAGE OUTLET)
 
 /// Two doors: cool it down or let it out. The rage side keeps the honest science line (venting
 /// tends to keep anger hot; calming settles it faster) and the Apple Maps handoff never
-/// recommends a specific business, per the hard rule.
+/// recommends a specific business today (partnerships are a later, clearly-labelled decision).
 struct ReliefSheet: View {
-    @State private var breathing = false
     @State private var raging = false
+    @State private var ragePraise = false
+    @State private var rageHeldAt: Date?
+    @State private var showBreath = false
 
     var body: some View {
         ExploreSheet(title: "RELIEF",
                      subtitle: "Cool it down, or let it out. Your call.",
                      accent: Theme.ember, glyph: "❋") {
-            // The breath: a slow ring. In for four, out for four.
+            // The breath: now a guided session behind one tap, voice and all.
             exploreLabel("BREATHE").padding(.top, 26)
-            VStack(spacing: 18) {
-                ZStack {
-                    Circle()
-                        .strokeBorder(Theme.gold.opacity(0.25), lineWidth: 0.75)
-                        .frame(width: 150, height: 150)
-                    Circle()
-                        .fill(Theme.ember.opacity(0.22))
-                        .frame(width: 130, height: 130)
-                        .scaleEffect(breathing ? 1.0 : 0.55)
-                        .animation(.easeInOut(duration: 4).repeatForever(autoreverses: true),
-                                   value: breathing)
-                    Text("IN · OUT")
-                        .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.3))
-                        .foregroundStyle(Theme.bone.opacity(0.8))
+            Button {
+                Haptics.open(); showBreath = true
+            } label: {
+                HStack(spacing: 16) {
+                    ZStack {
+                        Circle().strokeBorder(Theme.gold.opacity(0.35), lineWidth: 0.75)
+                            .frame(width: 54, height: 54)
+                        Circle().fill(Theme.ember.opacity(0.25)).frame(width: 34, height: 34)
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(Theme.bone)
+                    }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("A GUIDED BREATH")
+                            .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                            .foregroundStyle(Theme.bone)
+                        Text("One quiet minute. I'll talk you through it.")
+                            .font(Theme.body(13).italic()).foregroundStyle(Theme.bone.opacity(0.65))
+                    }
+                    Spacer()
+                    Text("→").font(Theme.body(18)).foregroundStyle(Theme.gold)
                 }
-                Text("In for four, out for four, shoulders down from your ears. Stay a minute; the nervous system catches up fast.")
-                    .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.75))
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(5)
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 18).fill(.ultraThinMaterial)
+                        .overlay(RoundedRectangle(cornerRadius: 18)
+                            .strokeBorder(Theme.gold.opacity(0.3), lineWidth: 0.5))
+                )
+                .contentShape(RoundedRectangle(cornerRadius: 18))
             }
-            .frame(maxWidth: .infinity)
-            .padding(.top, 16)
-            .onAppear { breathing = true }
+            .buttonStyle(.plain)
+            .padding(.top, 14)
+            .sheet(isPresented: $showBreath) { GuidedBreathSheet() }
 
             // The rage outlet.
             exploreLabel("THE RAGE OUTLET", color: Theme.blood).padding(.top, 34)
@@ -310,8 +341,23 @@ struct ReliefSheet: View {
             .padding(.top, 16)
             .gesture(
                 DragGesture(minimumDistance: 0)
-                    .onChanged { _ in raging = true }
-                    .onEnded { _ in raging = false }
+                    .onChanged { _ in
+                        if !raging { rageHeldAt = Date() }
+                        raging = true
+                    }
+                    .onEnded { _ in
+                        raging = false
+                        // she really let it out: the friend says so, out loud
+                        if let start = rageHeldAt, Date().timeIntervalSince(start) >= 1.2 {
+                            CalmVoice.say("Great girl. You needed that.")
+                            ragePraise = true
+                            Task {
+                                try? await Task.sleep(nanoseconds: 4_000_000_000)
+                                ragePraise = false
+                            }
+                        }
+                        rageHeldAt = nil
+                    }
             )
             .task(id: raging) {
                 // a slow drumbeat of haptics while she holds; stops the moment she lets go
@@ -320,17 +366,31 @@ struct ReliefSheet: View {
                     try? await Task.sleep(nanoseconds: 140_000_000)
                 }
             }
-            Text(raging ? "the void hears you, girl" : "nothing gets recorded, obviously")
-                .font(Theme.body(12).italic()).foregroundStyle(Theme.bone.opacity(0.5))
+            Text(raging ? "the void hears you, girl"
+                 : ragePraise ? "great girl. you needed that."
+                 : "nothing gets recorded, obviously")
+                .font(Theme.body(12).italic())
+                .foregroundStyle(ragePraise ? Theme.gold : Theme.bone.opacity(0.5))
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.top, 10)
+                .animation(.easeInOut(duration: 0.3), value: ragePraise)
 
-            // The real-world handoff: Apple Maps searches, never a specific business.
-            exploreLabel("TAKE IT OUTSIDE").padding(.top, 30)
+            // The real-world handoff: Apple Maps searches, never a specific business (yet:
+            // partner placements are a future, clearly-labelled call of Maria's).
+            exploreLabel("TAKE IT OUTSIDE · LET IT OUT").padding(.top, 30)
             VStack(spacing: 12) {
                 mapsButton("RAGE ROOMS NEAR ME", query: "rage room")
+                mapsButton("AXE THROWING NEAR ME", query: "axe throwing")
+                mapsButton("BOXING & KICKBOXING NEAR ME", query: "boxing gym")
+            }
+            .padding(.top, 12)
+
+            exploreLabel("TAKE IT OUTSIDE · COOL IT DOWN").padding(.top, 22)
+            VStack(spacing: 12) {
                 mapsButton("SPAS NEAR ME", query: "spa")
-                mapsButton("BOXING GYMS NEAR ME", query: "boxing gym")
+                mapsButton("SAUNA & COLD PLUNGE NEAR ME", query: "sauna")
+                mapsButton("HOT YOGA NEAR ME", query: "hot yoga")
+                mapsButton("POTTERY PAINTING NEAR ME", query: "pottery painting studio")
             }
             .padding(.top, 12)
             Text("Apple Maps shows you what's nearby. I don't pick businesses and I never know where you went.")
@@ -468,5 +528,170 @@ struct SymptomDecoderSheet: View {
             }
 
         }
+    }
+}
+
+// MARK: - The guided breath (July 5, Maria's spec: tap to start, a timer, and a calm voice
+// walking her through it: in, hold, exhale, release all negative energy)
+
+struct GuidedBreathSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    private enum Stage { case ready, running, done }
+    private enum BreathPhase: String { case inhale = "BREATHE IN", hold = "HOLD", exhale = "LET IT GO" }
+
+    @State private var stage: Stage = .ready
+    @State private var minutes = 1
+    @State private var phase: BreathPhase = .inhale
+    @State private var secondsLeft = 0
+    @State private var full = false          // ring swell state
+    @State private var session: Task<Void, Never>?
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text("A GUIDED BREATH")
+                .displayCaps(24, em: 0.14)
+                .padding(.leading, Theme.tracking(24, em: 0.14))
+                .padding(.top, 54)
+            Text(stage == .done ? "Lighter already." : "In, hold, out. I've got you.")
+                .font(Theme.body(15).italic()).foregroundStyle(Theme.gold)
+                .padding(.top, 8)
+
+            Spacer()
+
+            ZStack {
+                Circle().strokeBorder(Theme.gold.opacity(0.25), lineWidth: 0.75)
+                    .frame(width: 230, height: 230)
+                Circle().fill(Theme.ember.opacity(0.22))
+                    .frame(width: 200, height: 200)
+                    .scaleEffect(full ? 1.0 : 0.5)
+                VStack(spacing: 8) {
+                    Text(stage == .running ? phase.rawValue : stage == .done ? "DONE" : "READY?")
+                        .font(Theme.mono(13)).tracking(Theme.tracking(13, em: 0.26))
+                        .foregroundStyle(Theme.bone)
+                    if stage == .running {
+                        Text(timeString)
+                            .font(Theme.data(22)).foregroundStyle(Theme.bone.opacity(0.7))
+                    }
+                }
+            }
+
+            Spacer()
+
+            if stage == .ready {
+                HStack(spacing: 10) {
+                    ForEach([1, 2, 3], id: \.self) { m in
+                        Button {
+                            Haptics.light(); minutes = m
+                        } label: {
+                            Text("\(m) MIN")
+                                .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.14))
+                                .foregroundStyle(minutes == m ? Theme.bone : Theme.bone.opacity(0.6))
+                                .padding(.horizontal, 20).padding(.vertical, 11)
+                                .background(Capsule().fill(Theme.ember.opacity(minutes == m ? 0.28 : 0))
+                                    .overlay(Capsule().strokeBorder(
+                                        Theme.ember.opacity(minutes == m ? 0.9 : 0.35), lineWidth: 0.75)))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                Button {
+                    Haptics.soft()
+                    session = Task { await run() }
+                } label: {
+                    Text("BEGIN")
+                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
+                        .foregroundStyle(Theme.void)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Capsule().fill(Theme.gold))
+                        .background(Capsule().fill(Theme.gold).opacity(0.4).blur(radius: 18))
+                }
+                .buttonStyle(.plain)
+                .padding(.top, 18)
+                .padding(.horizontal, 30)
+                .padding(.bottom, 40)
+            } else if stage == .running {
+                Button {
+                    endSession()
+                } label: {
+                    Text("THAT'S ENOUGH")
+                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .foregroundStyle(Theme.gold)
+                        .padding(.horizontal, 28).padding(.vertical, 13)
+                        .overlay(Capsule().strokeBorder(Theme.gold.opacity(0.45), lineWidth: 0.75))
+                }
+                .buttonStyle(.plain)
+                .padding(.bottom, 46)
+            } else {
+                Button {
+                    dismiss()
+                } label: {
+                    Text("BACK TO IT")
+                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
+                        .foregroundStyle(Theme.void)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Capsule().fill(Theme.gold))
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 30)
+                .padding(.bottom, 46)
+            }
+        }
+        .glassSheet(glyph: "❋", accent: Theme.ember)
+        .overlay(alignment: .topTrailing) {
+            Button { endSession(); dismiss() } label: {
+                Text("CLOSE")
+                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .foregroundStyle(Theme.gold.opacity(0.75))
+                    .padding(20)
+            }
+        }
+        .onDisappear { endSession() }
+    }
+
+    private var timeString: String {
+        String(format: "%d:%02d", secondsLeft / 60, secondsLeft % 60)
+    }
+
+    private func endSession() {
+        session?.cancel()
+        session = nil
+        CalmVoice.hush()
+        if stage == .running { stage = .done }
+    }
+
+    /// The session itself: 4 in, 4 held, 6 out, the voice leading each turn, until time is up.
+    private func run() async {
+        stage = .running
+        let total = minutes * 60
+        secondsLeft = total
+        let started = Date()
+        CalmVoice.say("Settle in. Shoulders down from your ears. We breathe together now.")
+        try? await Task.sleep(nanoseconds: 3_500_000_000)
+
+        let script: [(BreathPhase, Double, [String])] = [
+            (.inhale, 4, ["Breathe in. Slow and deep.", "In through the nose. Fill all the way up."]),
+            (.hold, 4, ["Hold it right there.", "Hold. You're safe."]),
+            (.exhale, 6, ["Exhale. Release every bit of negative energy.", "Out, slow. Let all of it go."]),
+        ]
+        var round = 0
+        while !Task.isCancelled, Date().timeIntervalSince(started) < Double(total) {
+            for (p, dur, lines) in script {
+                guard !Task.isCancelled else { return }
+                phase = p
+                if p == .inhale { withAnimation(.easeInOut(duration: dur)) { full = true } }
+                if p == .exhale { withAnimation(.easeInOut(duration: dur)) { full = false } }
+                CalmVoice.say(lines[round % lines.count])
+                try? await Task.sleep(nanoseconds: UInt64(dur * 1_000_000_000))
+                secondsLeft = max(0, total - Int(Date().timeIntervalSince(started)))
+            }
+            round += 1
+        }
+        guard !Task.isCancelled else { return }
+        stage = .done
+        Haptics.soft()
+        CalmVoice.say("That's it. Lighter already. Great girl.")
     }
 }

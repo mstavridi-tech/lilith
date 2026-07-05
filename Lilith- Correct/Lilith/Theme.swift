@@ -255,12 +255,12 @@ struct HairlineDivider: View {
 // MARK: - Dark glass sheet
 
 extension View {
-    /// A reading sheet that rises as dark glass (docs/08): frosted ultraThinMaterial over the void,
-    /// a single gold hairline along the top edge, and the body's glyph watermarked huge and faint
-    /// behind the text. Pass the placement glyph and its accent (gold, or ember for Lilith).
+    /// A reading sheet that rises as frosted glass with a soft colored crown (July 5, Maria: the
+    /// grain on popups stopped matching the app; frosted + a whisper of gradient is the vibe now).
+    /// Real material, the accent blooming from the top and melting into near-solid ground where
+    /// the reading sits, the glyph watermarked faint behind the text. No grain on sheets anymore.
     func glassSheet(glyph: String, accent: Color = Theme.gold) -> some View {
         self
-            .overlay(GrainOverlay())
             .overlay(alignment: .top) {
                 Rectangle()
                     .fill(accent.opacity(0.55))
@@ -270,12 +270,22 @@ extension View {
             .presentationBackground(alignment: .center) {
                 ZStack {
                     Rectangle().fill(.ultraThinMaterial)
-                    Theme.void.opacity(0.6)
+                    // the colored crown: accent light pooling at the top, gone by mid-sheet
+                    LinearGradient(stops: [
+                        .init(color: accent.opacity(0.20), location: 0.0),
+                        .init(color: accent.opacity(0.05), location: 0.28),
+                        .init(color: .clear, location: 0.5),
+                    ], startPoint: .top, endPoint: .bottom)
+                    // the ground: near-solid below so long reads never fight the frost
+                    LinearGradient(stops: [
+                        .init(color: Theme.void.opacity(0.42), location: 0.0),
+                        .init(color: Theme.void.opacity(0.68), location: 0.45),
+                        .init(color: Theme.void.opacity(0.86), location: 1.0),
+                    ], startPoint: .top, endPoint: .bottom)
                     Text(glyph)
                         .font(.system(size: 330, weight: .regular, design: .serif))
                         .foregroundStyle(accent.opacity(0.06))
                         .allowsHitTesting(false)
-                    EdgeVignette()
                 }
                 .ignoresSafeArea()
             }
