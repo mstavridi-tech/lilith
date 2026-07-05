@@ -107,14 +107,18 @@ struct MoonCycleStrip: View {
     }()
 }
 
-// MARK: - The textbook hormone curve (Maria's master list, July 4)
+// MARK: - The textbook hormone curve (Maria's master list, July 4; scrubber July 4 late)
 //
 // Hormone literacy, drawn honestly: the CLASSIC estrogen / progesterone / LH shapes across a cycle
-// of her length, a rule at today, and plain-language explainers. This is education about what's
-// typical. It is NEVER her measured levels; the card says so out loud, per docs/01 trust rules.
+// of her length. This is education about what's typical, NEVER her measured levels (docs/01).
+// July 4 late round (Maria): off the card, onto the page, and it moves. Drag anywhere on the plot
+// and the readout tells you how that day of the cycle classically feels, in group-chat language,
+// so the science lands without anyone needing to know what "luteal" means first.
 
 struct HormoneCurveCard: View {
     let state: CycleState
+
+    @State private var scrubDay: Int? = nil   // the day under her finger; nil = resting on today
 
     private var length: Int { state.cycleLength }
     private var ovulation: Int { CycleMath.ovulationDay(length: length) }
@@ -158,36 +162,91 @@ struct HormoneCurveCard: View {
         "LH": Theme.ember
     ]
 
+    private var shownDay: Int { scrubDay ?? min(state.cycleDay, length) }
+
+    private var shownPhase: CyclePhase {
+        CycleMath.phaseRanges(length: length, periodLength: state.periodLength)
+            .first { $0.range.contains(shownDay) }?.phase ?? .luteal
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HairlineDivider(width: 110).frame(maxWidth: .infinity, alignment: .center)
-            Text("THE TEXTBOOK CURVE")
+            Text("THE HORMONE STORY")
                 .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
                 .foregroundStyle(Theme.ember)
-            Text("What the chemistry classically does across a \(length)-day cycle, and where you are in it.")
-                .font(Theme.body(13)).foregroundStyle(Theme.bone.opacity(0.6))
+            Text("Drag your finger across the month and feel how each day usually goes.")
+                .font(Theme.body(13)).foregroundStyle(Theme.bone.opacity(0.65))
                 .fixedSize(horizontal: false, vertical: true)
 
+            readout
+                .padding(.top, 10)
+
             chart
-                .frame(height: 225) // room to breathe (Maria, July 4 evening: it felt cramped)
-                .padding(.top, 14)
+                .frame(height: 200)
+                .padding(.top, 6)
 
             legend
-                .padding(.top, 4)
+                .padding(.top, 2)
 
-            VStack(alignment: .leading, spacing: 16) {
-                explainer("ESTROGEN", "The hype girl. She climbs all through your follicular phase, peaks right before the egg drops, and that peak is why main character week feels like that.")
-                explainer("PROGESTERONE", "The cozy one. She only shows up after ovulation, runs the luteal show, and slows everything down on purpose. When she leaves, your period arrives.")
-                explainer("LH", "The starting gun. One sharp spike out of nowhere and ovulation happens about a day later. Blink and you miss her.")
-            }
-            .padding(.top, 14)
-
-            Text("The textbook shape, never your levels.")
+            Text("The textbook script, never your levels.")
                 .font(Theme.body(12).italic()).foregroundStyle(Theme.gold.opacity(0.65))
-                .padding(.top, 10)
+                .padding(.top, 6)
         }
-        .softCard(padding: 22)
         .padding(.top, 30)
+    }
+
+    /// The living caption: the day under her finger (or today), what era it is, and how it
+    /// classically feels. Fixed height so scrubbing never makes the page jump.
+    private var readout: some View {
+        HStack(alignment: .top, spacing: 16) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("DAY")
+                    .font(Theme.mono(8.5)).tracking(Theme.tracking(8.5, em: 0.3))
+                    .foregroundStyle(Theme.bone.opacity(0.5))
+                Text("\(shownDay)")
+                    .font(Theme.data(40))
+                    .foregroundStyle(Theme.bone)
+                    .contentTransition(.numericText())
+                Text(shownDay == min(state.cycleDay, length) && scrubDay == nil ? "TODAY" : shownPhase.name)
+                    .font(Theme.mono(8.5)).tracking(Theme.tracking(8.5, em: 0.2))
+                    .foregroundStyle(shownPhase.aura)
+            }
+            .frame(width: 64, alignment: .leading)
+
+            Text(Self.feel(day: shownDay, length: length, periodLength: state.periodLength))
+                .font(Theme.body(14.5)).foregroundStyle(Theme.bone.opacity(0.9))
+                .lineSpacing(5)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .frame(minHeight: 96, alignment: .top)
+        .shadow(color: .black.opacity(0.4), radius: 8, y: 1) // legible straight on the plate
+        .animation(.easeOut(duration: 0.15), value: shownDay)
+    }
+
+    /// How a given textbook day classically feels, in the group chat's language. Typical patterns,
+    /// never her measured anything.
+    static func feel(day: Int, length: Int, periodLength: Int) -> String {
+        let ov = CycleMath.ovulationDay(length: length)
+        switch day {
+        case 1:
+            return "Day one. The uterus is doing demolition work and everything hurts a little. Heating pad, biggest shirt you own, zero guilt. Cancel what needs cancelling, it's not that deep."
+        case 2...periodLength:
+            return "Still bleeding, still officially in rest era. Iron-rich food, soft plans, early nights. The bar is on the floor and that's exactly where it belongs."
+        case (periodLength + 1)...(ov - 4):
+            return "Estrogen is picking you back up off the floor. Ideas sound fun again, people sound tolerable again. Say yes to one thing and watch it snowball."
+        case (ov - 3)...(ov - 1):
+            return "The glow-up window. Energy, focus, and audacity all climbing at once. Book the thing, send the message, wear the outfit."
+        case ov...(ov + 1):
+            return "Peak you. Estrogen at the very top, LH just fired, main character lighting on. Everyone can tell, even if nobody says it. You are the prize."
+        case (ov + 2)...(ov + 6):
+            return "The golden comedown. Still social, suddenly more selective. Perfect era for finishing things instead of starting them."
+        case (length - 2)...:
+            return "The PMS window, be so for real right now. The rage is chemistry, the tears are chemistry, the snack drawer is medicine. Softer plans, softer people, please."
+        default:
+            return "Progesterone is running the show now: cozier, hungrier, way less patient with nonsense. All three of those are valid. Protect your peace."
+        }
     }
 
     private var chart: some View {
@@ -196,7 +255,7 @@ struct HormoneCurveCard: View {
                 LineMark(x: .value("Day", s.day), y: .value("Level", s.value))
                     .foregroundStyle(by: .value("Hormone", s.hormone))
                     .interpolationMethod(.catmullRom)
-                    .lineStyle(StrokeStyle(lineWidth: 1.6))
+                    .lineStyle(StrokeStyle(lineWidth: 1.8))
             }
             RuleMark(x: .value("Today", Double(min(state.cycleDay, length))))
                 .foregroundStyle(Theme.bone.opacity(0.45))
@@ -206,6 +265,11 @@ struct HormoneCurveCard: View {
                         .font(Theme.mono(8)).tracking(Theme.tracking(8, em: 0.2))
                         .foregroundStyle(Theme.bone.opacity(0.7))
                 }
+            if let scrubDay {
+                RuleMark(x: .value("Here", Double(scrubDay)))
+                    .foregroundStyle(Theme.gold.opacity(0.9))
+                    .lineStyle(StrokeStyle(lineWidth: 1.4))
+            }
         }
         .chartForegroundStyleScale { (name: String) in palette[name] ?? Theme.bone }
         .chartLegend(.hidden)
@@ -223,6 +287,28 @@ struct HormoneCurveCard: View {
                 }
             }
         }
+        // The scrubber: her finger anywhere on the plot picks the day; letting go rests on today.
+        .chartOverlay { proxy in
+            GeometryReader { geo in
+                Rectangle().fill(.clear).contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { value in
+                                guard let plotAnchor = proxy.plotFrame else { return }
+                                let x = value.location.x - geo[plotAnchor].origin.x
+                                guard let day: Double = proxy.value(atX: x) else { return }
+                                let clamped = min(max(1, Int(day.rounded())), length)
+                                if clamped != scrubDay {
+                                    scrubDay = clamped
+                                    Haptics.light()
+                                }
+                            }
+                            .onEnded { _ in
+                                withAnimation(.easeOut(duration: 0.4)) { scrubDay = nil }
+                            }
+                    )
+            }
+        }
     }
 
     private func label(for day: Int) -> String {
@@ -231,28 +317,27 @@ struct HormoneCurveCard: View {
         return "DAY \(day)"
     }
 
+    /// The legend doubles as the cast list: each hormone keeps her nickname so the lines have
+    /// personality without a wall of explainer text under the plot.
     private var legend: some View {
-        HStack(spacing: 14) {
-            ForEach(["ESTROGEN", "PROGESTERONE", "LH"], id: \.self) { name in
-                HStack(spacing: 5) {
-                    Circle().fill(palette[name] ?? Theme.bone).frame(width: 5, height: 5)
-                    Text(name)
-                        .font(Theme.mono(8.5)).tracking(Theme.tracking(8.5, em: 0.14))
-                        .foregroundStyle(Theme.bone.opacity(0.65))
-                }
-            }
+        VStack(alignment: .leading, spacing: 6) {
+            legendRow("ESTROGEN", "the hype girl, peaks right before the egg drops")
+            legendRow("PROGESTERONE", "the cozy one, runs the show after ovulation")
+            legendRow("LH", "the starting gun, one spike and it's happening")
         }
     }
 
-    private func explainer(_ name: String, _ text: String) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
+    private func legendRow(_ name: String, _ nickname: String) -> some View {
+        HStack(spacing: 7) {
+            Circle().fill(palette[name] ?? Theme.bone).frame(width: 5, height: 5)
             Text(name)
-                .font(Theme.mono(9)).tracking(Theme.tracking(9, em: 0.2))
-                .foregroundStyle(palette[name] ?? Theme.bone)
-            Text(text)
-                .font(Theme.body(13.5)).foregroundStyle(Theme.bone.opacity(0.82))
-                .lineSpacing(4)
-                .fixedSize(horizontal: false, vertical: true)
+                .font(Theme.mono(8.5)).tracking(Theme.tracking(8.5, em: 0.14))
+                .foregroundStyle(Theme.bone.opacity(0.75))
+            Text(nickname)
+                .font(Theme.body(12).italic())
+                .foregroundStyle(Theme.bone.opacity(0.55))
+                .lineLimit(1)
         }
     }
+
 }

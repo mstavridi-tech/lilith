@@ -20,17 +20,18 @@ struct CycleCalendarSheet: View {
                     .displayCaps(26, em: 0.16)
                     .padding(.leading, Theme.tracking(26, em: 0.16))
                     .padding(.top, 44)
+                Text("Tap any day to log it or fix it.")
+                    .font(Theme.body(14).italic()).foregroundStyle(Theme.gold)
+                    .padding(.top, 8)
 
-                monthHeader.padding(.top, 26)
-                weekdayRow.padding(.top, 16)
-                grid.padding(.top, 6)
-                legend.padding(.top, 18)
+                monthHeader.padding(.top, 24)
+                weekdayRow.padding(.top, 18)
+                grid.padding(.top, 8)
+                legend.padding(.top, 20)
 
                 HairlineDivider(width: 120).padding(.top, 28)
 
                 whatsComing.padding(.top, 24)
-                careReminders.padding(.top, 28)
-                disclaimer.padding(.top, 26)
 
                 Wordmark().padding(.top, 40)
             }
@@ -117,60 +118,60 @@ struct CycleCalendarSheet: View {
             Haptics.light()
             logDay = LogDay(date: d)
         } label: {
-            VStack(spacing: 3) {
+            // July 4 late round (Maria: "too hectic, nothing makes sense"). One mark per day,
+            // full stop. The moon glyph forest is gone; only the full and new moons keep a quiet
+            // dot below their day, because those two are the ones the app actually talks about.
+            VStack(spacing: 4) {
                 ZStack {
                     if isPeriod {
-                        Circle().fill(Theme.blood)
+                        Circle().fill(Theme.blood.opacity(0.85))
                     } else if isPredicted {
-                        Circle().strokeBorder(Theme.blood.opacity(0.6),
-                                              style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
+                        Circle().strokeBorder(Theme.blood.opacity(0.55),
+                                              style: StrokeStyle(lineWidth: 1, dash: [2.5, 2.5]))
+                    } else if isOvulation {
+                        Circle().strokeBorder(Theme.ember.opacity(0.9), lineWidth: 1.2)
                     } else if isFertile {
-                        // the whole fertile window glows ember, the ovulation peak brightest
-                        Circle().fill(Theme.ember.opacity(isOvulation ? 0.30 : 0.14))
-                        Circle().strokeBorder(Theme.ember.opacity(isOvulation ? 0.95 : 0.45),
-                                              lineWidth: isOvulation ? 1.5 : 1)
+                        Circle().fill(Theme.ember.opacity(0.12))
                     }
                     if isToday {
-                        Circle().strokeBorder(Theme.gold.opacity(0.85), lineWidth: 1)
+                        Circle().strokeBorder(Theme.gold, lineWidth: 1.2)
                     }
                     Text("\(cal.component(.day, from: d))")
-                        .font(Theme.mono(12))
-                        .foregroundStyle(isPeriod ? Theme.bone : Theme.bone.opacity(0.8))
+                        .font(Theme.mono(12.5))
+                        .foregroundStyle(isPeriod ? Theme.bone : Theme.bone.opacity(0.85))
                 }
-                .frame(width: 30, height: 30)
+                .frame(width: 36, height: 36)
 
-                // the moon cycle, marked on every day
-                moonMark(d).frame(height: 10)
+                moonDot(d).frame(height: 5)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 46)
+            .frame(height: 50)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
 
-    /// The moon phase on every day, so the whole lunar cycle reads across the month.
-    @ViewBuilder private func moonMark(_ date: Date) -> some View {
-        if let phase = try? ChartEngine.moonPhase(at: date) {
-            let strong = phase == .fullMoon || phase == .newMoon
-            Image(systemName: CycleView.moonSymbol(phase))
-                .font(.system(size: 9))
-                .foregroundStyle(Theme.bone.opacity(strong ? 0.85 : 0.45))
+    /// A single bone dot under full-moon and new-moon days only. Everything else stays quiet.
+    @ViewBuilder private func moonDot(_ date: Date) -> some View {
+        if let phase = try? ChartEngine.moonPhase(at: date), phase == .fullMoon || phase == .newMoon {
+            Circle()
+                .fill(phase == .fullMoon ? Theme.bone.opacity(0.85) : .clear)
+                .overlay(Circle().strokeBorder(Theme.bone.opacity(0.7), lineWidth: 0.75))
+                .frame(width: 5, height: 5)
         } else {
             EmptyView()
         }
     }
 
     private var legend: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 12) {
             legendItem("PERIOD") { Circle().fill(Theme.blood) }
-            legendItem("PREDICTED") {
+            legendItem("EXPECTED") {
                 Circle().strokeBorder(Theme.blood.opacity(0.7), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
             }
-            legendItem("FERTILE") { Circle().strokeBorder(Theme.ember.opacity(0.8), lineWidth: 1) }
-            legendItem("MOON") {
-                Image(systemName: "moonphase.full.moon").font(.system(size: 7))
-                    .foregroundStyle(Theme.bone.opacity(0.8))
+            legendItem("FERTILE") { Circle().fill(Theme.ember.opacity(0.35)) }
+            legendItem("FULL/NEW MOON") {
+                Circle().strokeBorder(Theme.bone.opacity(0.8), lineWidth: 0.75)
             }
         }
         .frame(maxWidth: .infinity)
@@ -214,41 +215,8 @@ struct CycleCalendarSheet: View {
         }
     }
 
-    // MARK: Care reminders (guideline-based nudges, never diagnosis)
-
-    private var careReminders: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("WORTH A REMINDER")
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
-                .foregroundStyle(Theme.ember)
-
-            careRow("Cervical screening (pap smear)",
-                    "Guidelines vary by country, often every 3 to 5 years from your early twenties. Ask your provider when yours is due.")
-            careRow("STI check",
-                    "Worth one with any new partner, and a routine one now and then regardless.")
-            careRow("Breast self-check",
-                    "A quick monthly feel, ideally just after your period. You're learning your normal, not diagnosing.")
-        }
-    }
-
-    private func careRow(_ title: String, _ body: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title).font(Theme.body(15)).foregroundStyle(Theme.bone.opacity(0.9))
-            Text(body).font(Theme.body(13)).foregroundStyle(Theme.bone.opacity(0.62)).lineSpacing(4)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 4)
-    }
-
-    private var disclaimer: some View {
-        Text("These are general screening guidelines, not personal medical advice, and they vary by country and history. Your provider sets your real schedule.")
-            .font(Theme.body(12)).foregroundStyle(Theme.gold.opacity(0.7))
-            .lineSpacing(4)
-            .fixedSize(horizontal: false, vertical: true)
-            .padding(.vertical, 16).padding(.horizontal, 16)
-            .overlay(Rectangle().fill(Theme.gold.opacity(0.4)).frame(width: 0.5), alignment: .leading)
-    }
+    // Care reminders moved to the Health Vault and THE FINE PRINT (July 4 late round): the
+    // calendar had become a clinic notice board and Maria called it hectic. Calendar = calendar.
 
     // MARK: Date math
 

@@ -26,16 +26,16 @@ struct ExploreGrid: View {
 
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())],
                       spacing: 12) {
-                card("rectangle.grid.2x2", "THE PHASE PLAYBOOK", "move, eat, work, love, by phase") {
+                card(.follicular, "THE PHASE PLAYBOOK", "move, eat, work, love, by phase") {
                     showPlaybook = true
                 }
-                card("wind", "RELIEF", "breathe it out or rage it out") {
+                card(.menstrual, "RELIEF", "breathe it out or rage it out") {
                     showRelief = true
                 }
-                card("moon.stars", "MOON LORE", "tonight's sky, old stories") {
+                card(.moonlight, "MOON LORE", "tonight's sky, old stories") {
                     showLore = true
                 }
-                card("text.magnifyingglass", "DECODE A SYMPTOM", "what's typical, what's a doctor") {
+                card(.you, "DECODE A SYMPTOM", "what's typical, what's a doctor") {
                     showDecoder = true
                 }
             }
@@ -47,15 +47,17 @@ struct ExploreGrid: View {
         .sheet(isPresented: $showDecoder) { SymptomDecoderSheet() }
     }
 
-    private func card(_ symbol: String, _ title: String, _ sub: String,
+    /// July 4 late round (Maria: the flat glass grid read "AI"; Kimi's generated imagery read calm
+    /// and sleek). Each door now wears one of our own liquid-light plates, cropped small, with a
+    /// scrim so the title stays readable per the readability system. Same art language as the
+    /// screens themselves, so Explore feels like four little windows instead of four buttons.
+    private func card(_ plate: AuraBackdrop, _ title: String, _ sub: String,
                       action: @escaping () -> Void) -> some View {
         Button {
             Haptics.light(); action()
         } label: {
-            VStack(alignment: .leading, spacing: 10) {
-                Image(systemName: symbol)
-                    .font(.system(size: 17, weight: .light))
-                    .foregroundStyle(Theme.gold)
+            VStack(alignment: .leading, spacing: 4) {
+                Spacer(minLength: 0)
                 Text(title)
                     .font(Theme.mono(10.5)).tracking(Theme.tracking(10.5, em: 0.14))
                     .foregroundStyle(Theme.bone)
@@ -63,19 +65,33 @@ struct ExploreGrid: View {
                     .fixedSize(horizontal: false, vertical: true)
                 Text(sub)
                     .font(Theme.body(12).italic())
-                    .foregroundStyle(Theme.bone.opacity(0.55))
+                    .foregroundStyle(Theme.bone.opacity(0.72))
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(14)
+            .padding(13)
+            .frame(height: 116)
             .background(
-                RoundedRectangle(cornerRadius: 18)
-                    .fill(.ultraThinMaterial)
-                    .overlay(RoundedRectangle(cornerRadius: 18).fill(Theme.void.opacity(0.35)))
-                    .overlay(RoundedRectangle(cornerRadius: 18)
-                        .strokeBorder(Theme.bone.opacity(0.10), lineWidth: 0.5))
+                ZStack {
+                    if let img = UIImage(named: plate.rawValue) {
+                        Image(uiImage: img)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        Theme.surface
+                    }
+                    // the crown rule, miniature: art up top, near-solid ground under the words
+                    LinearGradient(
+                        stops: [.init(color: .clear, location: 0),
+                                .init(color: Theme.void.opacity(0.45), location: 0.45),
+                                .init(color: Theme.void.opacity(0.88), location: 1)],
+                        startPoint: .top, endPoint: .bottom)
+                }
             )
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .overlay(RoundedRectangle(cornerRadius: 18)
+                .strokeBorder(Theme.bone.opacity(0.12), lineWidth: 0.5))
             .contentShape(RoundedRectangle(cornerRadius: 18))
         }
         .buttonStyle(.plain)

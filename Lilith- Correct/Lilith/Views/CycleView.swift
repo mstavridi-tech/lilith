@@ -393,8 +393,10 @@ struct CycleLogSheet: View {
         }
     }
 
-    /// Log a period on this day with one tap, or remove it. The span follows her learned length, so
-    /// there's no "5 days" claim: it adapts as she logs more. Works for any day (today, past, expected).
+    /// Log a period with one tap, or remove it. The span follows her learned length, so there's
+    /// no "5 days" claim: it adapts as she logs more. When she's logging from today, she can say
+    /// WHEN it actually started (July 4 late round: tapping "started today" three days late was
+    /// making the app count the wrong cycle day, and she noticed).
     @ViewBuilder private var periodStartAction: some View {
         if store.isBleeding(on: date) {
             Button {
@@ -407,6 +409,22 @@ struct CycleLogSheet: View {
                     .background(Capsule().strokeBorder(Theme.blood.opacity(0.6), lineWidth: 1))
             }
             .buttonStyle(.plain)
+        } else if Calendar.current.isDateInToday(date) {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("MY PERIOD STARTED")
+                    .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                    .foregroundStyle(Theme.blood)
+                HStack(spacing: 8) {
+                    startChip("TODAY", daysAgo: 0)
+                    startChip("YESTERDAY", daysAgo: 1)
+                    startChip("2 DAYS AGO", daysAgo: 2)
+                    startChip("3 DAYS AGO", daysAgo: 3)
+                }
+                Text("Day one is the first day of real bleeding, and getting it right keeps every count in the app honest. Earlier than that? The calendar takes any date.")
+                    .font(Theme.body(12)).foregroundStyle(Theme.bone.opacity(0.55))
+                    .lineSpacing(4)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         } else {
             VStack(spacing: 10) {
                 Button {
@@ -428,13 +446,37 @@ struct CycleLogSheet: View {
         }
     }
 
+    private func startChip(_ label: String, daysAgo: Int) -> some View {
+        Button {
+            Haptics.soft()
+            let start = Calendar.current.date(byAdding: .day, value: -daysAgo, to: date) ?? date
+            store.logPeriodStart(on: start)
+            dismiss()
+        } label: {
+            Text(label)
+                .font(Theme.mono(9.5)).tracking(Theme.tracking(9.5, em: 0.08))
+                .foregroundStyle(Theme.bone)
+                .padding(.horizontal, 11).padding(.vertical, 11)
+                .frame(maxWidth: .infinity)
+                .background(
+                    Capsule().fill(Theme.blood.opacity(daysAgo == 0 ? 0.32 : 0.14))
+                        .overlay(Capsule().strokeBorder(Theme.blood.opacity(daysAgo == 0 ? 0.9 : 0.5),
+                                                        lineWidth: 1))
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
     private func groupLabel(_ text: String) -> some View {
-        Text(text)
-            .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
-            .foregroundStyle(Theme.ember)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, 28)
-            .padding(.bottom, 12)
+        VStack(alignment: .leading, spacing: 10) {
+            Rectangle().fill(Theme.gold.opacity(0.15)).frame(height: 0.5)
+            Text(text)
+                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                .foregroundStyle(Theme.ember)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, 26)
+        .padding(.bottom, 12)
     }
 
     /// A wrapping row of selectable aura chips for any labelled, identifiable set. Selected chips

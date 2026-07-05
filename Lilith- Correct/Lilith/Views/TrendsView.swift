@@ -14,11 +14,13 @@ struct TrendsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
+                // July 4 late round (Maria: "super ugly, too AI"): the dashboard grammar is gone.
+                // Voice leads, the one line follows, and the numbers read as an editorial list
+                // instead of boxed widgets. Boxes are what every AI dashboard looks like.
                 header.cascadeIn(0, trigger: developToken)
-                chartCard.cascadeIn(1, trigger: developToken)
-                averagesSection.cascadeIn(2, trigger: developToken)
-                keyStatsSection.cascadeIn(3, trigger: developToken)
-                insightCard.cascadeIn(4, trigger: developToken)
+                insightCard.cascadeIn(1, trigger: developToken)
+                chartCard.cascadeIn(2, trigger: developToken)
+                receiptsSection.cascadeIn(3, trigger: developToken)
                 Wordmark()
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, 40)
@@ -54,7 +56,7 @@ struct TrendsView: View {
     /// the line as jewels, bleed days rest on the floor as wine dots. Nothing else competes.
     private var chartCard: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("THE MONTH, ONE LINE")
+            Text("THE SHAPE OF YOUR MONTH")
                 .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.24))
                 .foregroundStyle(Theme.ember)
             let curve = Self.smoothedVibe(points)
@@ -123,106 +125,76 @@ struct TrendsView: View {
         }
     }
 
-    // MARK: The averages (Kimi's "System averages" rows, on real numbers)
+    // MARK: The receipts (editorial rows, no boxes: a ledger, not a dashboard)
 
-    private var averagesSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            sectionLabel("THE AVERAGES")
-            VStack(alignment: .leading, spacing: 14) {
-                averageRow("MOOD", value: stats.avgMood, denom: 100,
-                           display: stats.moodCount == 0 ? "—" : "\(Int(stats.avgMood))",
-                           color: CyclePhase.follicular.aura)
-                averageRow("VIBE", value: stats.avgVibe, denom: 100,
-                           display: "\(Int(stats.avgVibe))", color: Theme.gold)
-                averageRow("SYMPTOM DAYS", value: Double(stats.symptomDays), denom: 30,
-                           display: "\(stats.symptomDays)", color: Theme.ember)
-                averageRow("BLEED DAYS", value: Double(stats.bleedDays), denom: 30,
-                           display: "\(stats.bleedDays)", color: Theme.blood)
-            }
-            .softCard(padding: 20) // glass under the rows so the bars never fight the glow (July 4)
+    private var receiptsSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HairlineDivider(width: 110)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.bottom, 18)
+            Text("THE RECEIPTS").displayCaps(20, em: 0.16)
+                .padding(.bottom, 6)
+
+            receiptRow("YOUR AVERAGE MOOD",
+                       stats.moodCount == 0 ? "no logs yet" : "\(Int(stats.avgMood)) of 100",
+                       accent: CyclePhase.follicular.aura)
+            hairline
+            receiptRow("THE VIBE, AVERAGED", "\(Int(stats.avgVibe)) of 100", accent: Theme.gold)
+            hairline
+            receiptRow("DAYS YOU BLED", "\(stats.bleedDays)", accent: Theme.blood)
+            hairline
+            receiptRow("DAYS WITH SYMPTOMS", "\(stats.symptomDays)", accent: Theme.ember)
+            hairline
+            receiptRow("YOUR BEST DAY", stats.bestWeekday, accent: Theme.gold)
+            hairline
+            receiptRow("THE MONTH IS", stats.trendWord.lowercased(), accent: Theme.gold,
+                       detail: stats.trendDetail.lowercased())
         }
-        .padding(.top, 32)
+        .padding(.top, 34)
+        .shadow(color: .black.opacity(0.35), radius: 8, y: 1) // ledger sits straight on the plate
     }
 
-    private func averageRow(_ label: String, value: Double, denom: Double,
-                            display: String, color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 7) {
-            HStack {
-                HStack(spacing: 7) {
-                    Circle().fill(color).frame(width: 5, height: 5)
-                    Text(label)
-                        .font(Theme.label(10))
-                        .tracking(1.0)
-                        .foregroundStyle(Theme.textSecondary)
-                }
-                Spacer()
-                Text(display)
-                    .font(Theme.data(16))
-                    .foregroundStyle(Theme.textPrimary)
-            }
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    Capsule().fill(Theme.bone.opacity(0.07))
-                    Capsule().fill(color.opacity(0.75))
-                        .frame(width: max(3, geo.size.width * min(1, value / denom)))
-                }
-            }
-            .frame(height: 3)
-        }
+    private var hairline: some View {
+        Rectangle().fill(Theme.gold.opacity(0.14)).frame(height: 0.5)
     }
 
-    // MARK: Key stats (Kimi's grid: Highest / Lowest / Best day / Trend)
-
-    private var keyStatsSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            sectionLabel("KEY STATS")
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())],
-                      spacing: 12) {
-                statCard("HIGHEST", value: "\(Int(stats.highest.vibe))", sub: Self.shortDay.string(from: stats.highest.date).uppercased())
-                statCard("LOWEST", value: "\(Int(stats.lowest.vibe))", sub: Self.shortDay.string(from: stats.lowest.date).uppercased())
-                statCard("BEST DAY", value: stats.bestWeekday, sub: "ON AVERAGE")
-                statCard("TREND", value: stats.trendWord, sub: stats.trendDetail)
-            }
-        }
-        .padding(.top, 32)
-    }
-
-    private func statCard(_ label: String, value: String, sub: String) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
+    private func receiptRow(_ label: String, _ value: String, accent: Color,
+                            detail: String? = nil) -> some View {
+        HStack(alignment: .firstTextBaseline) {
             Text(label)
-                .font(Theme.label(9))
-                .tracking(1.2)
-                .foregroundStyle(Theme.textTertiary)
-            Text(value)
-                .font(value.count > 4 ? Theme.display(20).weight(.medium) : Theme.data(26))
-                .foregroundStyle(Theme.textPrimary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-            Text(sub)
-                .font(Theme.label(8.5))
-                .tracking(0.8)
-                .foregroundStyle(Theme.textTertiary)
+                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.16))
+                .foregroundStyle(Theme.bone.opacity(0.6))
+            Spacer()
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(value)
+                    .font(Theme.display(21).weight(.medium))
+                    .foregroundStyle(Theme.bone)
+                if let detail {
+                    Text(detail)
+                        .font(Theme.body(12).italic())
+                        .foregroundStyle(accent.opacity(0.85))
+                }
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .softCard(padding: 16)
+        .padding(.vertical, 15)
     }
 
-    // MARK: The insight (one pattern, in voice, honest about thin data)
+    // MARK: The insight (voice first: the friend speaks before the numbers do)
 
     private var insightCard: some View {
         HStack(alignment: .top, spacing: 12) {
             Text("✶")
-                .font(Theme.display(15))
+                .font(Theme.display(16))
                 .foregroundStyle(Theme.gold)
             Text(insightLine)
-                .font(Theme.body(14.5))
-                .foregroundStyle(Theme.bone.opacity(0.88))
-                .lineSpacing(5)
+                .font(Theme.body(16).italic())
+                .foregroundStyle(Theme.bone.opacity(0.92))
+                .lineSpacing(6)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .softCard(padding: 20)
-        .padding(.top, 32)
+        .padding(.top, 24)
+        .shadow(color: .black.opacity(0.4), radius: 8, y: 1)
     }
 
     private var insightLine: String {
@@ -236,13 +208,6 @@ struct TrendsView: View {
             return "Your month is trending up and the data agrees with your delulu. Keep doing whatever this is."
         }
         return "No big pattern jumping out this month. Sometimes stability IS the plot twist."
-    }
-
-    private func sectionLabel(_ text: String) -> some View {
-        Text(text)
-            .font(Theme.label(10))
-            .tracking(1.4)
-            .foregroundStyle(Theme.gold.opacity(0.8))
     }
 
     private static let shortDay: DateFormatter = {
