@@ -24,11 +24,32 @@ Implementation note: this is app-side logic (works offline), a simple hour check
 - "be so for real right now"
 - "it's not that deep" (the reality check)
 - "you are the prize" (the thesis of the whole app)
-- (Maria: add yours here, the things your friends quote back at you)
 
-## Maria's homework (the fun kind)
+## Maria's homework, DELIVERED July 5, 2026 (the 15-situations list)
 
-Over the next week, write down ten things you actually say: greetings, reactions, the way you hype a friend, the way you tell someone to calm down, your goodbye. Voice notes to yourself count. Bring them here and we'll fold them in. The more real ones we have, the less the app can ever feel like AI.
+Collected by prompting her with situations instead of asking her to self-observe. Each mapped to
+its app moment; ✅ = already wired into the build.
+
+| # | Maria's phrase | App moment | Status |
+|---|---|---|---|
+| 1 | "Rise and shine" / "hey girl hey, good morning" | morning greeting | ✅ both in the slot |
+| 2 | "what's up bestie" | afternoon greeting | ✅ in the slot |
+| 3 | "YAAAS QUEEN! You deserve it!" | wins, rising trends, big-day readings | voice engine |
+| 4 | "Girl, take a chill pill" | spiraling / reality check | voice engine |
+| 5 | "Ugh, that feeling. I can't even." | day-one period empathy | voice engine |
+| 6 | "girl, we need to breathe" | RELIEF | ✅ Relief subtitle |
+| 7 | "Slaaaay you look fire! someone call the paparazzi" | ovulation / main character week | voice engine |
+| 8 | "girl no, do you really think that's the best idea right now?" | questionable-decision warnings | voice engine + future chat |
+| 9 | "Look who awoke from her slumber" / "a sight for sore eyes" | welcome-back beat | ✅ both lines |
+| 10 | "is he worth it or are you going to spiral, eeeeh" | the him question | reserved for chat (Phase 3) |
+| 11 | "Stop. Breathe. You got this! Who slays all day? You" | pre-event pep | ✅ MAIN CHARACTER PREP |
+| 12 | "time to sleep" | goodnight | ✅ sleep meditation close |
+| 13 | "mmmm not to be the bearer of bad news, butttt..." | hard-transit lead-in | voice engine |
+| 14 | "girl it's not that deep" | the reality check | ✅ canon already |
+| 15 | "you did it queeen!" | completion moments | ✅ meditation finish |
+
+"Voice engine" = goes into the deployed prompt's LILITHISMS section next backend update, to be
+used naturally and sparingly, never forced into every reading.
 
 ## How these get used
 

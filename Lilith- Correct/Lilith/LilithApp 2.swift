@@ -81,10 +81,10 @@ struct WelcomeBack: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("WELCOME BACK, GIRL.")
-                .displayCaps(26, em: 0.14)
+            Text("LOOK WHO AWOKE FROM HER SLUMBER.")
+                .displayCaps(24, em: 0.14)
                 .multilineTextAlignment(.center)
-            Text("Let's see what your body is saying.")
+            Text("A sight for sore eyes, honestly.")
                 .font(Theme.body(17).italic())
                 .foregroundStyle(Theme.gold)
         }

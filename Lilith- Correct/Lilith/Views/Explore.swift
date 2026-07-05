@@ -310,7 +310,7 @@ struct ReliefSheet: View {
 
     var body: some View {
         ExploreSheet(title: "RELIEF",
-                     subtitle: "Cool it down, or let it out. Your call.",
+                     subtitle: "Girl, we need to breathe. Or scream. Your call.",
                      accent: Theme.ember) {
             // The breath: now a guided session behind one tap, voice and all.
             exploreLabel("BREATHE").padding(.top, 26)
@@ -370,7 +370,7 @@ struct ReliefSheet: View {
                                     .foregroundStyle(Theme.bone.opacity(0.6))
                             }
                             Spacer()
-                            Text("~\(m.minutes) MIN")
+                            Text("1 · 3 · 5 MIN")
                                 .font(Theme.mono(9)).tracking(Theme.tracking(9, em: 0.12))
                                 .foregroundStyle(Theme.gold.opacity(0.7))
                         }
@@ -831,7 +831,7 @@ struct Meditation: Identifiable {
                     ("Let the bed hold you. That's its whole job. You don't have to help.", 10),
                     ("In... and a long way out. Heavy arms. Heavy eyes.", 10),
                     ("Tomorrow's problems open at nine. You're not on shift.", 10),
-                    ("Goodnight, girl. I'll be here in the morning.", 5),
+                    ("Time to sleep. Goodnight, girl. I'll be here in the morning.", 5),
                    ]),
         Meditation(id: "maincharacter", title: "MAIN CHARACTER PREP",
                    sub: "for right before you walk in",
@@ -840,6 +840,7 @@ struct Meditation: Identifiable {
                     ("Breathe in. You've done harder things than this on worse sleep.", 9),
                     ("Exhale the doubt. It never once helped you.", 8),
                     ("You're not asking to be there. You're arriving. There's a difference and everyone feels it.", 10),
+                    ("Stop. Breathe. You got this. Who slays all day? You do.", 9),
                     ("One more breath, deep and slow. That's the walk-in breath.", 9),
                     ("Remember: you are the prize. Act accordingly.", 7),
                     ("Now go. Let them look.", 5),
@@ -857,6 +858,7 @@ struct MeditationSheet: View {
     @State private var done = false
     @State private var currentLine = ""
     @State private var swell = false
+    @State private var minutes = 1
     @State private var session: Task<Void, Never>?
 
     var body: some View {
@@ -881,7 +883,7 @@ struct MeditationSheet: View {
             }
             .padding(.bottom, 26)
 
-            Text(done ? "That's the session. Carry it lightly." : currentLine)
+            Text(done ? "You did it, queen. Carry it lightly." : currentLine)
                 .font(Theme.body(16).italic())
                 .foregroundStyle(Theme.bone.opacity(0.9))
                 .multilineTextAlignment(.center)
@@ -893,11 +895,28 @@ struct MeditationSheet: View {
             Spacer()
 
             if !running && !done {
+                HStack(spacing: 10) {
+                    ForEach([1, 3, 5], id: \.self) { m in
+                        Button {
+                            Haptics.light(); minutes = m
+                        } label: {
+                            Text("\(m) MIN")
+                                .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.14))
+                                .foregroundStyle(minutes == m ? Theme.bone : Theme.bone.opacity(0.6))
+                                .padding(.horizontal, 20).padding(.vertical, 11)
+                                .background(Capsule().fill(Theme.ember.opacity(minutes == m ? 0.28 : 0))
+                                    .overlay(Capsule().strokeBorder(
+                                        Theme.ember.opacity(minutes == m ? 0.9 : 0.35), lineWidth: 0.75)))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.bottom, 14)
                 Button {
                     Haptics.soft()
                     session = Task { await run() }
                 } label: {
-                    Text("BEGIN · ~\(meditation.minutes) MIN")
+                    Text("BEGIN")
                         .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
                         .foregroundStyle(Theme.void)
                         .frame(maxWidth: .infinity)
@@ -954,16 +973,41 @@ struct MeditationSheet: View {
         if running { running = false; done = true }
     }
 
+    /// Play the script, stretched to her chosen length: pauses scale up for longer sessions, and
+    /// anything past the script becomes quiet time with a soft cue every half minute, so a 5-minute
+    /// sit is mostly silence held open, exactly like a real guide does it.
     private func run() async {
         running = true
+        let target = Double(minutes * 60)
+        let base = meditation.script.reduce(0) { $0 + $1.pause }
+        let scale = min(2.2, max(1.0, target / base))
+        let started = Date()
+
         for (index, step) in meditation.script.enumerated() {
             guard !Task.isCancelled else { return }
             currentLine = step.line
             // cast-voice files, when they exist, are named <meditationID>-<lineIndex>.mp3
             CalmVoice.say(step.line, key: "\(meditation.id)-\(index)")
-            try? await Task.sleep(nanoseconds: UInt64(step.pause * 1_000_000_000))
+            try? await Task.sleep(nanoseconds: UInt64(step.pause * scale * 1_000_000_000))
         }
+
+        let fillers = [
+            "Just breathe. I've got you.",
+            "In... and slowly out.",
+            "Still here. No rush at all.",
+            "Let the shoulders fall again.",
+        ]
+        var i = 0
+        while !Task.isCancelled, Date().timeIntervalSince(started) < target - 12 {
+            currentLine = fillers[i % fillers.count]
+            CalmVoice.say(fillers[i % fillers.count], key: "filler-\(i % fillers.count)")
+            try? await Task.sleep(nanoseconds: 30_000_000_000)
+            i += 1
+        }
+
         guard !Task.isCancelled else { return }
+        currentLine = "You did it, queen."
+        CalmVoice.say("You did it, queen. Carry it lightly.", key: "closing")
         running = false
         done = true
         Haptics.soft()

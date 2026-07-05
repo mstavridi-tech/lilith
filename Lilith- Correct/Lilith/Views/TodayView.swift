@@ -119,8 +119,8 @@ struct TodayView: View {
     static func greetingPhrase(hour: Int, dayIndex: Int) -> String {
         let slot: [String]
         switch hour {
-        case 5...11:  slot = ["GOOD MORNING, SUNSHINE.", "RISE AND SHINE."]
-        case 12...16: slot = ["TODAY, FOR YOU.", "STILL YOUR DAY."]
+        case 5...11:  slot = ["GOOD MORNING, SUNSHINE.", "RISE AND SHINE.", "HEY GIRL HEY, GOOD MORNING."]
+        case 12...16: slot = ["WHAT'S UP, BESTIE.", "STILL YOUR DAY."]
         case 17...21: slot = ["GOOD EVENING, GORGEOUS.", "THE NIGHT IS YOURS."] // "THE MOON IS UP." retired July 4 (Maria: reads weird at 7pm)
         default:      slot = ["UP LATE, I SEE.", "THE STARS DON'T SLEEP EITHER."]
         }
