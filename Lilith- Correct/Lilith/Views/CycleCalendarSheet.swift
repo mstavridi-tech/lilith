@@ -39,7 +39,7 @@ struct CycleCalendarSheet: View {
             .padding(.bottom, 40)
         }
         .scrollIndicators(.hidden)
-        .glassSheet(glyph: "☾", accent: Theme.blood)
+        .glassSheet(glyph: "", accent: Theme.blood)
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")

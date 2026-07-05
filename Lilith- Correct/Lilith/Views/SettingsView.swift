@@ -356,7 +356,7 @@ struct PremiumTeaser: View {
             .padding(.bottom, 40)
         }
         .scrollIndicators(.hidden)
-        .glassSheet(glyph: "✶", accent: Theme.gold)
+        .glassSheet(glyph: "", accent: Theme.gold)
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")

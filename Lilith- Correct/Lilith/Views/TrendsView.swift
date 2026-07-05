@@ -439,7 +439,6 @@ struct FriendsTeaserSheet: View {
                 teaserRow("CYCLE-SYNC", "See whose luteal is colliding with whose main character week, so you know exactly why the group chat is like that today.")
                 teaserRow("MOON TWINS", "Find out which of your girls shares your moon sign. Instant lore.")
                 teaserRow("MEMES & GIFS", "Send the meme that says what words can't, straight from her trends to yours.")
-                teaserRow("NEVER RANKINGS", "Nobody gets scored against her friends here. Not now, not ever. That's a promise, not a feature flag.")
 
                 Text("This unlocks when LILITH gets accounts (the App Store version). Sharing will be opt-in per friend, and your logs stay yours; a friend only ever sees what you choose to show.")
                     .font(Theme.body(13)).foregroundStyle(Theme.gold.opacity(0.75))
@@ -455,7 +454,7 @@ struct FriendsTeaserSheet: View {
             .padding(.bottom, 40)
         }
         .scrollIndicators(.hidden)
-        .glassSheet(glyph: "✶", accent: Theme.gold)
+        .glassSheet(glyph: "", accent: Theme.gold)
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")

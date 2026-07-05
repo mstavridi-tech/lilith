@@ -105,7 +105,7 @@ private struct ExploreSheet<Content: View>: View {
     let title: String
     let subtitle: String
     var accent: Color = Theme.gold
-    var glyph: String = "✶"
+    var glyph: String = ""
     @ViewBuilder var content: Content
     @Environment(\.dismiss) private var dismiss
 
@@ -256,17 +256,44 @@ struct PhasePlaybookSheet: View {
 
 enum CalmVoice {
     private static let synth = AVSpeechSynthesizer()
+    private static var player: AVAudioPlayer?
 
-    static func say(_ text: String) {
+    /// The best voice this device actually has: premium beats enhanced beats default, and the
+    /// warm US female voices beat the robotic compact ones. Still a placeholder for LILITH's
+    /// real cast voice, but a far less anxious one (July 5, Maria).
+    private static let voice: AVSpeechSynthesisVoice? = {
+        let all = AVSpeechSynthesisVoice.speechVoices().filter { $0.language.hasPrefix("en") }
+        let preferredNames = ["Ava", "Zoe", "Samantha", "Allison", "Susan", "Karen"]
+        func rank(_ v: AVSpeechSynthesisVoice) -> Int {
+            var score = 0
+            if v.quality == .premium { score += 200 } else if v.quality == .enhanced { score += 100 }
+            if let i = preferredNames.firstIndex(where: { v.name.contains($0) }) { score += 50 - i }
+            if v.language == "en-US" { score += 10 }
+            return score
+        }
+        return all.max { rank($0) < rank($1) }
+    }()
+
+    /// Speak a line. If a cast recording for `key` ships in the bundle (VoiceLines/<key>.mp3,
+    /// generated once Maria picks LILITH's voice), that plays instead of any synthesis.
+    static func say(_ text: String, key: String? = nil) {
+        if let key, let url = Bundle.main.url(forResource: key, withExtension: "mp3") {
+            player = try? AVAudioPlayer(contentsOf: url)
+            player?.play()
+            return
+        }
         let utterance = AVSpeechUtterance(string: text)
-        utterance.rate = 0.42
-        utterance.pitchMultiplier = 0.9
+        utterance.rate = 0.40
+        utterance.pitchMultiplier = 0.95
         utterance.preUtteranceDelay = 0.1
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterance.voice = voice
         synth.speak(utterance)
     }
 
-    static func hush() { synth.stopSpeaking(at: .immediate) }
+    static func hush() {
+        synth.stopSpeaking(at: .immediate)
+        player?.stop()
+    }
 }
 
 // MARK: - 2. Relief (incl. THE RAGE OUTLET)
@@ -279,11 +306,12 @@ struct ReliefSheet: View {
     @State private var ragePraise = false
     @State private var rageHeldAt: Date?
     @State private var showBreath = false
+    @State private var meditation: Meditation?
 
     var body: some View {
         ExploreSheet(title: "RELIEF",
                      subtitle: "Cool it down, or let it out. Your call.",
-                     accent: Theme.ember, glyph: "❋") {
+                     accent: Theme.ember) {
             // The breath: now a guided session behind one tap, voice and all.
             exploreLabel("BREATHE").padding(.top, 26)
             Button {
@@ -319,6 +347,41 @@ struct ReliefSheet: View {
             .buttonStyle(.plain)
             .padding(.top, 14)
             .sheet(isPresented: $showBreath) { GuidedBreathSheet() }
+
+            // The meditation shelf (July 5, Maria: Kimi-style options, some serious, some fun).
+            // Every script is ours, written in-house in LILITH's voice: original words, original
+            // structure, so the copyright is ours too.
+            exploreLabel("MEDITATIONS").padding(.top, 30)
+            VStack(spacing: 0) {
+                ForEach(Meditation.catalog) { m in
+                    if m.id != Meditation.catalog.first?.id {
+                        Rectangle().fill(Theme.gold.opacity(0.12)).frame(height: 0.5)
+                    }
+                    Button {
+                        Haptics.open(); meditation = m
+                    } label: {
+                        HStack(alignment: .firstTextBaseline) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(m.title)
+                                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.14))
+                                    .foregroundStyle(Theme.bone)
+                                Text(m.sub)
+                                    .font(Theme.body(13).italic())
+                                    .foregroundStyle(Theme.bone.opacity(0.6))
+                            }
+                            Spacer()
+                            Text("~\(m.minutes) MIN")
+                                .font(Theme.mono(9)).tracking(Theme.tracking(9, em: 0.12))
+                                .foregroundStyle(Theme.gold.opacity(0.7))
+                        }
+                        .padding(.vertical, 14)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.top, 10)
+            .sheet(item: $meditation) { MeditationSheet(meditation: $0) }
 
             // The rage outlet.
             exploreLabel("THE RAGE OUTLET", color: Theme.blood).padding(.top, 34)
@@ -509,7 +572,7 @@ struct SymptomDecoderSheet: View {
 
     var body: some View {
         ExploreSheet(title: "DECODE A SYMPTOM",
-                     subtitle: "What's typical, what helps, what's a doctor.", glyph: "✧") {
+                     subtitle: "What's typical, what helps, what's a doctor.") {
             ForEach(decodes, id: \.symptom) { d in
                 VStack(alignment: .leading, spacing: 8) {
                     Text(d.symptom.label)
@@ -639,7 +702,7 @@ struct GuidedBreathSheet: View {
                 .padding(.bottom, 46)
             }
         }
-        .glassSheet(glyph: "❋", accent: Theme.ember)
+        .glassSheet(glyph: "", accent: Theme.ember)
         .overlay(alignment: .topTrailing) {
             Button { endSession(); dismiss() } label: {
                 Text("CLOSE")
@@ -693,5 +756,216 @@ struct GuidedBreathSheet: View {
         stage = .done
         Haptics.soft()
         CalmVoice.say("That's it. Lighter already. Great girl.")
+    }
+}
+
+// MARK: - The meditation library (July 5, Maria's spec: options like Kimi's, serious and fun)
+//
+// Legal note, because she asked: these scripts are ORIGINAL writing, in-house, in LILITH's voice.
+// Meditation techniques themselves (breathing, body scans, counting) are not copyrightable; only
+// specific wording is, and this wording is ours. Never copy Headspace/Calm scripts, never use a
+// cloned voice of a real person without written consent. Guided relaxation is wellness content,
+// same rules as everything: no medical claims, and it never replaces treatment for anxiety.
+
+struct Meditation: Identifiable {
+    let id: String
+    let title: String
+    let sub: String
+    let script: [(line: String, pause: Double)]
+
+    var minutes: Int {
+        max(1, Int((script.reduce(0) { $0 + $1.pause } / 60).rounded()))
+    }
+
+    static let catalog: [Meditation] = [
+        Meditation(id: "morning", title: "MORNING RESET",
+                   sub: "before the day starts asking things",
+                   script: [
+                    ("Good morning. Before the phone, before the list, before anyone needs you. This minute is yours.", 8),
+                    ("Breathe in slow, and let the day wait outside the door.", 8),
+                    ("Exhale. You don't owe the morning speed.", 8),
+                    ("Think of one thing today that's actually yours. Not a task. A moment.", 10),
+                    ("Whatever happens today, you've survived every single day so far. Undefeated, actually.", 9),
+                    ("One more slow breath. In... and out.", 9),
+                    ("Now go. Softly at first. The day can catch up to you.", 6),
+                   ]),
+        Meditation(id: "offswitch", title: "THE OFF SWITCH",
+                   sub: "for evenings that will not log off",
+                   script: [
+                    ("The day is done. Whether it went well is no longer today's business.", 9),
+                    ("Unclench your jaw. Drop your shoulders. Yes, they were up again.", 9),
+                    ("Breathe out longer than you breathe in. That's the whole trick to switching off.", 10),
+                    ("Whatever you didn't finish will still be there tomorrow, and tomorrow-you is very capable.", 10),
+                    ("Let the last replay of that conversation go. You said what you said. It was fine.", 10),
+                    ("In... and all the way out. The night is yours now.", 9),
+                    ("Rest isn't a reward you earn. It's just yours. Take it.", 6),
+                   ]),
+        Meditation(id: "coworker", title: "THE COWORKER ONE",
+                   sub: "for professional composure, barely",
+                   script: [
+                    ("Okay. Deep breath. We are not getting fired today over this person.", 8),
+                    ("Breathe in patience. Exhale the email you want to send but should not.", 9),
+                    ("They are someone's problem forever. They are only yours until five.", 9),
+                    ("Unclench the jaw. They are not worth the dental work.", 9),
+                    ("Picture your peace as a door. They knock. You simply do not answer.", 10),
+                    ("One more breath. In... and out. Composure restored, allegedly.", 8),
+                    ("Now go be unbothered. It drives them crazy anyway.", 6),
+                   ]),
+        Meditation(id: "pms", title: "PMS PEACE TREATY",
+                   sub: "for week four diplomacy",
+                   script: [
+                    ("First things first: you're not crazy, it's chemistry. Progesterone is doing this, not you.", 9),
+                    ("Breathe in. The rage is real, and it's also temporary.", 9),
+                    ("Exhale. You don't have to fix anything tonight. Not the house, not the people, not yourself.", 10),
+                    ("The bar is on the floor this week and that's exactly where it belongs.", 9),
+                    ("Warmth helps. Snacks help. Saying no helps most of all.", 9),
+                    ("In... and out. Softer plans, softer people. That's the treaty.", 9),
+                    ("A few more days and the sun comes back up. It always does.", 6),
+                   ]),
+        Meditation(id: "sleep", title: "CAN'T SLEEP, WON'T SLEEP",
+                   sub: "for the 2am brain",
+                   script: [
+                    ("Hi. It's late. The brain is doing its little tour of everything since 2016. We're closing the exhibit.", 10),
+                    ("Breathe in slow... and out even slower. Nothing needs solving at this hour.", 10),
+                    ("That embarrassing thing? Everyone forgot it. You're the only visitor it gets.", 10),
+                    ("Let the bed hold you. That's its whole job. You don't have to help.", 10),
+                    ("In... and a long way out. Heavy arms. Heavy eyes.", 10),
+                    ("Tomorrow's problems open at nine. You're not on shift.", 10),
+                    ("Goodnight, girl. I'll be here in the morning.", 5),
+                   ]),
+        Meditation(id: "maincharacter", title: "MAIN CHARACTER PREP",
+                   sub: "for right before you walk in",
+                   script: [
+                    ("Alright. Shoulders back. We're walking in like we were invited, because we were.", 8),
+                    ("Breathe in. You've done harder things than this on worse sleep.", 9),
+                    ("Exhale the doubt. It never once helped you.", 8),
+                    ("You're not asking to be there. You're arriving. There's a difference and everyone feels it.", 10),
+                    ("One more breath, deep and slow. That's the walk-in breath.", 9),
+                    ("Remember: you are the prize. Act accordingly.", 7),
+                    ("Now go. Let them look.", 5),
+                   ]),
+    ]
+}
+
+/// One meditation, played: the voice reads each line on its own pace while the ring breathes.
+/// Same session grammar as the guided breath so nothing needs relearning.
+struct MeditationSheet: View {
+    let meditation: Meditation
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var running = false
+    @State private var done = false
+    @State private var currentLine = ""
+    @State private var swell = false
+    @State private var session: Task<Void, Never>?
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text(meditation.title)
+                .displayCaps(22, em: 0.14)
+                .padding(.leading, Theme.tracking(22, em: 0.14))
+                .padding(.top, 54)
+            Text(meditation.sub)
+                .font(Theme.body(15).italic()).foregroundStyle(Theme.gold)
+                .padding(.top, 8)
+
+            Spacer()
+
+            ZStack {
+                Circle().strokeBorder(Theme.gold.opacity(0.25), lineWidth: 0.75)
+                    .frame(width: 210, height: 210)
+                Circle().fill(Theme.ember.opacity(0.20))
+                    .frame(width: 180, height: 180)
+                    .scaleEffect(swell ? 1.0 : 0.6)
+                    .animation(.easeInOut(duration: 5).repeatForever(autoreverses: true), value: swell)
+            }
+            .padding(.bottom, 26)
+
+            Text(done ? "That's the session. Carry it lightly." : currentLine)
+                .font(Theme.body(16).italic())
+                .foregroundStyle(Theme.bone.opacity(0.9))
+                .multilineTextAlignment(.center)
+                .lineSpacing(6)
+                .frame(minHeight: 90, alignment: .top)
+                .padding(.horizontal, 34)
+                .animation(.easeInOut(duration: 0.4), value: currentLine)
+
+            Spacer()
+
+            if !running && !done {
+                Button {
+                    Haptics.soft()
+                    session = Task { await run() }
+                } label: {
+                    Text("BEGIN · ~\(meditation.minutes) MIN")
+                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
+                        .foregroundStyle(Theme.void)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Capsule().fill(Theme.gold))
+                        .background(Capsule().fill(Theme.gold).opacity(0.4).blur(radius: 18))
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 30)
+                .padding(.bottom, 46)
+            } else if running {
+                Button {
+                    endSession()
+                } label: {
+                    Text("THAT'S ENOUGH")
+                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .foregroundStyle(Theme.gold)
+                        .padding(.horizontal, 28).padding(.vertical, 13)
+                        .overlay(Capsule().strokeBorder(Theme.gold.opacity(0.45), lineWidth: 0.75))
+                }
+                .buttonStyle(.plain)
+                .padding(.bottom, 46)
+            } else {
+                Button { dismiss() } label: {
+                    Text("BACK TO IT")
+                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
+                        .foregroundStyle(Theme.void)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Capsule().fill(Theme.gold))
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 30)
+                .padding(.bottom, 46)
+            }
+        }
+        .glassSheet(glyph: "", accent: Theme.ember)
+        .overlay(alignment: .topTrailing) {
+            Button { endSession(); dismiss() } label: {
+                Text("CLOSE")
+                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .foregroundStyle(Theme.gold.opacity(0.75))
+                    .padding(20)
+            }
+        }
+        .onAppear { swell = true }
+        .onDisappear { endSession() }
+    }
+
+    private func endSession() {
+        session?.cancel()
+        session = nil
+        CalmVoice.hush()
+        if running { running = false; done = true }
+    }
+
+    private func run() async {
+        running = true
+        for (index, step) in meditation.script.enumerated() {
+            guard !Task.isCancelled else { return }
+            currentLine = step.line
+            // cast-voice files, when they exist, are named <meditationID>-<lineIndex>.mp3
+            CalmVoice.say(step.line, key: "\(meditation.id)-\(index)")
+            try? await Task.sleep(nanoseconds: UInt64(step.pause * 1_000_000_000))
+        }
+        guard !Task.isCancelled else { return }
+        running = false
+        done = true
+        Haptics.soft()
     }
 }

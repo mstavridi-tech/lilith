@@ -282,10 +282,12 @@ extension View {
                         .init(color: Theme.void.opacity(0.68), location: 0.45),
                         .init(color: Theme.void.opacity(0.86), location: 1.0),
                     ], startPoint: .top, endPoint: .bottom)
-                    Text(glyph)
-                        .font(.system(size: 330, weight: .regular, design: .serif))
-                        .foregroundStyle(accent.opacity(0.06))
-                        .allowsHitTesting(false)
+                    if !glyph.isEmpty { // watermark reserved for astrology sheets (July 5, Maria)
+                        Text(glyph)
+                            .font(.system(size: 330, weight: .regular, design: .serif))
+                            .foregroundStyle(accent.opacity(0.06))
+                            .allowsHitTesting(false)
+                    }
                 }
                 .ignoresSafeArea()
             }
@@ -522,7 +524,6 @@ extension View {
             .background(CosmicBackdrop(bloomAlignment: bloomAlignment,
                                        bloomIntensity: bloomIntensity,
                                        parallax: parallax, alive: alive))
-            .overlay(GrainOverlay())
     }
 }
 
@@ -605,7 +606,6 @@ extension View {
                 }
                 .ignoresSafeArea()
             )
-            .overlay(GrainOverlay())
     }
 }
 
@@ -706,7 +706,6 @@ extension View {
     func auraScreen(_ backdrop: AuraBackdrop, alive: Bool = true) -> some View {
         self
             .background(AuraStage(backdrop: backdrop, alive: alive))
-            .overlay(GrainOverlay())
     }
 }
 

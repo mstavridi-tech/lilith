@@ -128,7 +128,6 @@ struct LaunchRitual: View {
                 .opacity(wordmarkIn ? 1 : 0)
                 .scaleEffect(wordmarkIn ? 1 : 0.97)
 
-            GrainOverlay()
         }
         .task {
             withAnimation(.easeOut(duration: 1.3)) { auraIn = true }     // aura blooms first
