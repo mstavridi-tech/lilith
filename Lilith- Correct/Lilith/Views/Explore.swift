@@ -699,13 +699,14 @@ struct GuidedBreathSheet: View {
                         .font(Theme.control(13)).tracking(1.1)
                         .foregroundStyle(Theme.bone)
                     if stage == .running {
-                        // the count she breathes to: 1, 2, 3, 4... hold... let it go (July 6)
+                        // July 6 v2 (Maria: the ticking read as a stopwatch and gave her anxiety).
+                        // The clock is GONE. The count melts between numbers instead of snapping,
+                        // and the exhale counts down, like letting air out of the day.
                         Text(phase == .hold ? "· · ·" : "\(beat)")
-                            .font(Theme.data(44))
-                            .foregroundStyle(Theme.bone)
-                            .contentTransition(.numericText())
-                        Text(timeString)
-                            .font(Theme.data(14)).foregroundStyle(Theme.bone.opacity(0.55))
+                            .font(Theme.data(42))
+                            .foregroundStyle(Theme.bone.opacity(0.85))
+                            .contentTransition(.opacity)
+                            .animation(.easeInOut(duration: 1.0), value: beat)
                     }
                 }
             }
@@ -800,10 +801,12 @@ struct GuidedBreathSheet: View {
                       key: "breath-settle")
         try? await Task.sleep(nanoseconds: 3_500_000_000)
 
+        // Slowed July 6 (Maria: it felt rushed): five in, five held, seven out. Four counts per
+        // phase, stretched across the whole phase, so nothing on screen ever moves at clock speed.
         let script: [(BreathPhase, Double, [String], String)] = [
-            (.inhale, 4, ["Breathe in. Slow and deep.", "In through the nose. Fill all the way up."], "breath-in"),
-            (.hold, 4, ["Hold it right there.", "Hold. You're safe."], "breath-hold"),
-            (.exhale, 6, ["Exhale. Release every bit of negative energy.", "Out, slow. Let all of it go."], "breath-out"),
+            (.inhale, 5, ["Breathe in. Slow and deep.", "In through the nose. Fill all the way up."], "breath-in"),
+            (.hold, 5, ["Hold it right there.", "Hold. You're safe."], "breath-hold"),
+            (.exhale, 7, ["Exhale. Release every bit of negative energy.", "Out, slow. Let all of it go."], "breath-out"),
         ]
         var round = 0
         while !Task.isCancelled, Date().timeIntervalSince(started) < Double(total) {
@@ -813,10 +816,16 @@ struct GuidedBreathSheet: View {
                 if p == .inhale { withAnimation(.easeInOut(duration: dur)) { full = true } }
                 if p == .exhale { withAnimation(.easeInOut(duration: dur)) { full = false } }
                 CalmVoice.say(lines[round % lines.count], key: "\(keyPrefix)-\(round % lines.count)")
-                for second in 1...Int(dur) {
-                    guard !Task.isCancelled else { return }
-                    withAnimation(.easeOut(duration: 0.2)) { beat = second }
-                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                if p == .hold {
+                    try? await Task.sleep(nanoseconds: UInt64(dur * 1_000_000_000))
+                } else {
+                    let stepNanos = UInt64(dur / 4 * 1_000_000_000)
+                    let counts = p == .exhale ? [4, 3, 2, 1] : [1, 2, 3, 4]
+                    for c in counts {
+                        guard !Task.isCancelled else { return }
+                        beat = c
+                        try? await Task.sleep(nanoseconds: stepNanos)
+                    }
                 }
                 secondsLeft = max(0, total - Int(Date().timeIntervalSince(started)))
             }
@@ -929,6 +938,7 @@ struct MeditationSheet: View {
     @State private var currentLine = ""
     @State private var swell = false
     @State private var minutes = 1
+    @State private var breathBeat = 1   // the ambient count inside the ring, riding the swell
     @State private var session: Task<Void, Never>?
 
     var body: some View {
@@ -950,8 +960,30 @@ struct MeditationSheet: View {
                     .frame(width: 180, height: 180)
                     .scaleEffect(swell ? 1.0 : 0.6)
                     .animation(.easeInOut(duration: 9).repeatForever(autoreverses: true), value: swell) // slowed (July 6, Maria: it moved too fast)
+                // the same gentle count the breath page has (July 6, Maria): up the swell,
+                // down the release, melting between numbers, never ticking
+                Text("\(breathBeat)")
+                    .font(Theme.data(38))
+                    .foregroundStyle(Theme.bone.opacity(0.5))
+                    .contentTransition(.opacity)
+                    .animation(.easeInOut(duration: 1.2), value: breathBeat)
             }
             .padding(.bottom, 26)
+            .task {
+                // rides the ring: 4 counts up across the 9s swell, 4 counts back down
+                while !Task.isCancelled {
+                    for c in [1, 2, 3, 4] {
+                        guard !Task.isCancelled else { return }
+                        breathBeat = c
+                        try? await Task.sleep(nanoseconds: 2_250_000_000)
+                    }
+                    for c in [4, 3, 2, 1] {
+                        guard !Task.isCancelled else { return }
+                        breathBeat = c
+                        try? await Task.sleep(nanoseconds: 2_250_000_000)
+                    }
+                }
+            }
 
             Text(done ? "You did it, queen. Carry it lightly." : currentLine)
                 .font(Theme.body(16).italic())
