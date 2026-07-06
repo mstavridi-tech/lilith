@@ -3,6 +3,7 @@
 You are building LILITH, an iOS astrology app that is every girl's pocket best friend. Real astrology math, real cycle awareness, an AI BFF, and a voice that affirms instead of doom-posting (but also says "girl, it's not that deep" when it's not that deep).
 
 ## Read these before any work
+- `docs/10-THE-RECORD.md` — **READ THIS FIRST, WHOEVER YOU ARE.** The complete history, every settled design rule, every rejection and why, the voice, the operations manual, and the roadmap. Written July 6, 2026 so any model (Opus, Sonnet, anyone) works exactly like the sessions that built this. When your instincts and THE RECORD disagree, THE RECORD wins
 - `docs/01-PRODUCT-BRIEF.md` — what we're building and in what order
 - `docs/02-ARCHITECTURE.md` — how it's built; do not deviate without flagging it
 - `docs/03-BRAND-VOICE-DESIGN.md` — every word and pixel follows this
