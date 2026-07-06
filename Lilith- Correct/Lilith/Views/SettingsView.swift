@@ -126,7 +126,7 @@ struct SettingsView: View {
     private func group<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(title)
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                .font(Theme.control(10)).tracking(1.1)
                 .foregroundStyle(Theme.ember)
                 .padding(.bottom, 4)
             content()
@@ -145,7 +145,7 @@ struct SettingsView: View {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 5) {
                     Text(title)
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.12))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.bone)
                     Text(note)
                         .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.74))
@@ -164,7 +164,7 @@ struct SettingsView: View {
         HStack(alignment: .firstTextBaseline) {
             VStack(alignment: .leading, spacing: 5) {
                 Text(title)
-                    .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.12))
+                    .font(Theme.control(12)).tracking(1.1)
                     .foregroundStyle(Theme.bone)
                 Text(note)
                     .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.74))
@@ -184,7 +184,7 @@ struct SettingsView: View {
         HStack(alignment: .firstTextBaseline) {
             VStack(alignment: .leading, spacing: 5) {
                 Text("WEIGHT & HEIGHT")
-                    .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.12))
+                    .font(Theme.control(12)).tracking(1.1)
                     .foregroundStyle(Theme.bone)
                 Text("Optional, on this phone only. No goals, no judgment, ever.")
                     .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.74))
@@ -225,7 +225,7 @@ struct SettingsView: View {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 5) {
                     Text("TELL A FRIEND")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.12))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.bone)
                     Text("The good ones get shared. So does LILITH.")
                         .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.74))
@@ -244,7 +244,7 @@ struct SettingsView: View {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 5) {
                     Text("TALK TO SUPPORT")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.12))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.bone)
                     Text("Something broken, something weird, something on your mind. Write in.")
                         .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.74))
@@ -276,7 +276,7 @@ struct SettingsView: View {
             confirmingSignOut = true
         } label: {
             Text("SIGN OUT")
-                .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.14))
+                .font(Theme.control(12)).tracking(1.1)
                 .foregroundStyle(Theme.gold)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
@@ -290,7 +290,7 @@ struct SettingsView: View {
             confirmingDelete = true
         } label: {
             Text("DELETE EVERYTHING")
-                .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.14))
+                .font(Theme.control(12)).tracking(1.1)
                 .foregroundStyle(Theme.blood)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
@@ -361,7 +361,7 @@ struct PremiumTeaser: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }

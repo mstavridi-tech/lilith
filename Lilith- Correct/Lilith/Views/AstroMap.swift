@@ -143,7 +143,7 @@ struct AstroMapSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }
@@ -173,7 +173,7 @@ struct AstroMapSheet: View {
                     ProgressView().tint(Theme.gold)
                 } else {
                     Text("LOOK UP")
-                        .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.16))
+                        .font(Theme.control(10)).tracking(1.1)
                         .foregroundStyle(Theme.gold)
                 }
             }
@@ -197,7 +197,7 @@ struct AstroMapSheet: View {
                 .padding(.top, 22)
         } else if let placeName, let lines {
             Text(placeName.uppercased())
-                .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.2))
+                .font(Theme.control(11)).tracking(1.1)
                 .foregroundStyle(Theme.ember)
                 .padding(.top, 30)
 
@@ -214,7 +214,7 @@ struct AstroMapSheet: View {
                                 .font(Theme.display(18))
                                 .foregroundStyle(line.body == .blackMoonLilith ? Theme.ember : Theme.gold)
                             Text("\(line.body.displayName.uppercased()) · \(line.angle.rawValue)")
-                                .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.14))
+                                .font(Theme.control(11)).tracking(1.1)
                                 .foregroundStyle(Theme.bone)
                             Spacer()
                             Text(String(format: "%.1f°", line.orb))

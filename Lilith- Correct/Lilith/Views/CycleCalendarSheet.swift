@@ -43,7 +43,7 @@ struct CycleCalendarSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }
@@ -60,7 +60,7 @@ struct CycleCalendarSheet: View {
             chevron("chevron.left") { shiftMonth(-1) }
             Spacer()
             Text(Self.monthTitle.string(from: monthAnchor).uppercased())
-                .font(Theme.mono(13)).tracking(Theme.tracking(13, em: 0.2))
+                .font(Theme.control(13)).tracking(1.1)
                 .foregroundStyle(Theme.bone)
             Spacer()
             chevron("chevron.right") { shiftMonth(1) }
@@ -118,9 +118,9 @@ struct CycleCalendarSheet: View {
             Haptics.light()
             logDay = LogDay(date: d)
         } label: {
-            // July 4 late round (Maria: "too hectic, nothing makes sense"). One mark per day,
-            // full stop. The moon glyph forest is gone; only the full and new moons keep a quiet
-            // dot below their day, because those two are the ones the app actually talks about.
+            // July 6 (Maria): the moon phases return under every day (the lone dots read as
+            // noise without them), TODAY is a solid gold coin so it can never be confused with
+            // the ember ovulation ring, and the legend names every mark.
             VStack(spacing: 4) {
                 ZStack {
                     if isPeriod {
@@ -134,45 +134,44 @@ struct CycleCalendarSheet: View {
                         Circle().fill(Theme.ember.opacity(0.12))
                     }
                     if isToday {
-                        Circle().strokeBorder(Theme.gold, lineWidth: 1.2)
+                        Circle().fill(Theme.gold)
                     }
                     Text("\(cal.component(.day, from: d))")
                         .font(Theme.mono(12.5))
-                        .foregroundStyle(isPeriod ? Theme.bone : Theme.bone.opacity(0.85))
+                        .foregroundStyle(isToday ? Theme.void : (isPeriod ? Theme.bone : Theme.bone.opacity(0.85)))
                 }
                 .frame(width: 36, height: 36)
 
-                moonDot(d).frame(height: 5)
+                moonMark(d).frame(height: 10)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 50)
+            .frame(height: 54)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
 
-    /// A single bone dot under full-moon and new-moon days only. Everything else stays quiet.
-    @ViewBuilder private func moonDot(_ date: Date) -> some View {
-        if let phase = try? ChartEngine.moonPhase(at: date), phase == .fullMoon || phase == .newMoon {
-            Circle()
-                .fill(phase == .fullMoon ? Theme.bone.opacity(0.85) : .clear)
-                .overlay(Circle().strokeBorder(Theme.bone.opacity(0.7), lineWidth: 0.75))
-                .frame(width: 5, height: 5)
+    /// The moon phase under every day, quiet, brighter on the full and new moons.
+    @ViewBuilder private func moonMark(_ date: Date) -> some View {
+        if let phase = try? ChartEngine.moonPhase(at: date) {
+            let strong = phase == .fullMoon || phase == .newMoon
+            Image(systemName: CycleView.moonSymbol(phase))
+                .font(.system(size: 8.5))
+                .foregroundStyle(Theme.bone.opacity(strong ? 0.8 : 0.35))
         } else {
             EmptyView()
         }
     }
 
     private var legend: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 11) {
             legendItem("PERIOD") { Circle().fill(Theme.blood) }
             legendItem("EXPECTED") {
                 Circle().strokeBorder(Theme.blood.opacity(0.7), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
             }
             legendItem("FERTILE") { Circle().fill(Theme.ember.opacity(0.35)) }
-            legendItem("FULL/NEW MOON") {
-                Circle().strokeBorder(Theme.bone.opacity(0.8), lineWidth: 0.75)
-            }
+            legendItem("OVULATION") { Circle().strokeBorder(Theme.ember.opacity(0.9), lineWidth: 1.2) }
+            legendItem("TODAY") { Circle().fill(Theme.gold) }
         }
         .frame(maxWidth: .infinity)
     }
@@ -190,7 +189,7 @@ struct CycleCalendarSheet: View {
     private var whatsComing: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("WHAT'S COMING")
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                .font(Theme.control(10)).tracking(1.1)
                 .foregroundStyle(Theme.ember)
                 .frame(maxWidth: .infinity, alignment: .leading)
 

@@ -138,7 +138,7 @@ struct HealthVaultView: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }
@@ -186,7 +186,7 @@ struct HealthVaultView: View {
                 Haptics.light(); authFailed = false; unlock()
             } label: {
                 Text("UNLOCK")
-                    .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.18))
+                    .font(Theme.control(12)).tracking(1.1)
                     .foregroundStyle(Theme.gold)
                     .padding(.horizontal, 34).padding(.vertical, 13)
                     .overlay(Capsule().strokeBorder(Theme.gold.opacity(0.5), lineWidth: 0.75))
@@ -217,7 +217,7 @@ struct HealthVaultView: View {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(kind.label)
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.14))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.bone)
                     if let last = store.latest(kind) {
                         Text("LAST · \(Self.short.string(from: last.date).uppercased())")
@@ -230,7 +230,7 @@ struct HealthVaultView: View {
                     Haptics.light(); adding = kind
                 } label: {
                     Text("LOG")
-                        .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.16))
+                        .font(Theme.control(10)).tracking(1.1)
                         .foregroundStyle(Theme.gold)
                         .padding(.horizontal, 16).padding(.vertical, 8)
                         .overlay(Capsule().strokeBorder(Theme.gold.opacity(0.45), lineWidth: 0.5))
@@ -245,7 +245,7 @@ struct HealthVaultView: View {
             ForEach(logs) { entry in
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
                     Text(Self.short.string(from: entry.date).uppercased())
-                        .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.12))
+                        .font(Theme.control(10)).tracking(1.1)
                         .foregroundStyle(Theme.bone.opacity(0.8))
                     if let note = entry.note {
                         Text(note)
@@ -305,7 +305,7 @@ struct VaultAddSheet: View {
                     .padding(.top, 22)
 
                 Text("WHEN")
-                    .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                    .font(Theme.control(10)).tracking(1.1)
                     .foregroundStyle(Theme.ember)
                     .padding(.top, 28)
                 DatePicker("", selection: $date, in: ...Date(), displayedComponents: .date)
@@ -314,7 +314,7 @@ struct VaultAddSheet: View {
                     .padding(.top, 4)
 
                 Text("NOTE")
-                    .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                    .font(Theme.control(10)).tracking(1.1)
                     .foregroundStyle(Theme.ember)
                     .padding(.top, 18)
                 TextField("optional, e.g. all clear", text: $note, axis: .vertical)
@@ -337,7 +337,7 @@ struct VaultAddSheet: View {
                     dismiss()
                 } label: {
                     Text("SAVE TO THE VAULT")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.void)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -355,7 +355,7 @@ struct VaultAddSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }

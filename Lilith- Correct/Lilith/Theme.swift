@@ -99,6 +99,13 @@ enum Theme {
         .system(size: size, weight: .semibold)
     }
 
+    /// Interactive and label text: buttons, chips, section eyebrows, row titles. Sans semibold,
+    /// gently tracked at the call site. (July 6, Maria: monospaced had crept from telemetry into
+    /// every control and read blocky, "Minecraft". Mono is for NUMBERS: dates, degrees, counts.)
+    static func control(_ size: CGFloat = 12) -> Font {
+        .system(size: size, weight: .semibold)
+    }
+
     /// Letterspacing in points for a given size and em value (CSS `letter-spacing` ported).
     /// The mockup's tracking, e.g. headline 0.19em, eyebrow 0.26em, mantra 0.30em, wordmark 0.50em.
     static func tracking(_ size: CGFloat, em: CGFloat) -> CGFloat { size * em }
@@ -115,7 +122,7 @@ struct LuxChip: View {
 
     var body: some View {
         Text(label)
-            .font(Theme.mono(10.5)).tracking(Theme.tracking(10.5, em: 0.08))
+            .font(Theme.control(11)).tracking(0.7)
             .foregroundStyle(on ? (accent == Theme.gold ? Theme.void : Theme.bone)
                                 : Theme.bone.opacity(0.78))
             .padding(.horizontal, 15).padding(.vertical, 11)

@@ -49,7 +49,7 @@ struct MoonCycleStrip: View {
         VStack(alignment: .leading, spacing: 12) {
             HairlineDivider(width: 110).frame(maxWidth: .infinity, alignment: .center)
             Text("THE SKY OVER YOUR CYCLE")
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                .font(Theme.control(10)).tracking(1.1)
                 .foregroundStyle(Theme.ember)
             Text("Every night of this cycle and the moon it wears. Dots are days you actually bled.")
                 .font(Theme.body(13)).foregroundStyle(Theme.bone.opacity(0.6))
@@ -173,7 +173,7 @@ struct HormoneCurveCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HairlineDivider(width: 110).frame(maxWidth: .infinity, alignment: .center)
             Text("THE HORMONE STORY")
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                .font(Theme.control(10)).tracking(1.1)
                 .foregroundStyle(Theme.ember)
             Text("Drag your finger across the month and feel how each day usually goes.")
                 .font(Theme.body(13)).foregroundStyle(Theme.bone.opacity(0.65))

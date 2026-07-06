@@ -255,7 +255,7 @@ struct OnboardingView: View {
                 completeFlow()
             } label: {
                 Text("NOT NOW")
-                    .font(Theme.mono(13)).tracking(Theme.tracking(13, em: 0.18))
+                    .font(Theme.control(13)).tracking(1.1)
                     .foregroundStyle(Theme.bone.opacity(0.7))
                     .frame(maxWidth: .infinity).padding(.vertical, 14)
                     .overlay(Capsule().strokeBorder(Theme.bone.opacity(0.25), lineWidth: 0.75))

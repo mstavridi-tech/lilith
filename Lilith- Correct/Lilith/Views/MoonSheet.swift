@@ -26,7 +26,7 @@ struct MoonSheet: View {
 
                 if let moon {
                     Text("Moon in \(moon.sign.name) · \(Int(moon.degreeInSign))°")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.12))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.gold.opacity(0.85))
                         .padding(.top, 10)
                 }
@@ -50,7 +50,7 @@ struct MoonSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }

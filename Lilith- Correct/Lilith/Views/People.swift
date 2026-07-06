@@ -181,7 +181,7 @@ struct PeopleSheet: View {
                     Haptics.open(); adding = true
                 } label: {
                     Text("ADD SOMEONE")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.18))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.void)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 15)
@@ -207,7 +207,7 @@ struct PeopleSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }
@@ -327,7 +327,7 @@ struct AddPersonSheet: View {
                     dismiss()
                 } label: {
                     Text("SAVE THEM")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.void)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -347,7 +347,7 @@ struct AddPersonSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }
@@ -356,7 +356,7 @@ struct AddPersonSheet: View {
 
     private func fieldLabel(_ text: String) -> some View {
         Text(text)
-            .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+            .font(Theme.control(10)).tracking(1.1)
             .foregroundStyle(Theme.ember)
             .padding(.top, 26)
             .padding(.bottom, 10)
@@ -425,7 +425,7 @@ struct PersonReadingSheet: View {
                     dismiss()
                 } label: {
                     Text("REMOVE FROM YOUR PEOPLE")
-                        .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.14))
+                        .font(Theme.control(10)).tracking(1.1)
                         .foregroundStyle(Theme.blood.opacity(0.85))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 13)
@@ -446,7 +446,7 @@ struct PersonReadingSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }

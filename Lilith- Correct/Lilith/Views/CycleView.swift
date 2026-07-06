@@ -94,7 +94,7 @@ struct CycleView: View {
                     Image(systemName: "calendar")
                         .font(.system(size: 12, weight: .medium))
                     Text("CALENDAR")
-                        .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.16))
+                        .font(Theme.control(10)).tracking(1.1)
                 }
                 .foregroundStyle(Theme.gold)
                 .padding(.horizontal, 14).padding(.vertical, 9)
@@ -142,7 +142,7 @@ struct CycleView: View {
     // A single line under the orb: when her next period is expected.
     private func orbCaption(_ state: CycleState) -> some View {
         Text(nextLine(state))
-            .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+            .font(Theme.control(11)).tracking(1.1)
             .foregroundStyle(Theme.gold.opacity(0.8))
             .frame(maxWidth: .infinity, alignment: .center)
             .padding(.top, 18)
@@ -162,7 +162,7 @@ struct CycleView: View {
             HairlineDivider(width: 110)
                 .frame(maxWidth: .infinity, alignment: .center)
             Text("HORMONE WEATHER")
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                .font(Theme.control(10)).tracking(1.1)
                 .foregroundStyle(Theme.ember)
             Text(state.phase.hormoneNote)
                 .font(Theme.body(16))
@@ -194,7 +194,7 @@ struct CycleView: View {
             HStack(spacing: 8) {
                 Image(systemName: Self.moonSymbol(moon)).font(.system(size: 13))
                 Text("MOON WEATHER · \(moon.rawValue.uppercased())")
-                    .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.22))
+                    .font(Theme.control(10)).tracking(1.1)
             }
             .foregroundStyle(Theme.ember)
             Text(Self.moonCycleNote(cycle: state.phase, moon: moon))
@@ -265,7 +265,7 @@ struct CycleView: View {
                           action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.18))
+                .font(Theme.control(12)).tracking(1.1)
                 .foregroundStyle(filled ? Theme.bone : color)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 15)
@@ -345,7 +345,7 @@ struct CycleLogSheet: View {
                     .padding(.leading, Theme.tracking(28, em: 0.14))
                     .padding(.top, 44)
                 Text(Self.longDate.string(from: date).uppercased())
-                    .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.2))
+                    .font(Theme.control(10)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.8))
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, 8)
@@ -405,7 +405,7 @@ struct CycleLogSheet: View {
                     dismiss()
                 } label: {
                     Text("SAVE")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.void)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -423,7 +423,7 @@ struct CycleLogSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }
@@ -440,7 +440,7 @@ struct CycleLogSheet: View {
                 Haptics.soft(); store.clearPeriod(around: date); dismiss()
             } label: {
                 Text("REMOVE THIS PERIOD")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.blood)
                     .frame(maxWidth: .infinity).padding(.vertical, 15)
                     .background(Capsule().strokeBorder(Theme.blood.opacity(0.6), lineWidth: 1))
@@ -449,7 +449,7 @@ struct CycleLogSheet: View {
         } else if Calendar.current.isDateInToday(date) {
             VStack(alignment: .leading, spacing: 12) {
                 Text("MY PERIOD STARTED")
-                    .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                    .font(Theme.control(10)).tracking(1.1)
                     .foregroundStyle(Theme.blood)
                 HStack(spacing: 8) {
                     startChip("TODAY", daysAgo: 0)
@@ -468,7 +468,7 @@ struct CycleLogSheet: View {
                     Haptics.soft(); store.logPeriodStart(on: date); dismiss()
                 } label: {
                     Text("PERIOD STARTED THIS DAY")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.16))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.bone)
                         .frame(maxWidth: .infinity).padding(.vertical, 15)
                         .background(Capsule().fill(Theme.blood.opacity(0.30))
@@ -505,7 +505,7 @@ struct CycleLogSheet: View {
         VStack(alignment: .leading, spacing: 10) {
             Rectangle().fill(Theme.gold.opacity(0.15)).frame(height: 0.5)
             Text(text)
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                .font(Theme.control(10)).tracking(1.1)
                 .foregroundStyle(Theme.ember)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -642,7 +642,7 @@ struct RingExplainerSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }
@@ -652,7 +652,7 @@ struct RingExplainerSheet: View {
     private func explainRow(_ title: String, _ body: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                .font(Theme.control(10)).tracking(1.1)
                 .foregroundStyle(Theme.ember)
             Text(body)
                 .font(Theme.body(15)).foregroundStyle(Theme.bone.opacity(0.85))

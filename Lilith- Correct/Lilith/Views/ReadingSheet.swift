@@ -85,7 +85,7 @@ struct ReadingSheet: View {
 
                 if selection.isLilith {
                     Text("★ THE NAMESAKE")
-                        .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.18))
+                        .font(Theme.control(10)).tracking(1.1)
                         .foregroundStyle(Theme.ember)
                         .padding(.top, 10)
                 }
@@ -98,7 +98,7 @@ struct ReadingSheet: View {
 
                 if let personalReading {
                     Text("FOR YOU")
-                        .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                        .font(Theme.control(10)).tracking(1.1)
                         .foregroundStyle(Theme.ember)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.top, explainer == nil ? 26 : 28)
@@ -120,7 +120,7 @@ struct ReadingSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }

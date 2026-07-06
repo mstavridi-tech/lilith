@@ -22,7 +22,7 @@ struct ExploreGrid: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("EXPLORE")
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                .font(Theme.control(10)).tracking(1.1)
                 .foregroundStyle(Theme.ember)
 
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())],
@@ -60,7 +60,7 @@ struct ExploreGrid: View {
             VStack(alignment: .leading, spacing: 4) {
                 Spacer(minLength: 0)
                 Text(title)
-                    .font(Theme.mono(10.5)).tracking(Theme.tracking(10.5, em: 0.14))
+                    .font(Theme.control(10.5)).tracking(1.1)
                     .foregroundStyle(Theme.bone)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
@@ -138,7 +138,7 @@ private struct ExploreSheet<Content: View>: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }
@@ -148,7 +148,7 @@ private struct ExploreSheet<Content: View>: View {
 
 private func exploreLabel(_ text: String, color: Color = Theme.ember) -> some View {
     Text(text)
-        .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+        .font(Theme.control(10)).tracking(1.1)
         .foregroundStyle(color)
 }
 
@@ -327,7 +327,7 @@ struct ReliefSheet: View {
                     }
                     VStack(alignment: .leading, spacing: 4) {
                         Text("A GUIDED BREATH")
-                            .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                            .font(Theme.control(11)).tracking(1.1)
                             .foregroundStyle(Theme.bone)
                         Text("One quiet minute. I'll talk you through it.")
                             .font(Theme.body(13).italic()).foregroundStyle(Theme.bone.opacity(0.65))
@@ -373,7 +373,7 @@ struct ReliefSheet: View {
                         HStack(alignment: .firstTextBaseline) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(m.title)
-                                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.14))
+                                    .font(Theme.control(11)).tracking(1.1)
                                     .foregroundStyle(Theme.bone)
                                 Text(m.sub)
                                     .font(Theme.body(13).italic())
@@ -405,7 +405,7 @@ struct ReliefSheet: View {
                 RoundedRectangle(cornerRadius: 18)
                     .strokeBorder(Theme.blood.opacity(raging ? 1 : 0.6), lineWidth: 1)
                 Text(raging ? "LET IT ALL OUT" : "HOLD TO SCREAM INTO THE VOID")
-                    .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.16))
+                    .font(Theme.control(12)).tracking(1.1)
                     .foregroundStyle(Theme.bone)
             }
             .frame(height: 64)
@@ -415,14 +415,19 @@ struct ReliefSheet: View {
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { _ in
-                        if !raging { rageHeldAt = Date() }
+                        if !raging {
+                            rageHeldAt = Date()
+                            // the press must be FELT instantly (July 6, Maria): one hard thump
+                            // on contact, then the drumbeat takes over
+                            UIImpactFeedbackGenerator(style: .heavy).impactOccurred(intensity: 1.0)
+                        }
                         raging = true
                     }
                     .onEnded { _ in
                         raging = false
                         // she really let it out: the friend says so, out loud
                         if let start = rageHeldAt, Date().timeIntervalSince(start) >= 1.2 {
-                            CalmVoice.say("Great girl. You needed that.", key: "rage-praise")
+                            CalmVoice.say("You needed that.", key: "rage-praise")
                             ragePraise = true
                             Task {
                                 try? await Task.sleep(nanoseconds: 4_000_000_000)
@@ -440,7 +445,7 @@ struct ReliefSheet: View {
                 }
             }
             Text(raging ? "the void hears you, girl"
-                 : ragePraise ? "great girl. you needed that."
+                 : ragePraise ? "you needed that."
                  : "nothing gets recorded, obviously")
                 .font(Theme.body(12).italic())
                 .foregroundStyle(ragePraise ? Theme.gold : Theme.bone.opacity(0.5))
@@ -495,7 +500,7 @@ struct ReliefSheet: View {
         Link(destination: URL(string: "maps://?q=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query)")!) {
             HStack(spacing: 6) {
                 Text(title)
-                    .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.12))
+                    .font(Theme.control(10)).tracking(1.1)
                     .foregroundStyle(Theme.bone.opacity(0.9))
                 Image(systemName: "arrow.up.right")
                     .font(.system(size: 8, weight: .semibold))
@@ -538,7 +543,7 @@ struct MoonLoreSheet: View {
                     .font(.system(size: 44, weight: .ultraLight))
                     .foregroundStyle(Theme.bone)
                 Text(moon.rawValue.uppercased())
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.26))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold)
             }
             .frame(maxWidth: .infinity)
@@ -593,14 +598,51 @@ struct SymptomDecoderSheet: View {
                doctor: "Insomnia that ignores your cycle and runs every week deserves real help. Sleep is not a luxury item.")
     ]
 
+    @State private var open: Set<CycleSymptom> = []
+
+    // July 6 (Maria: "too much writing"): an accordion. Titles only at rest; tap one and just
+    // that symptom unfolds. Reading becomes a choice instead of a wall.
     var body: some View {
         ExploreSheet(title: "DECODE A SYMPTOM",
-                     subtitle: "What's typical, what helps, what's a doctor.") {
-            ForEach(decodes, id: \.symptom) { d in
-                VStack(alignment: .leading, spacing: 8) {
+                     subtitle: "Tap the one that's bothering you.") {
+            VStack(spacing: 0) {
+                ForEach(decodes, id: \.symptom) { d in
+                    if d.symptom != decodes.first?.symptom {
+                        Rectangle().fill(Theme.gold.opacity(0.12)).frame(height: 0.5)
+                    }
+                    decodeRow(d)
+                }
+            }
+            .padding(.top, 10)
+        }
+    }
+
+    private func decodeRow(_ d: Decode) -> some View {
+        let isOpen = open.contains(d.symptom)
+        return VStack(alignment: .leading, spacing: 0) {
+            Button {
+                Haptics.light()
+                withAnimation(.easeInOut(duration: 0.28)) {
+                    if isOpen { open.remove(d.symptom) } else { open.insert(d.symptom) }
+                }
+            } label: {
+                HStack {
                     Text(d.symptom.label)
-                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.2))
-                        .foregroundStyle(Theme.ember)
+                        .font(Theme.control(12)).tracking(1.0)
+                        .foregroundStyle(isOpen ? Theme.ember : Theme.bone)
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Theme.gold.opacity(0.6))
+                        .rotationEffect(.degrees(isOpen ? 180 : 0))
+                }
+                .padding(.vertical, 16)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            if isOpen {
+                VStack(alignment: .leading, spacing: 10) {
                     exploreBody(d.what)
                     Text(d.doctor)
                         .font(Theme.body(13)).foregroundStyle(Theme.gold.opacity(0.8))
@@ -610,9 +652,9 @@ struct SymptomDecoderSheet: View {
                         .overlay(Rectangle().fill(Theme.gold.opacity(0.4)).frame(width: 0.5),
                                  alignment: .leading)
                 }
-                .padding(.top, 26)
+                .padding(.bottom, 18)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
-
         }
     }
 }
@@ -653,7 +695,7 @@ struct GuidedBreathSheet: View {
                     .scaleEffect(full ? 1.0 : 0.5)
                 VStack(spacing: 8) {
                     Text(stage == .running ? phase.rawValue : stage == .done ? "DONE" : "READY?")
-                        .font(Theme.mono(13)).tracking(Theme.tracking(13, em: 0.26))
+                        .font(Theme.control(13)).tracking(1.1)
                         .foregroundStyle(Theme.bone)
                     if stage == .running {
                         Text(timeString)
@@ -680,7 +722,7 @@ struct GuidedBreathSheet: View {
                     session = Task { await run() }
                 } label: {
                     Text("BEGIN")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.void)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -696,7 +738,7 @@ struct GuidedBreathSheet: View {
                     endSession()
                 } label: {
                     Text("THAT'S ENOUGH")
-                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .font(Theme.control(11)).tracking(1.1)
                         .foregroundStyle(Theme.gold)
                         .padding(.horizontal, 28).padding(.vertical, 13)
                         .overlay(Capsule().strokeBorder(Theme.gold.opacity(0.45), lineWidth: 0.75))
@@ -708,7 +750,7 @@ struct GuidedBreathSheet: View {
                     dismiss()
                 } label: {
                     Text("BACK TO IT")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.void)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -723,7 +765,7 @@ struct GuidedBreathSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { endSession(); dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }
@@ -929,7 +971,7 @@ struct MeditationSheet: View {
                     session = Task { await run() }
                 } label: {
                     Text("BEGIN")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.void)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -944,7 +986,7 @@ struct MeditationSheet: View {
                     endSession()
                 } label: {
                     Text("THAT'S ENOUGH")
-                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .font(Theme.control(11)).tracking(1.1)
                         .foregroundStyle(Theme.gold)
                         .padding(.horizontal, 28).padding(.vertical, 13)
                         .overlay(Capsule().strokeBorder(Theme.gold.opacity(0.45), lineWidth: 0.75))
@@ -954,7 +996,7 @@ struct MeditationSheet: View {
             } else {
                 Button { dismiss() } label: {
                     Text("BACK TO IT")
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.2))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.void)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -969,7 +1011,7 @@ struct MeditationSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { endSession(); dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }

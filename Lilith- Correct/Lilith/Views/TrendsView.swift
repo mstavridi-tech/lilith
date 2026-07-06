@@ -60,7 +60,7 @@ struct TrendsView: View {
     private var monthStrip: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("YOUR LAST 30 DAYS")
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.24))
+                .font(Theme.control(10)).tracking(1.1)
                 .foregroundStyle(Theme.ember)
             Text("One bar per day, colored by which era you were in. Dots are moods you logged, higher is better. Wine at the base means you bled.")
                 .font(Theme.body(13)).foregroundStyle(Theme.bone.opacity(0.65))
@@ -156,7 +156,7 @@ struct TrendsView: View {
                 HStack(spacing: 8) {
                     Circle().fill(phase.aura).frame(width: 6, height: 6)
                     Text(phase.name)
-                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .font(Theme.control(11)).tracking(1.1)
                         .foregroundStyle(Theme.bone)
                 }
                 Text(phase.tagline)
@@ -183,7 +183,7 @@ struct TrendsView: View {
                     .foregroundStyle(Theme.gold)
                 VStack(alignment: .leading, spacing: 4) {
                     Text("FRIENDS")
-                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .font(Theme.control(11)).tracking(1.1)
                         .foregroundStyle(Theme.bone)
                     Text("Cycle-sync, moon twins, memes. Coming.")
                         .font(Theme.body(13).italic()).foregroundStyle(Theme.bone.opacity(0.6))
@@ -241,7 +241,7 @@ struct TrendsView: View {
                             detail: String? = nil) -> some View {
         HStack(alignment: .firstTextBaseline) {
             Text(label)
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.16))
+                .font(Theme.control(10)).tracking(1.1)
                 .foregroundStyle(Theme.bone.opacity(0.6))
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
@@ -458,7 +458,7 @@ struct FriendsTeaserSheet: View {
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Text("CLOSE")
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.18))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.gold.opacity(0.75))
                     .padding(20)
             }
@@ -468,7 +468,7 @@ struct FriendsTeaserSheet: View {
     private func teaserRow(_ title: String, _ body: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.26))
+                .font(Theme.control(10)).tracking(1.1)
                 .foregroundStyle(Theme.ember)
             Text(body)
                 .font(Theme.body(15)).foregroundStyle(Theme.bone.opacity(0.85))

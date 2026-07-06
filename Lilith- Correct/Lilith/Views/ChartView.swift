@@ -89,14 +89,14 @@ struct ChartView: View {
                 .frame(width: 34)
             VStack(alignment: .leading, spacing: 4) {
                 Text(part.titleSuffix)
-                    .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.12))
+                    .font(Theme.control(11)).tracking(1.1)
                     .foregroundStyle(Theme.bone.opacity(0.55))
                 Text(sign.name)
                     .font(Theme.body(20)).foregroundStyle(Theme.bone)
             }
             Spacer()
             Text("READ →")
-                .font(Theme.mono(10)).tracking(Theme.tracking(10, em: 0.16))
+                .font(Theme.control(10)).tracking(1.1)
                 .foregroundStyle(Theme.ember)
         }
         .padding(.vertical, 16)
@@ -121,7 +121,7 @@ struct ChartView: View {
             VStack(alignment: .leading, spacing: 5) {
                 HStack(spacing: 8) {
                     Text(p.body.displayName.uppercased())
-                        .font(Theme.mono(12)).tracking(Theme.tracking(12, em: 0.1))
+                        .font(Theme.control(12)).tracking(1.1)
                         .foregroundStyle(Theme.bone.opacity(0.55))
                     if isLilith {
                         Text("★ THE NAMESAKE")
@@ -184,7 +184,7 @@ struct ChartView: View {
                         .font(.system(size: 15, weight: .light))
                         .foregroundStyle(Theme.gold)
                     Text("OPEN THE MAP")
-                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .font(Theme.control(11)).tracking(1.1)
                         .foregroundStyle(Theme.gold)
                     Spacer()
                     Text("→").font(Theme.body(18)).foregroundStyle(Theme.gold)
@@ -220,7 +220,7 @@ struct ChartView: View {
                         .font(.system(size: 15, weight: .light))
                         .foregroundStyle(Theme.gold)
                     Text(goDeeper ? "CLOSE THE DEEP DIVE" : "ALL \(chart.placements.count) PLACEMENTS")
-                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .font(Theme.control(11)).tracking(1.1)
                         .foregroundStyle(Theme.gold)
                     Spacer()
                     Image(systemName: goDeeper ? "chevron.up" : "chevron.down")
@@ -277,7 +277,7 @@ struct ChartView: View {
                         .font(.system(size: 15, weight: .light))
                         .foregroundStyle(Theme.gold)
                     Text("OPEN YOUR PEOPLE")
-                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .font(Theme.control(11)).tracking(1.1)
                         .foregroundStyle(Theme.gold)
                     Spacer()
                     Text("→").font(Theme.body(18)).foregroundStyle(Theme.gold)
