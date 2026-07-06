@@ -305,13 +305,7 @@ struct AddPersonSheet: View {
                         Button {
                             Haptics.light(); role = r
                         } label: {
-                            Text(r.label)
-                                .font(Theme.mono(9.5)).tracking(Theme.tracking(9.5, em: 0.1))
-                                .foregroundStyle(role == r ? Theme.bone : Theme.bone.opacity(0.65))
-                                .padding(.horizontal, 13).padding(.vertical, 9)
-                                .background(Capsule().fill(Theme.ember.opacity(role == r ? 0.28 : 0))
-                                    .overlay(Capsule().strokeBorder(
-                                        Theme.ember.opacity(role == r ? 0.9 : 0.35), lineWidth: 0.75)))
+                            LuxChip(label: r.label, on: role == r, accent: Theme.ember)
                         }
                         .buttonStyle(.plain)
                     }

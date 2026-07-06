@@ -8,6 +8,7 @@ struct ChartView: View {
     @State private var openReading: ReadingSelection?
     @State private var showMap = false
     @State private var showPeople = false
+    @State private var goDeeper = false // progressive disclosure (July 6, Maria: ADHD-friendly)
 
     var body: some View {
         ScrollView {
@@ -22,35 +23,11 @@ struct ChartView: View {
 
                 bigThreeSection
 
-                VStack(spacing: 0) {
-                    Text("EVERY PLACEMENT").displayCaps(20, em: 0.16)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom, 4)
-                    Text("Tap any line. Every body has a story.")
-                        .font(Theme.body(14)).foregroundStyle(Theme.gold.opacity(0.85))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom, 8)
-
-                    ForEach(Array(chart.placements.enumerated()), id: \.element.id) { index, placement in
-                        if index > 0 {
-                            Rectangle().fill(Theme.gold.opacity(0.15)).frame(height: 0.5)
-                        }
-                        Button {
-                            Haptics.open()
-                            openReading = ReadingSelection(placement: placement)
-                        } label: {
-                            placementRow(placement)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.top, 40)
-
-                aspectsSection
-
                 mapSection
 
                 peopleSection
+
+                goDeeperSection
 
                 transitSection
 
@@ -218,6 +195,66 @@ struct ChartView: View {
                 .contentShape(Capsule())
             }
             .buttonStyle(.plain)
+        }
+        .padding(.top, 36)
+    }
+
+    // July 6 restructure (Maria: "every placement will divert from the Map and People... I need
+    // it easier for the ADHD girls and the autistic ones"). Progressive disclosure: the big three
+    // and the two fun doors come first; the full 13-placement list and the aspect table live
+    // behind ONE door that opens only when she asks. One decision per zone, no wall of choices.
+    private var goDeeperSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HairlineDivider(width: 110)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.bottom, 4)
+            Text("GO DEEPER").displayCaps(20, em: 0.16)
+            Text("Every placement in your chart, each with its story, plus the aspects webbing them together.")
+                .font(Theme.body(14)).foregroundStyle(Theme.gold.opacity(0.85))
+            Button {
+                Haptics.open()
+                withAnimation(.easeInOut(duration: 0.35)) { goDeeper.toggle() }
+            } label: {
+                HStack {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 15, weight: .light))
+                        .foregroundStyle(Theme.gold)
+                    Text(goDeeper ? "CLOSE THE DEEP DIVE" : "ALL \(chart.placements.count) PLACEMENTS")
+                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.16))
+                        .foregroundStyle(Theme.gold)
+                    Spacer()
+                    Image(systemName: goDeeper ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(Theme.gold.opacity(0.7))
+                }
+                .padding(.horizontal, 18).padding(.vertical, 15)
+                .background(Capsule().fill(.ultraThinMaterial)
+                    .overlay(Capsule().strokeBorder(Theme.gold.opacity(0.35), lineWidth: 0.5)))
+                .contentShape(Capsule())
+            }
+            .buttonStyle(.plain)
+
+            if goDeeper {
+                VStack(spacing: 0) {
+                    ForEach(Array(chart.placements.enumerated()), id: \.element.id) { index, placement in
+                        if index > 0 {
+                            Rectangle().fill(Theme.gold.opacity(0.15)).frame(height: 0.5)
+                        }
+                        Button {
+                            Haptics.open()
+                            openReading = ReadingSelection(placement: placement)
+                        } label: {
+                            placementRow(placement)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.top, 8)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+
+                aspectsSection
+                    .transition(.opacity)
+            }
         }
         .padding(.top, 36)
     }

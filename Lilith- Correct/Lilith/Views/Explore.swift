@@ -208,15 +208,12 @@ struct PhasePlaybookSheet: View {
                         Haptics.light(); selected = phase
                     } label: {
                         Text(phase.name)
-                            .font(Theme.mono(9)).tracking(Theme.tracking(9, em: 0.1))
-                            .foregroundStyle(selected == phase ? Theme.bone : Theme.bone.opacity(0.6))
-                            .padding(.horizontal, 10).padding(.vertical, 9)
-                            .background(
-                                Capsule().fill(selected == phase ? phase.aura.opacity(0.25) : .clear)
-                                    .overlay(Capsule().strokeBorder(
-                                        selected == phase ? phase.aura.opacity(0.8) : Theme.bone.opacity(0.2),
-                                        lineWidth: 0.75))
-                            )
+                            .font(Theme.mono(9)).tracking(Theme.tracking(9, em: 0.06))
+                            .foregroundStyle(selected == phase ? Theme.bone : Theme.bone.opacity(0.7))
+                            .padding(.horizontal, 10).padding(.vertical, 10)
+                            .background(Capsule().fill(selected == phase ? phase.aura : Theme.surfaceHigh))
+                            .shadow(color: selected == phase ? phase.aura.opacity(0.4) : .clear,
+                                    radius: 8, y: 2)
                     }
                     .buttonStyle(.plain)
                 }
@@ -340,10 +337,21 @@ struct ReliefSheet: View {
                 }
                 .padding(16)
                 .background(
-                    RoundedRectangle(cornerRadius: 18).fill(.ultraThinMaterial)
-                        .overlay(RoundedRectangle(cornerRadius: 18)
-                            .strokeBorder(Theme.gold.opacity(0.3), lineWidth: 0.5))
+                    ZStack {
+                        if let img = UIImage(named: AuraBackdrop.moonlight.rawValue) {
+                            Image(uiImage: img).resizable().scaledToFill()
+                        } else {
+                            Theme.surface
+                        }
+                        LinearGradient(
+                            stops: [.init(color: Theme.void.opacity(0.35), location: 0),
+                                    .init(color: Theme.void.opacity(0.82), location: 1)],
+                            startPoint: .top, endPoint: .bottom)
+                    }
                 )
+                .clipShape(RoundedRectangle(cornerRadius: 18))
+                .overlay(RoundedRectangle(cornerRadius: 18)
+                    .strokeBorder(Theme.bone.opacity(0.12), lineWidth: 0.5))
                 .contentShape(RoundedRectangle(cornerRadius: 18))
             }
             .buttonStyle(.plain)
@@ -662,13 +670,7 @@ struct GuidedBreathSheet: View {
                         Button {
                             Haptics.light(); minutes = m
                         } label: {
-                            Text("\(m) MIN")
-                                .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.14))
-                                .foregroundStyle(minutes == m ? Theme.bone : Theme.bone.opacity(0.6))
-                                .padding(.horizontal, 20).padding(.vertical, 11)
-                                .background(Capsule().fill(Theme.ember.opacity(minutes == m ? 0.28 : 0))
-                                    .overlay(Capsule().strokeBorder(
-                                        Theme.ember.opacity(minutes == m ? 0.9 : 0.35), lineWidth: 0.75)))
+                            LuxChip(label: "\(m) MIN", on: minutes == m, accent: Theme.gold)
                         }
                         .buttonStyle(.plain)
                     }
@@ -916,13 +918,7 @@ struct MeditationSheet: View {
                         Button {
                             Haptics.light(); minutes = m
                         } label: {
-                            Text("\(m) MIN")
-                                .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.14))
-                                .foregroundStyle(minutes == m ? Theme.bone : Theme.bone.opacity(0.6))
-                                .padding(.horizontal, 20).padding(.vertical, 11)
-                                .background(Capsule().fill(Theme.ember.opacity(minutes == m ? 0.28 : 0))
-                                    .overlay(Capsule().strokeBorder(
-                                        Theme.ember.opacity(minutes == m ? 0.9 : 0.35), lineWidth: 0.75)))
+                            LuxChip(label: "\(m) MIN", on: minutes == m, accent: Theme.gold)
                         }
                         .buttonStyle(.plain)
                     }

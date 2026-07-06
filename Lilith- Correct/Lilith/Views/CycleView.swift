@@ -491,15 +491,12 @@ struct CycleLogSheet: View {
             dismiss()
         } label: {
             Text(label)
-                .font(Theme.mono(9.5)).tracking(Theme.tracking(9.5, em: 0.08))
+                .font(Theme.mono(9.5)).tracking(Theme.tracking(9.5, em: 0.06))
                 .foregroundStyle(Theme.bone)
-                .padding(.horizontal, 11).padding(.vertical, 11)
+                .padding(.horizontal, 8).padding(.vertical, 11)
                 .frame(maxWidth: .infinity)
-                .background(
-                    Capsule().fill(Theme.blood.opacity(daysAgo == 0 ? 0.32 : 0.14))
-                        .overlay(Capsule().strokeBorder(Theme.blood.opacity(daysAgo == 0 ? 0.9 : 0.5),
-                                                        lineWidth: 1))
-                )
+                .background(Capsule().fill(daysAgo == 0 ? Theme.blood : Theme.surfaceHigh))
+                .shadow(color: daysAgo == 0 ? Theme.blood.opacity(0.4) : .clear, radius: 8, y: 2)
         }
         .buttonStyle(.plain)
     }
@@ -527,19 +524,7 @@ struct CycleLogSheet: View {
                     Haptics.light()
                     toggle(item)
                 } label: {
-                    Text(label(for: item))
-                        .font(Theme.mono(11)).tracking(Theme.tracking(11, em: 0.12))
-                        .foregroundStyle(on ? Theme.bone : Theme.bone.opacity(0.8))
-                        .padding(.horizontal, 16).padding(.vertical, 10)
-                        .background(
-                            ZStack {
-                                Capsule().fill(accent.opacity(on ? 0.30 : 0))
-                                Capsule().strokeBorder(accent.opacity(on ? 0.9 : 0.35), lineWidth: 1)
-                            }
-                        )
-                        .background {
-                            if on { Capsule().fill(accent).opacity(0.4).blur(radius: 10) }
-                        }
+                    LuxChip(label: label(for: item), on: on, accent: accent)
                 }
                 .buttonStyle(.plain)
             }

@@ -104,6 +104,32 @@ enum Theme {
     static func tracking(_ size: CGFloat, em: CGFloat) -> CGFloat { size * em }
 }
 
+// MARK: - Lux selection chips (July 6: the thin outlined capsule read cheap and dated, Maria.
+// One chip grammar for every picker in the app, borrowed from the Today scope switcher she
+// likes: a quiet near-solid tile at rest, a solid accent fill when chosen. No outlines, ever.)
+
+struct LuxChip: View {
+    let label: String
+    let on: Bool
+    var accent: Color = Theme.gold
+
+    var body: some View {
+        Text(label)
+            .font(Theme.mono(10.5)).tracking(Theme.tracking(10.5, em: 0.08))
+            .foregroundStyle(on ? (accent == Theme.gold ? Theme.void : Theme.bone)
+                                : Theme.bone.opacity(0.78))
+            .padding(.horizontal, 15).padding(.vertical, 11)
+            .background(
+                Capsule().fill(on ? AnyShapeStyle(accent) : AnyShapeStyle(Theme.surfaceHigh))
+            )
+            .overlay(
+                Capsule().strokeBorder(Theme.bone.opacity(on ? 0 : 0.06), lineWidth: 0.5)
+            )
+            .shadow(color: on ? accent.opacity(0.4) : .clear, radius: 8, y: 2)
+            .animation(.easeOut(duration: 0.15), value: on)
+    }
+}
+
 // MARK: - Grain
 
 /// Film grain: a tiny cached noise tile blended over everything with .screen, two passes
