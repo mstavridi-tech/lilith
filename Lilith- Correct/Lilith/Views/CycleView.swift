@@ -44,6 +44,7 @@ struct CycleView: View {
                     // orbCaption removed July 4: "period expected in N days" already lives in the
                     // quick-glance row; saying it twice on one screen read as filler (Maria).
                     logActions.cascadeIn(4, trigger: developToken)
+                    careNote.cascadeIn(4, trigger: developToken)
                     MoonCycleStrip(days: MoonCycleDay.currentCycle(entries: store.entries, state: state))
                         .cascadeIn(5, trigger: developToken)
                     hormoneWeather(state).cascadeIn(5, trigger: developToken)
@@ -282,6 +283,28 @@ struct CycleView: View {
 
     private var bleedingToday: Bool { store.entry(on: Date())?.isBleeding ?? false }
 
+    /// The friend's follow-through on what she just logged (new partner, unprotected, the fertile
+    /// window when she's trying). Care.swift holds the standards; this only shows the one line
+    /// that matters most right now. The sensitive stuff lives HERE, never on a lock screen.
+    @AppStorage("tryingToConceive") private var tryingToConceive = false
+
+    @ViewBuilder private var careNote: some View {
+        if let line = Care.note(entries: store.entries, state: store.today,
+                                tryingToConceive: tryingToConceive) {
+            HStack(alignment: .top, spacing: 12) {
+                Text("✶")
+                    .font(Theme.display(15))
+                    .foregroundStyle(Theme.ember)
+                Text(line)
+                    .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.9))
+                    .lineSpacing(5)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .softCard(padding: 16)
+            .padding(.top, 18)
+        }
+    }
+
     /// Cycle-day numbers (1-based) she actually logged blood on within the current cycle, for the
     /// exact markers on the ring. Empty when she isn't tracking yet.
     private var bleedDaysThisCycle: [Int] {
@@ -322,6 +345,9 @@ struct CycleLogSheet: View {
     @State private var energy: EnergyLevel?
     @State private var sleep: SleepQuality?
     @State private var libido: Libido?
+    @State private var sex: SexKind?
+    @State private var newPartner = false
+    @AppStorage("tryingToConceive") private var tryingToConceive = false
 
     init(date: Date, store: CycleStore) {
         self.date = date
@@ -334,6 +360,8 @@ struct CycleLogSheet: View {
         _energy = State(initialValue: existing?.energy)
         _sleep = State(initialValue: existing?.sleep)
         _libido = State(initialValue: existing?.libido)
+        _sex = State(initialValue: existing?.sex)
+        _newPartner = State(initialValue: existing?.newPartner ?? false)
     }
 
     var body: some View {
@@ -379,6 +407,45 @@ struct CycleLogSheet: View {
                 groupLabel("LIBIDO")
                 chips(Libido.allCases, accent: Theme.blood, isOn: { libido == $0 }) { picked in
                     libido = (libido == picked) ? nil : picked
+                }
+
+                groupLabel("SEX")
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(spacing: 10) {
+                        ForEach(SexKind.allCases) { kind in
+                            Button {
+                                Haptics.light()
+                                sex = (sex == kind) ? nil : kind
+                            } label: {
+                                LuxChip(label: kind.label, on: sex == kind, accent: Theme.blood)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        Button {
+                            Haptics.light(); newPartner.toggle()
+                        } label: {
+                            LuxChip(label: "NEW PARTNER", on: newPartner, accent: Theme.ember)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    HStack(spacing: 10) {
+                        Text("Trying for a baby?")
+                            .font(Theme.body(14)).foregroundStyle(Theme.bone.opacity(0.7))
+                        Button {
+                            Haptics.light(); tryingToConceive = true
+                        } label: {
+                            LuxChip(label: "YES", on: tryingToConceive, accent: Theme.gold)
+                        }
+                        .buttonStyle(.plain)
+                        Button {
+                            Haptics.light(); tryingToConceive = false
+                        } label: {
+                            LuxChip(label: "NO", on: !tryingToConceive, accent: Theme.gold)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    // what she logs here changes what I say and when I nudge; the details live
+                    // in Care.swift and never, ever on her lock screen
                 }
 
                 groupLabel("SYMPTOMS")
@@ -552,7 +619,10 @@ struct CycleLogSheet: View {
         entry.energy = energy
         entry.sleep = sleep
         entry.libido = libido
+        entry.sex = sex
+        entry.newPartner = newPartner ? true : nil
         store.save(entry)
+        if newPartner { Care.scheduleNewPartnerCheck() } // the two-week quiet nudge
     }
 
     private static let longDate: DateFormatter = {

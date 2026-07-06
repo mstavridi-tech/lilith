@@ -60,6 +60,14 @@ enum Libido: String, Codable, CaseIterable, Identifiable {
     var label: String { rawValue.uppercased() }
 }
 
+// July 6 (Maria): the sex section. Protected or not, new partner or not: the two answers that
+// change what a best friend would actually say next. Stays on-device like everything.
+enum SexKind: String, Codable, CaseIterable, Identifiable {
+    case protected, unprotected
+    var id: String { rawValue }
+    var label: String { rawValue.uppercased() }
+}
+
 /// One logged day. A day with `flow != nil` is a bleeding day; the rest is optional context.
 /// New optional fields decode as nil from older saved logs, so nothing she logged is ever lost.
 struct CycleEntry: Codable, Identifiable {
@@ -72,11 +80,14 @@ struct CycleEntry: Codable, Identifiable {
     var energy: EnergyLevel? = nil
     var sleep: SleepQuality? = nil
     var libido: Libido? = nil
+    var sex: SexKind? = nil
+    var newPartner: Bool? = nil          // optional so old logs keep decoding
 
     var isBleeding: Bool { flow != nil }
     var isEmpty: Bool {
         flow == nil && mood == nil && symptoms.isEmpty && energy == nil && sleep == nil
-            && libido == nil && (note?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+            && libido == nil && sex == nil && newPartner != true
+            && (note?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
     }
 }
 

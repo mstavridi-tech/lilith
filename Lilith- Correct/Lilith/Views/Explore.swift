@@ -672,6 +672,7 @@ struct GuidedBreathSheet: View {
     @State private var minutes = 1
     @State private var phase: BreathPhase = .inhale
     @State private var secondsLeft = 0
+    @State private var beat = 0          // 1,2,3,4... the spoken-rhythm count inside the ring
     @State private var full = false          // ring swell state
     @State private var session: Task<Void, Never>?
 
@@ -693,13 +694,18 @@ struct GuidedBreathSheet: View {
                 Circle().fill(Theme.ember.opacity(0.22))
                     .frame(width: 200, height: 200)
                     .scaleEffect(full ? 1.0 : 0.5)
-                VStack(spacing: 8) {
+                VStack(spacing: 6) {
                     Text(stage == .running ? phase.rawValue : stage == .done ? "DONE" : "READY?")
                         .font(Theme.control(13)).tracking(1.1)
                         .foregroundStyle(Theme.bone)
                     if stage == .running {
+                        // the count she breathes to: 1, 2, 3, 4... hold... let it go (July 6)
+                        Text(phase == .hold ? "· · ·" : "\(beat)")
+                            .font(Theme.data(44))
+                            .foregroundStyle(Theme.bone)
+                            .contentTransition(.numericText())
                         Text(timeString)
-                            .font(Theme.data(22)).foregroundStyle(Theme.bone.opacity(0.7))
+                            .font(Theme.data(14)).foregroundStyle(Theme.bone.opacity(0.55))
                     }
                 }
             }
@@ -807,7 +813,11 @@ struct GuidedBreathSheet: View {
                 if p == .inhale { withAnimation(.easeInOut(duration: dur)) { full = true } }
                 if p == .exhale { withAnimation(.easeInOut(duration: dur)) { full = false } }
                 CalmVoice.say(lines[round % lines.count], key: "\(keyPrefix)-\(round % lines.count)")
-                try? await Task.sleep(nanoseconds: UInt64(dur * 1_000_000_000))
+                for second in 1...Int(dur) {
+                    guard !Task.isCancelled else { return }
+                    withAnimation(.easeOut(duration: 0.2)) { beat = second }
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                }
                 secondsLeft = max(0, total - Int(Date().timeIntervalSince(started)))
             }
             round += 1
@@ -939,7 +949,7 @@ struct MeditationSheet: View {
                 Circle().fill(Theme.ember.opacity(0.20))
                     .frame(width: 180, height: 180)
                     .scaleEffect(swell ? 1.0 : 0.6)
-                    .animation(.easeInOut(duration: 5).repeatForever(autoreverses: true), value: swell)
+                    .animation(.easeInOut(duration: 9).repeatForever(autoreverses: true), value: swell) // slowed (July 6, Maria: it moved too fast)
             }
             .padding(.bottom, 26)
 

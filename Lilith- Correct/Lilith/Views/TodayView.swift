@@ -22,6 +22,7 @@ struct TodayView: View {
     @State private var scope: HoroscopeService.Scope = .daily        // the selected tab
     @State private var displayScope: HoroscopeService.Scope = .daily // what the reading shows
     @State private var showMoonSheet = false
+    @State private var showShareReading = false
 
     @State private var transits: [Transit] = [] // computed once per load, never per frame
 
@@ -68,6 +69,11 @@ struct TodayView: View {
         .auraScreen(.moonlight) // Today reads calm; the phase speaks through chip, ring, numbers
         .task { await load() }
         .sheet(isPresented: $showMoonSheet) { MoonSheet(chart: chart) }
+        .sheet(isPresented: $showShareReading) {
+            if let horoscope {
+                ReadingShareSheet(response: horoscope, bigThree: chart.bigThreeShort)
+            }
+        }
     }
 
     // MARK: Scroll plumbing (the custom, spinner-free pull-to-refresh)
@@ -382,6 +388,9 @@ struct TodayView: View {
 
     // MARK: The reading card — the merged answer on one calm surface
 
+    // July 6 (Maria): the reading is shareable, but never from here, where her cycle day and
+    // vibe sit an inch away. Tapping the card opens the clean share view: reading only, wordmark
+    // at the bottom, screenshot-safe. The little glyph says so.
     private var readingCard: some View {
         VStack(alignment: .leading, spacing: 0) {
             headline
@@ -393,6 +402,20 @@ struct TodayView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .softCard()
+        .overlay(alignment: .topTrailing) {
+            if horoscope != nil {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.system(size: 13, weight: .light))
+                    .foregroundStyle(Theme.gold.opacity(0.6))
+                    .padding(14)
+            }
+        }
+        .contentShape(RoundedRectangle(cornerRadius: 24))
+        .onTapGesture {
+            guard horoscope != nil else { return }
+            Haptics.open()
+            showShareReading = true
+        }
         .padding(.top, 18)
     }
 

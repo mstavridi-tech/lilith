@@ -66,6 +66,7 @@ final class VaultStore: ObservableObject {
     func add(_ entry: VaultEntry) {
         entries.append(entry)
         persist()
+        Care.scheduleReminder(for: entry.kind) // the next one books itself, by the standard
     }
 
     func delete(_ entry: VaultEntry) {
@@ -223,6 +224,12 @@ struct HealthVaultView: View {
                         Text("LAST · \(Self.short.string(from: last.date).uppercased())")
                             .font(Theme.mono(9)).tracking(Theme.tracking(9, em: 0.14))
                             .foregroundStyle(Theme.gold.opacity(0.8))
+                        if let due = Care.nextDueLine(for: kind, lastDone: last.date) {
+                            Text(due)
+                                .font(Theme.body(12).italic())
+                                .foregroundStyle(Theme.bone.opacity(0.6))
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
                 }
                 Spacer()
