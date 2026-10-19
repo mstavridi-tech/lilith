@@ -1,0 +1,763 @@
+<title>Project Zuhra Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a long-form plan. Sticky contents rail on wide screens, single reading column on phones. Phone mockups for the interface section. */
+:root{
+  --bg:#F5F3F6;
+  --surface:#FFFFFF;
+  --ink:#1C1622;
+  --muted:#5E5566;
+  --line:#E2DCE5;
+  --accent:#7B2D52;
+  --accent-soft:#F1E3EA;
+  --gold:#A27A2E;
+  --good:#2F6B4F;
+  --warn:#9A5B12;
+  --phone:#14101A;
+  --phone-ink:#F3EEF5;
+  --phone-dim:#A99FB0;
+  --phone-card:#211A28;
+  --display:"Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --body:"Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131017; --surface:#1C1721; --ink:#EEE8F1; --muted:#ABA1B3; --line:#33293A;
+    --accent:#D98BAE; --accent-soft:#33202B; --gold:#D2AE62; --good:#7CC4A0; --warn:#E0A55A;
+    --phone:#0B080E; --phone-card:#1E1724; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131017; --surface:#1C1721; --ink:#EEE8F1; --muted:#ABA1B3; --line:#33293A;
+  --accent:#D98BAE; --accent-soft:#33202B; --gold:#D2AE62; --good:#7CC4A0; --warn:#E0A55A;
+  --phone:#0B080E; --phone-card:#1E1724; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16.5px;line-height:1.62;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0}
+.wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:56px;padding-block:48px 96px}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr);gap:0;padding-block:28px 72px}.rail{display:none}}
+.rail{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 28px);align-self:start;max-height:calc(100vh - 56px);overflow:auto;font-size:13.5px}
+.rail .eyebrow{margin-bottom:10px}
+.rail ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.rail a{display:block;color:var(--muted);text-decoration:none;padding:5px 10px;border-radius:6px;border-left:2px solid transparent}
+.rail a:hover,.rail a:focus-visible{color:var(--ink);background:var(--accent-soft);outline:none}
+main{min-width:0;max-width:760px}
+.eyebrow{font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1,h2,h3{font-family:var(--display);font-weight:600;text-wrap:balance;line-height:1.12;margin:0}
+h1{font-size:clamp(44px,8vw,76px);letter-spacing:-.01em}
+h2{font-size:clamp(30px,4.6vw,40px);margin-bottom:6px}
+h3{font-size:24px;margin-top:30px;margin-bottom:6px}
+p{margin:0 0 14px}
+section{padding-top:64px;scroll-margin-top:24px}
+section + section{border-top:1px solid var(--line);margin-top:64px}
+.lede{font-size:19px;color:var(--muted);max-width:62ch}
+.hero{padding-top:12px}
+.hero .sub{font-family:var(--display);font-style:italic;font-size:clamp(22px,3.4vw,28px);color:var(--muted);margin-top:10px;max-width:30ch;line-height:1.25}
+.meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:26px;font-size:13.5px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:600}
+.note{background:var(--accent-soft);border-radius:10px;padding:16px 18px;font-size:15px;margin:18px 0}
+.note b{color:var(--accent)}
+.script{font-family:var(--display);font-size:22px;line-height:1.45;border-left:2px solid var(--accent);padding:4px 0 4px 22px;margin:18px 0}
+.script p{margin-bottom:12px}
+ul.tight,ol.tight{padding-left:20px;margin:0 0 14px}
+ul.tight li,ol.tight li{margin-bottom:6px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:18px 0}
+@media (max-width:700px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;min-width:0}
+.card h4{font-family:var(--body);font-size:15px;font-weight:700;margin:0 0 6px}
+.card p,.card li{font-size:15px}
+.card .k{font-family:var(--display);font-size:30px;font-weight:600;color:var(--accent);line-height:1}
+.layer{border-top:3px solid var(--accent)}
+.layer.self{border-top-color:var(--gold)}
+.layer.sky{border-top-color:var(--muted)}
+.tag{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tablebox{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.yes{color:var(--good);font-weight:600}
+.no{color:var(--muted)}
+.ours td{background:var(--accent-soft);font-weight:600}
+.timeline{display:grid;gap:0;margin:18px 0}
+.wk{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;padding:14px 0;border-top:1px solid var(--line)}
+.wk:first-child{border-top:0}
+.wk .when{font-family:var(--mono);font-size:13px;color:var(--muted);padding-top:3px}
+.wk .when b{display:block;font-family:var(--body);color:var(--ink);font-size:15px}
+.wk h4{margin:0 0 4px;font-size:16px}
+.wk p,.wk li{font-size:15px;margin-bottom:4px}
+.wk.milestone .when b{color:var(--accent)}
+@media (max-width:560px){.wk{grid-template-columns:minmax(0,1fr);gap:4px}}
+.phones{display:flex;flex-wrap:wrap;gap:22px;margin:22px 0;justify-content:flex-start}
+.phone{width:248px;max-width:100%;background:var(--phone);color:var(--phone-ink);border-radius:34px;padding:16px 14px 12px;box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 18px 40px -18px rgba(28,22,34,.45);font-size:12px;line-height:1.4;display:flex;flex-direction:column;gap:9px;min-height:500px}
+.phone .notch{width:84px;height:20px;border-radius:12px;background:#000;margin:0 auto 4px}
+.phone .eb{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#C9A55E;font-weight:600}
+.phone .big{font-family:var(--display);font-size:24px;line-height:1.1;font-weight:600}
+.phone .dim{color:var(--phone-dim)}
+.phone .pc{background:var(--phone-card);border-radius:14px;padding:11px 12px}
+.phone .row{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.phone .chip{display:inline-block;padding:5px 9px;border-radius:999px;background:#2C2334;font-size:11px;margin:0 4px 5px 0}
+.phone .chip.on{background:#C98AA8;color:#1B1420;font-weight:600}
+.phone .bar{height:5px;border-radius:3px;background:#3A2F42;overflow:hidden}
+.phone .bar i{display:block;height:100%;background:#C98AA8}
+.phone .tabs{margin-top:auto;display:flex;justify-content:space-around;align-items:center;background:#1E1724;border-radius:999px;padding:8px 6px;font-size:10px;color:var(--phone-dim)}
+.phone .tabs .on{color:var(--phone-ink);font-weight:600}
+.phone .plus{width:30px;height:30px;border-radius:50%;background:#C98AA8;color:#1B1420;display:grid;place-items:center;font-size:18px;font-weight:700}
+.phone .alter{font-family:var(--display);font-style:italic;font-size:15px;line-height:1.3;color:#EBD9A8}
+.phone .hunch{border-left:2px solid #C9A55E;padding-left:9px}
+.phone .face{display:flex;gap:6px}
+.phone .face span{flex:1;text-align:center;padding:8px 0;border-radius:10px;background:#2C2334;font-size:16px}
+.phone .face span.on{background:#C98AA8}
+.cap{font-size:13.5px;color:var(--muted);margin-top:8px;max-width:248px}
+.figure{display:flex;flex-direction:column}
+.decide{counter-reset:d;list-style:none;padding:0;margin:16px 0;display:grid;gap:10px}
+.decide li{counter-increment:d;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:13px 16px 13px 52px;position:relative;font-size:15px}
+.decide li::before{content:counter(d);position:absolute;left:16px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--bg);display:grid;place-items:center;font-size:13px;font-weight:700}
+dl.gloss{display:grid;grid-template-columns:170px minmax(0,1fr);gap:10px 20px;font-size:15px;margin:16px 0}
+dl.gloss dt{font-weight:700}
+dl.gloss dd{margin:0;color:var(--muted)}
+@media (max-width:560px){dl.gloss{grid-template-columns:minmax(0,1fr);gap:2px}dl.gloss dd{margin-bottom:10px}}
+.src{font-size:13.5px;color:var(--muted)}
+.src a{color:var(--muted)}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.foot{margin-top:72px;font-size:13px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+<nav class="rail" aria-label="Contents">
+  <div class="eyebrow">Contents</div>
+  <ol>
+    <li><a href="#pitch">The 60-second pitch</a></li>
+    <li><a href="#problem">The problem</a></li>
+    <li><a href="#product">The product</a></li>
+    <li><a href="#who">Who it is for</a></li>
+    <li><a href="#market">Market size</a></li>
+    <li><a href="#competition">Competition</a></li>
+    <li><a href="#model">Business model</a></li>
+    <li><a href="#money">The numbers</a></li>
+    <li><a href="#interface">The interface</a></li>
+    <li><a href="#build">Build plan to beta</a></li>
+    <li><a href="#marketing">Marketing plan</a></li>
+    <li><a href="#talk">Talking to real women</a></li>
+    <li><a href="#ops">Legal and admin</a></li>
+    <li><a href="#risks">Risks</a></li>
+    <li><a href="#name">The name</a></li>
+    <li><a href="#decide">Your decisions</a></li>
+    <li><a href="#words">Words to know</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">Business plan · working name</div>
+  <h1>Zuhra</h1>
+  <p class="sub">The health app for women whose bodies don't fit in one tracker.</p>
+  <div class="meta">
+    <span><b>Founder</b> Maria Stavridi, Dubai</span>
+    <span><b>Version</b> 1.0, October 20, 2026</span>
+    <span><b>Beta</b> TestFlight by mid-December 2026</span>
+    <span><b>Public launch</b> January 20, 2027</span>
+  </div>
+  <div class="note"><b>How to read this.</b> Sections 1 to 8 are the business case you can explain to anyone. Section 9 is how the app looks and why it won't feel crowded. Sections 10 to 13 are the work: building, marketing, research and admin. Section 16 shows what's settled and what's still open. "Zuhra" is only a placeholder; we still choose the real name together (section 15).</div>
+</header>
+
+<section id="pitch">
+  <div class="eyebrow">1 · The 60-second pitch</div>
+  <h2>Say this, word for word if you like</h2>
+  <div class="script">
+    <p>Millions of women aren't dealing with one health thing. They're dealing with three at once. ADHD and PMDD. PCOS and a GLP-1. Perimenopause and a stimulant. Every app out there tracks one of those, so nothing ever connects the dots.</p>
+    <p>Zuhra puts all of it in one place. It reads her Apple Watch or Oura, her cycle, her meds and a ten-second daily check-in, and over time it shows her own patterns. Things like: your sleep drops the week before your period, and it's worse after a dose increase. Then it turns that into a one-page report her doctor can actually use.</p>
+    <p>On top of the data, it gives her confidence back. She builds an alter ego from her birth chart, and on hard days the app reminds her what she has already handled, using her own data as proof.</p>
+    <p>Everything stays on her phone. It's a subscription, around sixty dollars a year, and we launch in Dubai, the UK and the US in January.</p>
+  </div>
+  <p class="src">The short version, for a lift or a party: "It's the health app for women juggling more than one thing at once, like ADHD and PMDD, or PCOS and Mounjaro. It reads your ring and your cycle, finds your patterns, and makes a report for your doctor."</p>
+</section>
+
+<section id="problem">
+  <div class="eyebrow">2 · The problem</div>
+  <h2>Her conditions overlap. Her apps don't.</h2>
+  <p class="lede">Women's health conditions travel in pairs and threes, and they interact through the menstrual cycle. Every tool on the market handles one piece.</p>
+  <div class="grid3">
+    <div class="card"><div class="k">3.2×</div><p>Women with ADHD are about three times as likely to screen positive for PMDD: 31.4% versus 9.8% of other women (2025 controlled study, 700+ women).</p></div>
+    <div class="card"><div class="k">54%</div><p>of women with ADHD report debilitating perimenopause symptoms, versus about 33% without ADHD (Iceland cohort, 5,392 women, 2025).</p></div>
+    <div class="card"><div class="k">2% → 18%</div><p>Among US women with PCOS, GLP-1 prescriptions went from 2.4% in 2021 to 17.6% in 2025, before counting telehealth and compounded use.</p></div>
+  </div>
+  <h3>What goes wrong today</h3>
+  <ul class="tight">
+    <li><b>Nothing connects.</b> Her period app doesn't know about her meds. Her ring doesn't know she has PMDD. Her GLP-1 tracker doesn't know her cycle. She is the only place the information meets.</li>
+    <li><b>The interactions matter.</b> Tirzepatide (Mounjaro, Zepbound) lowers the estrogen in the oral pill by about 55 to 66%, so the label advises backup contraception for 4 weeks after starting and after every dose increase. ADHD meds often feel weaker in the late luteal phase. These are real, logged, cycle-linked effects nobody is tracking for her.</li>
+    <li><b>She gets dismissed.</b> In a 2026 UK survey, 81.9% of women said a doctor had dismissed their symptoms, versus 51.7% of men. PMDD takes an average of 12 years and about 6 providers to diagnose (IAPMD).</li>
+    <li><b>Tracking everything is exhausting.</b> The closest general tool, Bearable, is known for overwhelming people. Its own help pages tell users to track less.</li>
+  </ul>
+</section>
+
+<section id="product">
+  <div class="eyebrow">3 · The product</div>
+  <h2>Three layers, one calm app</h2>
+  <p class="lede">The app has three layers. Each one does a different job, and she controls how much of the third one she sees.</p>
+  <div class="grid3">
+    <div class="card layer"><span class="tag">Body</span><h4 style="margin-top:10px">The receipts</h4><p>Facts only. Wearable data, cycle phase, meds and doses, a ten-second check-in, lab results. Over time: her personal patterns, and a doctor-ready report.</p></div>
+    <div class="card layer self"><span class="tag">Self</span><h4 style="margin-top:10px">The alter ego</h4><p>Confidence. She names an alter ego, seeded from her chart. On hard days the app reminds her what she has already handled, using her own logged history as proof.</p></div>
+    <div class="card layer sky"><span class="tag">Sky</span><h4 style="margin-top:10px">The rhythm</h4><p>The moon as the app's monthly rhythm: set an intention at the new moon, get her receipts card at the full moon. A woo dial sets how much she sees: Off, A little, or Full sky.</p></div>
+  </div>
+  <h3>Why the layers are kept apart</h3>
+  <p>The health layer never borrows astrology's authority, and the astrology layer never pretends to be health advice. A 48-year-old on HRT and a stimulant can switch the sky off and still have a serious health tool. A 27-year-old who loves her chart can turn it all the way up. Both pay for the same app.</p>
+  <h3>Why the alter ego is built on data</h3>
+  <p>Research on self-distancing shows that talking to yourself as someone else (by name, in the third person) measurably lowers anxiety. The "Batman effect" studies found children persisted longer at hard tasks while pretending to be a hero. But generic affirmations can backfire for people with low self-esteem (Wood, Perunovic and Lee, 2009), because the brain argues back. So every confidence line is built from her own evidence:</p>
+  <div class="note">"Luteal week, and your HRV is low. The last 4 times this happened, you still showed up for Thursday. Nyx doesn't need to be loud this week. She needs to be on time."</div>
+  <h3>What the app will never do</h3>
+  <ul class="tight">
+    <li>Diagnose anything, score her for a condition, or say a medication is or isn't working.</li>
+    <li>Suggest doses, timing changes or peptide protocols. She can log "other compounds" as free text, and that's all.</li>
+    <li>Praise or criticise her body or weight.</li>
+    <li>Send her data anywhere. It lives on her phone, never in iCloud, never on our server.</li>
+  </ul>
+</section>
+
+<section id="who">
+  <div class="eyebrow">4 · Who it is for</div>
+  <h2>Women 22 to 55 juggling more than one thing</h2>
+  <p class="lede">Three people we design for. They're composites, not real users, but every detail comes from the research.</p>
+  <div class="grid3">
+    <div class="card"><h4>Lina, 29, Dubai</h4><p>Marketing manager. Diagnosed ADHD at 27, takes a stimulant. Suspects PMDD. Wears an Apple Watch. Her luteal week wrecks her work and her meds feel weaker then, but her psychiatrist wants "more data".</p></div>
+    <div class="card"><h4>Sarah, 36, London</h4><p>PCOS, started Mounjaro in spring, on the pill. Side effects come and go, she didn't know about the backup contraception window, and her GP appointments last 10 minutes.</p></div>
+    <div class="card"><h4>Dana, 47, Chicago</h4><p>Perimenopause and late-diagnosed ADHD. Oura ring, on HRT. Everything changed at once and nobody connects her sleep, her moods and her meds. Likes the moon, doesn't want her doctor to see it.</p></div>
+  </div>
+  <h3>Why women only</h3>
+  <ul class="tight">
+    <li>The cycle is the core of the engine, so the product is women-first by design.</li>
+    <li>Women are the ones carrying these overlaps: 15% of US women take a GLP-1 versus 9% of men, and about 80% of UK private GLP-1 prescriptions go to women.</li>
+    <li>Oura's own filing shows 72% of its 5 million paying members are women, and its fastest-growing group is women in their early twenties.</li>
+    <li>Men can download it. We just don't design for them.</li>
+  </ul>
+  <h3>Tone for every age</h3>
+  <p>Adult, warm, dry and specific. The humour comes from honesty ("your HRV and your Saturday disagree"), not slang. The health layer stays calm. The alter ego layer is where the playful hype lives.</p>
+</section>
+
+<section id="market">
+  <div class="eyebrow">5 · Market size</div>
+  <h2>A large market with a small, specific way in</h2>
+  <div class="tablebox"><table>
+    <thead><tr><th>Layer</th><th>Who</th><th class="num">People</th><th class="num">Value per year</th></tr></thead>
+    <tbody>
+      <tr><td><b>Total market</b></td><td>Women 22 to 55 with iPhones in the US, UK and GCC</td><td class="num">~54M</td><td class="num">~$2.7B</td></tr>
+      <tr><td><b>Reachable market</b></td><td>Of those, women with at least one target condition or medication (~35%) who already use health apps (~40%)</td><td class="num">~7.6M</td><td class="num">~$380M</td></tr>
+      <tr><td><b>Our 18-month target</b></td><td>Paying subscribers in the base scenario</td><td class="num">~3,400</td><td class="num">~$171K</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src">Values at $49.99 per year. Women 22 to 55: about 73M in the US, 15.5M in the UK and 12.5M across the GCC (2.5M in the UAE). iPhone share used: US 57%, UK 49%, GCC 40%. Our target is 0.045% of the reachable market, built from the funnel upwards, not by assuming a market share.</p>
+  <h3>Supporting numbers</h3>
+  <div class="tablebox"><table>
+    <thead><tr><th>Signal</th><th>Figure</th></tr></thead>
+    <tbody>
+      <tr><td>PCOS</td><td>8.7% of US women 20 to 49; 15.1% in the Eastern Mediterranean region, which includes the Gulf</td></tr>
+      <tr><td>Endometriosis</td><td>6.2% of US women 20 to 49; about 10% worldwide</td></tr>
+      <tr><td>PMDD</td><td>1.6% confirmed, 3.2% provisional (2024 Oxford meta-analysis, which calls it an underestimate)</td></tr>
+      <tr><td>ADHD in women</td><td>New diagnoses in women 23 to 49 nearly doubled between 2020 and 2022</td></tr>
+      <tr><td>GLP-1s</td><td>15% of US women currently take one (KFF, November 2025)</td></tr>
+      <tr><td>Perimenopause</td><td>About 2 million US women start it every year, roughly 8 to 16 million in it at any time</td></tr>
+      <tr><td>Wearables</td><td>37% of US adults own a smartwatch; women are 53% of wearable owners</td></tr>
+      <tr><td>Tracking habit</td><td>About 37 to 45% of US women of reproductive age use period or fertility apps</td></tr>
+      <tr><td>Femtech market</td><td>About $9 to 10 billion, growing 14 to 18% a year</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="competition">
+  <div class="eyebrow">6 · Competition</div>
+  <h2>Everyone owns one piece</h2>
+  <div class="tablebox"><table>
+    <thead><tr><th>App</th><th>Cycle lens on everything</th><th>Several meds and conditions</th><th>Any wearable</th><th>Doctor report</th><th>Price per year</th></tr></thead>
+    <tbody>
+      <tr class="ours"><td>Zuhra</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes, via Apple Health</td><td class="yes">Yes</td><td class="num">$59.99</td></tr>
+      <tr><td>Oura</td><td>Partly</td><td class="no">GLP-1 only (Oct 2026)</td><td class="no">Oura ring only</td><td>Perimenopause only</td><td class="num">$69.99</td></tr>
+      <tr><td>Guava</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="num">$78</td></tr>
+      <tr><td>Bearable</td><td class="no">No</td><td class="yes">Yes</td><td>Some</td><td>Basic</td><td class="num">$34.99</td></tr>
+      <tr><td>Belle (PMDD)</td><td class="yes">Yes</td><td class="no">PMDD only</td><td class="no">No</td><td class="yes">Yes</td><td class="num">~$80</td></tr>
+      <tr><td>Shotsy (GLP-1)</td><td class="no">No</td><td class="no">GLP-1 only</td><td class="no">No</td><td>Basic</td><td class="num">$39.99</td></tr>
+      <tr><td>Flo, Clue</td><td class="yes">Yes</td><td class="no">One mode at a time</td><td class="no">Limited</td><td class="no">No</td><td class="num">~$40 to 60</td></tr>
+      <tr><td>Stardust</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="num">$29.99</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Our position in one line</h3>
+  <p>The only app that reads every pattern through her cycle, across all her conditions and meds, from any wearable, and hands her doctor one clean page. With taste, and a voice.</p>
+  <h3>Why a big competitor can't simply copy it</h3>
+  <ul class="tight">
+    <li><b>Oura</b> only serves Oura owners, and its brand is clinical. It won't add an alter ego or a moon.</li>
+    <li><b>Flo and Stardust</b> are built for the broad market. Multi-condition depth would clutter their apps for most of their users.</li>
+    <li><b>Guava</b> is gender-neutral and clinical, with no cycle engine.</li>
+    <li><b>The voice, the design and the trust</b> of a founder who lives it take years to copy.</li>
+    <li><b>Her history.</b> Once she has six months of patterns in the app, leaving means losing them.</li>
+  </ul>
+  <div class="note"><b>The biggest threat is Oura.</b> It launched GLP-1 Insights this month and already makes a perimenopause report for doctors. We win on any wearable (Apple Watch first), PMDD and ADHD (which Oura doesn't cover), several meds at once, and the self and sky layers.</div>
+</section>
+
+<section id="model">
+  <div class="eyebrow">7 · Business model</div>
+  <h2>A free core, a paid "receipts" layer</h2>
+  <div class="grid2">
+    <div class="card"><h4>Free, forever</h4><ul class="tight"><li>Today screen and daily check-in</li><li>Cycle tracking and phase</li><li>Meds schedule and reminders</li><li>Apple Health connection</li><li>Her alter ego's name and daily line</li><li>Moon phase and woo dial</li></ul></div>
+    <div class="card"><h4>Premium</h4><ul class="tight"><li>Doctor-ready report (PDF)</li><li>Receipts: her personal patterns by phase, dose and day</li><li>The Vault: lab results and documents, locked with Face ID</li><li>Full alter ego from her chart</li><li>Monthly full-moon receipts card</li><li>Full history</li></ul></div>
+  </div>
+  <h3>Pricing</h3>
+  <div class="tablebox"><table>
+    <thead><tr><th>Plan</th><th class="num">Price</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Annual</td><td class="num">$59.99</td><td>The main plan. Annual plans make 60.6% of health app revenue.</td></tr>
+      <tr><td>Monthly</td><td class="num">$7.99</td><td>For people who want to try it without committing.</td></tr>
+      <tr><td>Free trial</td><td class="num">14 days</td><td>Trials of 17 to 32 days convert best (42 to 46%), trials under 4 days convert worst (25.5%). 14 days covers half a cycle.</td></tr>
+      <tr><td>Founding member</td><td class="num">$39.99</td><td>For waitlist and beta testers, locked for life. Rewards early users and creates urgency.</td></tr>
+    </tbody>
+  </table></div>
+  <h3>When the paywall appears</h3>
+  <p>At the end of onboarding, she sees one calm screen offering the 14-day trial. She can skip it and keep the free core. Data from 2026 shows paywalls shown up front convert about 5 times better than free apps with optional upgrades (10.7% versus 2.1%), with the same first-year retention. Showing the offer once, early, and letting her skip it gets most of that benefit without being pushy.</p>
+  <h3>Later revenue, not at launch</h3>
+  <ul class="tight">
+    <li>Clinic partnerships in Dubai: clinicians recommend the app to patients who need to track before appointments.</li>
+    <li>A one-off paid report for women who only need it once, at around $9.99.</li>
+    <li>Friends and shared circles, once accounts exist.</li>
+  </ul>
+</section>
+
+<section id="money">
+  <div class="eyebrow">8 · The numbers</div>
+  <h2>Three honest scenarios</h2>
+  <p class="lede">Net of Apple's 15% commission and 3% refunds, launching January 2027. These come from a funnel model using 2026 health app benchmarks, not from wishful market shares.</p>
+  <div class="tablebox"><table>
+    <thead><tr><th></th><th class="num">Conservative</th><th class="num">Base</th><th class="num">Optimistic</th></tr></thead>
+    <tbody>
+      <tr><td>Downloads per month (settled)</td><td class="num">1,500 to 3,300</td><td class="num">4,000 to 10,000</td><td class="num">10,000 to 25,000</td></tr>
+      <tr><td>Downloads that become paying</td><td class="num">2.0%</td><td class="num">3.5%</td><td class="num">5.5%</td></tr>
+      <tr><td>Annual price modelled</td><td class="num">$39.99</td><td class="num">$49.99</td><td class="num">$69.99</td></tr>
+      <tr><td><b>2027 net revenue</b></td><td class="num"><b>$14K</b></td><td class="num"><b>$96K</b></td><td class="num"><b>$524K</b></td></tr>
+      <tr><td>18 months, total net</td><td class="num">$27K</td><td class="num">$190K</td><td class="num">$1.05M</td></tr>
+      <tr><td>Paying subscribers at month 18</td><td class="num">~590</td><td class="num">~3,400</td><td class="num">~14,000</td></tr>
+      <tr><td>Yearly run rate at month 18</td><td class="num">~$23K</td><td class="num">~$171K</td><td class="num">~$930K</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src">Benchmarks: 2.9% median download-to-paid for health and fitness apps, 6.2% top quarter (RevenueCat 2026). Our planned $59.99 sits between the base and optimistic prices, so the base case is slightly cautious.</p>
+  <h3>What each scenario means for you</h3>
+  <ul class="tight">
+    <li><b>Conservative:</b> a nice side income that covers its own costs. A signal to reposition.</li>
+    <li><b>Base:</b> real side income in year one, and the option to go full time in year two. Needs a working organic engine (section 11).</li>
+    <li><b>Optimistic:</b> needs a viral moment or an App Store feature. Possible, not plannable.</li>
+  </ul>
+  <h3>Costs, year one</h3>
+  <div class="tablebox"><table>
+    <thead><tr><th>Item</th><th class="num">Cost</th></tr></thead>
+    <tbody>
+      <tr><td>Apple Developer Program</td><td class="num">$99 / yr</td></tr>
+      <tr><td>Apple commission (Small Business Program)</td><td class="num">15% of sales</td></tr>
+      <tr><td>RevenueCat (subscriptions)</td><td class="num">Free to $2.5K/mo, then 1%</td></tr>
+      <tr><td>Analytics (TelemetryDeck, privacy-first)</td><td class="num">Free tier</td></tr>
+      <tr><td>Domain, landing page, waitlist</td><td class="num">~$150 / yr</td></tr>
+      <tr><td>Privacy policy tool</td><td class="num">~$120 to 240 / yr</td></tr>
+      <tr><td>UAE lawyer (contract, privacy, setup)</td><td class="num">~$700 to 1,400</td></tr>
+      <tr><td>UAE license (free zone or permit), when needed</td><td class="num">~$1,600 to 3,500 / yr</td></tr>
+      <tr><td>Trademark (UAE, one or two classes)</td><td class="num">~$1,800 to 3,600</td></tr>
+      <tr><td>Marketing (section 11)</td><td class="num">$0 to 2,000</td></tr>
+      <tr><td><b>Total, year one (full setup)</b></td><td class="num"><b>~$5K to 12K</b></td></tr>
+    </tbody>
+  </table></div>
+  <h3>The minimal path (what we'll actually do)</h3>
+  <p>You want to keep spending small, so the plan spends almost nothing until the app earns. Trademark filing, a company and paid marketing all wait until there is real revenue.</p>
+  <div class="tablebox"><table>
+    <thead><tr><th>Before launch</th><th class="num">Cost</th></tr></thead>
+    <tbody>
+      <tr><td>Apple Developer Program</td><td class="num">$99</td></tr>
+      <tr><td>Domain and a one-page site (Carrd)</td><td class="num">~$35</td></tr>
+      <tr><td>Privacy policy and terms from a template, checked by the lawyer</td><td class="num">$0</td></tr>
+      <tr><td>One hour with a UAE lawyer</td><td class="num">~$150 to 400</td></tr>
+      <tr><td>Waitlist and email (free tiers)</td><td class="num">$0</td></tr>
+      <tr><td>Marketing ($0 tier, plus printed QR cards)</td><td class="num">~$50</td></tr>
+      <tr><td><b>Total before the app earns anything</b></td><td class="num"><b>~$350 to 600</b></td></tr>
+    </tbody>
+  </table></div>
+  <p>Once subscriptions start, revenue pays for the next steps in this order: the business license, the trademark, then small creator campaigns.</p>
+  <h3>Unit economics, in plain words</h3>
+  <p>A paid ad install costs about $2.40 to $3.80 in the US. At 3.5% conversion, each paying customer from ads costs around $86, and she pays us about $40 to $50 in year one. So ads lose money at launch. We grow through communities, content and creators paid on results, and switch on small ad tests only once we know our real conversion rate.</p>
+  <h3>Tax, explained simply</h3>
+  <ul class="tight">
+    <li><b>In the UAE:</b> no personal income tax. As an individual you only become liable for corporate tax once business turnover passes AED 1 million in a year. A company has to register for corporate tax from the start, at 9% on profit above AED 375,000.</li>
+    <li><b>The US tax form:</b> Apple sells the app for you in every country and pays you each month. Because you're not American, you fill in a form called the W-8BEN inside App Store Connect. It takes about ten minutes: your legal name, country, address and passport details. You don't need a US tax number. You renew it every three years.</li>
+    <li><b>The catch:</b> the US and the UAE have no tax treaty. That means Apple will likely keep back up to 30% of what you earn from <i>US</i> customers and pay it to the US tax office. Sales in the UAE, UK, EU and everywhere else are not affected.</li>
+    <li><b>What it means in practice:</b> a US subscriber paying $59.99 might net you about $35 instead of about $50. The scenarios above don't include this, so treat US income as roughly 30% lower. It's another reason the Gulf and the UK matter as launch markets.</li>
+    <li><b>Ask the lawyer or a tax advisor</b> to confirm exactly how Apple applies it to your account, and whether a company later changes anything.</li>
+  </ul>
+</section>
+
+<section id="interface">
+  <div class="eyebrow">9 · The interface</div>
+  <h2>A lot inside, very little on screen</h2>
+  <p class="lede">The fear is right: if she opens the app and sees everything at once, she closes it and forgets it. The design answers that with a few strict rules.</p>
+  <h3>Ten rules</h3>
+  <ol class="tight">
+    <li><b>One question per tab.</b> Today: "how am I, and why?" Receipts: "what's my pattern?" You: "who am I, and where's my stuff?"</li>
+    <li><b>Three tabs and one button.</b> The middle button is the check-in. Nothing else competes with it.</li>
+    <li><b>She only sees her own conditions.</b> In onboarding she picks her mix (PMDD, ADHD, PCOS, GLP-1 and so on). Anything not in her mix never appears.</li>
+    <li><b>Today shows three things, maximum.</b> One sentence about her day, the check-in, and what's coming up. Everything else is a tap away.</li>
+    <li><b>Words first, numbers on tap.</b> "You slept less and your HRV dipped" comes first. The 6h 10m and the 38 ms are underneath.</li>
+    <li><b>A ten-second check-in.</b> Three taps by default. "Add more" opens symptoms only if she wants to.</li>
+    <li><b>The app gets quieter on hard days.</b> When her signals are low, Today shows fewer things and softer copy.</li>
+    <li><b>The woo dial controls the sky.</b> At Off, no moon, no chart, nothing. At Full sky, the moon sits on Today and the chart fills her profile.</li>
+    <li><b>No red and green judgement, no streak shame.</b> Patterns are "hunches" with a count, never warnings. Missing a day is fine.</li>
+    <li><b>One accent colour, one display serif, lots of space.</b> Dark by default, light mode included. Sleek, sexy and minimal comes from restraint.</li>
+  </ol>
+  <h3>The four key screens</h3>
+  <div class="phones">
+    <div class="figure">
+      <div class="phone" role="img" aria-label="Today screen mockup">
+        <div class="notch"></div>
+        <div class="eb">Tuesday · luteal day 24</div>
+        <div class="big">Slow morning. That tracks.</div>
+        <div class="dim">5h 50m sleep and your HRV dipped. Same as the last three luteal Tuesdays.</div>
+        <div class="pc"><div class="alter">"Nyx doesn't need to be loud today. She needs to be on time."</div></div>
+        <div class="pc">
+          <div class="row"><b>Check in</b><span class="dim">10 sec</span></div>
+          <div class="face" style="margin-top:8px"><span>😮‍💨</span><span class="on">😐</span><span>🙂</span><span>✨</span></div>
+        </div>
+        <div class="pc">
+          <div class="eb" style="color:var(--phone-dim)">Coming up</div>
+          <div>Dose day Thursday</div>
+          <div class="dim">Period likely in 4 days</div>
+        </div>
+        <div class="tabs"><span class="on">Today</span><span class="plus">+</span><span>Receipts</span><span>You</span></div>
+      </div>
+      <p class="cap"><b>Today.</b> One sentence, one alter ego line, the check-in, and what's coming. Nothing else.</p>
+    </div>
+    <div class="figure">
+      <div class="phone" role="img" aria-label="Check-in screen mockup">
+        <div class="notch"></div>
+        <div class="eb">Check in</div>
+        <div class="big">How's today?</div>
+        <div class="pc"><div class="dim" style="margin-bottom:6px">Mood</div><div class="face"><span>😮‍💨</span><span class="on">😐</span><span>🙂</span><span>✨</span></div></div>
+        <div class="pc"><div class="dim" style="margin-bottom:6px">Energy</div><div class="bar"><i style="width:35%"></i></div></div>
+        <div class="pc"><div class="dim" style="margin-bottom:6px">Focus (because ADHD is in your mix)</div><div class="bar"><i style="width:45%"></i></div></div>
+        <div class="pc"><div class="row"><span>Elvanse 40mg</span><span class="chip on" style="margin:0">Taken</span></div></div>
+        <div><span class="chip">+ symptoms</span><span class="chip">+ social</span><span class="chip">+ note</span></div>
+        <div class="pc" style="text-align:center;background:#C98AA8;color:#1B1420;font-weight:700">Done</div>
+      </div>
+      <p class="cap"><b>Check-in.</b> Three taps. The rows change with her mix. Extras stay folded away.</p>
+    </div>
+    <div class="figure">
+      <div class="phone" role="img" aria-label="Receipts screen mockup">
+        <div class="notch"></div>
+        <div class="eb">Receipts</div>
+        <div class="big">What your body keeps saying</div>
+        <div class="pc hunch"><b>Luteal sleep</b><div class="dim">You sleep 38 min less in the 5 days before your period.</div><div class="eb" style="color:var(--phone-dim);margin-top:4px">Seen 4 cycles out of 4</div></div>
+        <div class="pc hunch"><b>After dose increases</b><div class="dim">Energy check-ins drop for 3 days, then recover.</div><div class="eb" style="color:var(--phone-dim);margin-top:4px">Early hunch · seen 2 times</div></div>
+        <div class="pc hunch"><b>Full moon</b><div class="dim">No difference in your sleep. Myth busted, for you.</div><div class="eb" style="color:var(--phone-dim);margin-top:4px">5 full moons</div></div>
+        <div class="pc row"><b>Doctor report</b><span class="chip on" style="margin:0">Make PDF</span></div>
+        <div class="tabs"><span>Today</span><span class="plus">+</span><span class="on">Receipts</span><span>You</span></div>
+      </div>
+      <p class="cap"><b>Receipts.</b> Patterns as plain sentences with honest counts. The doctor report is one tap.</p>
+    </div>
+    <div class="figure">
+      <div class="phone" role="img" aria-label="You screen mockup">
+        <div class="notch"></div>
+        <div class="eb">You</div>
+        <div class="big">Maria, also known as Nyx</div>
+        <div class="pc"><div class="dim">Fights like your Mars in Aries. Shines like your Venus in Leo. Walks in like a Scorpio rising.</div></div>
+        <div class="pc row"><b>Your mix</b><span class="dim">ADHD · PMDD · GLP-1</span></div>
+        <div class="pc row"><b>Meds</b><span class="dim">3 active</span></div>
+        <div class="pc row"><b>The Vault</b><span class="dim">🔒 6 lab results</span></div>
+        <div class="pc row"><b>Woo dial</b><span class="dim">A little</span></div>
+        <div class="tabs"><span>Today</span><span class="plus">+</span><span>Receipts</span><span class="on">You</span></div>
+      </div>
+      <p class="cap"><b>You.</b> Her alter ego up top, and her stuff underneath as a short list.</p>
+    </div>
+  </div>
+  <h3>Onboarding, six screens</h3>
+  <ol class="tight">
+    <li><b>Hello.</b> What the app is, in one sentence, plus the privacy promise.</li>
+    <li><b>Your mix.</b> Tap what applies: PMDD or bad PMS, ADHD, PCOS, endometriosis, GLP-1, perimenopause, birth control, other.</li>
+    <li><b>Your meds.</b> Optional. Name, dose, schedule.</li>
+    <li><b>Your body.</b> Last period start, then connect Apple Health (Watch, Oura and others).</li>
+    <li><b>Your sky.</b> Optional birth date, time and place, then the woo dial.</li>
+    <li><b>Your alter ego.</b> She names her. The app writes her three lines from the chart, or from her answers if she skipped the sky.</li>
+  </ol>
+  <p>Then one calm screen offering the 14-day trial, which she can skip.</p>
+</section>
+
+<section id="build">
+  <div class="eyebrow">10 · Build plan to beta</div>
+  <h2>Eight weeks to TestFlight</h2>
+  <p class="lede">The plan fits your real week: a few evenings plus weekends, roughly 12 to 18 hours, with Claude Code doing the heavy lifting. Weekends are build days. Evenings are for testing on your phone, writing copy and marketing. It starts from a fresh Xcode project and reuses LILITH's proven parts, so we start roughly a third of the way in.</p>
+  <h3>What we reuse from LILITH</h3>
+  <div class="tablebox"><table>
+    <thead><tr><th>LILITH part</th><th>Becomes</th></tr></thead>
+    <tbody>
+      <tr><td>Cycle engine (CycleModels, CycleStore)</td><td>The phase engine under every pattern</td></tr>
+      <tr><td>ChartEngine (SwiftAA, verified against Swiss Ephemeris)</td><td>Alter ego seeding and the moon rhythm</td></tr>
+      <tr><td>Care.swift (discreet local notifications)</td><td>Meds reminders and the GLP-1 backup window note</td></tr>
+      <tr><td>HealthVault (Face ID vault)</td><td>The Vault for lab results</td></tr>
+      <tr><td>Theme system, floating tab bar, moon sheet</td><td>A starting point for the new design system</td></tr>
+      <tr><td>Fine print and delete-everything logic</td><td>Disclaimers and privacy controls</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Week by week</h3>
+  <div class="timeline">
+    <div class="wk"><div class="when"><b>Week 1</b>Oct 20 to 26</div><div><h4>Unblock everything</h4><p>Enroll in Apple Developer as an individual. Read your employment contract. Book the lawyer. Talk to 5 women in your target group. Pick the name shortlist. New Xcode project, port the cycle engine and chart engine.</p></div></div>
+    <div class="wk"><div class="when"><b>Week 2</b>Oct 27 to Nov 2</div><div><h4>Design system and onboarding</h4><p>Colours, type and components. Build the six onboarding screens and "your mix", so the app knows which modules to show. Reserve the name in App Store Connect.</p></div></div>
+    <div class="wk"><div class="when"><b>Week 3</b>Nov 3 to 9</div><div><h4>Check-in and meds</h4><p>The ten-second check-in that adapts to her mix. Meds with schedules, "taken" taps and dose changes. Reminders through the Care engine.</p></div></div>
+    <div class="wk"><div class="when"><b>Week 4</b>Nov 10 to 16</div><div><h4>Apple Health</h4><p>Read sleep, HRV, resting heart rate, wrist temperature and steps. Line them up by day and cycle phase. Test with a real Apple Watch and an Oura ring.</p></div></div>
+    <div class="wk"><div class="when"><b>Week 5</b>Nov 17 to 23</div><div><h4>Today screen</h4><p>The one-sentence summary, the "coming up" card and the hard-day quiet mode. Internal TestFlight for you and up to 100 friends (no Apple review needed).</p></div></div>
+    <div class="wk milestone"><div class="when"><b>Milestone</b>Nov 23</div><div><h4>Internal beta in your hands</h4><p>You use it daily from here. Every rough edge you hit becomes the next fix.</p></div></div>
+    <div class="wk"><div class="when"><b>Week 6</b>Nov 24 to 30</div><div><h4>Vault and doctor report</h4><p>Lab results as photos or PDFs, dated and tagged, behind Face ID. The one-page PDF report: check-ins by phase, meds timeline, wearable overlays, her notes. A PMDD mode in the daily rating format clinicians already use.</p></div></div>
+    <div class="wk"><div class="when"><b>Week 7</b>Dec 1 to 7</div><div><h4>Alter ego, sky and receipts v1</h4><p>Alter ego from the chart, with hand-written lines for hard days. Moon rhythm and the woo dial. First simple receipts: averages by phase, labelled as early hunches with counts.</p></div></div>
+    <div class="wk"><div class="when"><b>Week 8</b>Dec 8 to 14</div><div><h4>Polish and submit</h4><p>Privacy policy, disclaimers, Apple Health permission text, age rating. Submit to TestFlight beta review (usually 1 to 2 days).</p></div></div>
+    <div class="wk milestone"><div class="when"><b>Milestone</b>~Dec 14</div><div><h4>Public beta live</h4><p>100 to 300 testers from the waitlist, Reddit and Dubai communities.</p></div></div>
+    <div class="wk"><div class="when"><b>Dec 15 to Jan 14</b></div><div><h4>Learn and finish</h4><p>Fix what testers hit. Add the paywall and subscriptions. Screenshots and App Store page. Submit for App Store review by about January 12, leaving room for one rejection.</p></div></div>
+    <div class="wk milestone"><div class="when"><b>Launch</b>Jan 20, 2027</div><div><h4>Public launch</h4><p>Before Ramadan starts (about February 8), so the Ramadan content can run on a live app.</p></div></div>
+  </div>
+  <h3>Not in the beta (on purpose)</h3>
+  <ul class="tight">
+    <li>The full pattern engine. It needs months of data anyway, so it grows in after launch.</li>
+    <li>Friends and shared circles. These need accounts and a server.</li>
+    <li>Direct Oura connection (beyond Apple Health), AI-written text, Android, and a full Arabic interface.</li>
+  </ul>
+  <div class="note"><b>The one thing that can break this timeline:</b> the Apple Developer account. Without it there is no TestFlight. Enroll this week.</div>
+</section>
+
+<section id="marketing">
+  <div class="eyebrow">11 · Marketing plan</div>
+  <h2>Grow like Shotsy, not like Cal AI</h2>
+  <p class="lede">Shotsy, a GLP-1 tracker built by a patient, reportedly reached about a million downloads and over 100,000 paying subscribers with no ad spend. It launched with a Reddit post, filled its beta from that community, and spread because users shared screenshots of their charts. We have the same three ingredients: underserved communities, a founder who is the user, and shareable outputs.</p>
+  <h3>The channels, in priority order</h3>
+  <div class="grid2">
+    <div class="card"><h4>1 · Condition communities</h4><p>Reddit (r/PMDDxADHD, r/TwoXADHD, r/PCOS, r/Mounjaro, r/menopause, r/ouraring) and Facebook groups. Join and help for 8 weeks with no links. Message the moderators before posting. Launch as a story, with screenshots and founder status in line one.</p></div>
+    <div class="card"><h4>2 · Built-in sharing</h4><p>Receipts cards and the full-moon card are designed to be screenshotted, and the doctor report is something people show friends. Every share carries the app's name.</p></div>
+    <div class="card"><h4>3 · Faceless content</h4><p>Five posts a week on TikTok and Instagram, built from templates: receipts, the overlap, moon myth versus fact, alter ego lines, doctor-ready tips. You on camera at most once a week, only when you want to.</p></div>
+    <div class="card"><h4>4 · Creators paid on results</h4><p>Nano and micro creators who already post about their own PMDD, ADHD, PCOS, GLP-1 or perimenopause. Offer lifetime premium plus 30 to 50% revenue share first, then small flat fees, then pay-per-view campaigns.</p></div>
+    <div class="card"><h4>5 · Dubai layer</h4><p>Beta sign-up cards during the Dubai Fitness Challenge (Oct 31 to Nov 29), women-only studios and run clubs, menopause clinics (Menovivre, Emirates Hospitals), Dubai Business Women Council, and local press.</p></div>
+    <div class="card"><h4>6 · App Store and press</h4><p>Four condition-specific App Store pages (PMDD, ADHD, GLP-1, perimenopause), the Apple featuring nomination, Femtech Insider, podcasts like Women &amp; ADHD and Hello Menopause, and Gulf News for Ramadan.</p></div>
+  </div>
+  <h3>Before launch</h3>
+  <ul class="tight">
+    <li><b>Waitlist page</b> this month: headline, three screenshots, the privacy promise, email, and "which of these is you?" checkboxes.</li>
+    <li><b>Referrals:</b> refer 1 to skip the beta queue, 3 for a founding-member badge and 3 months free, 10 for lifetime premium.</li>
+    <li><b>Goal:</b> 1,500 to 3,000 emails by launch, and 100 to 300 beta testers who own a Watch or Oura and juggle 2 or more conditions.</li>
+    <li><b>At day 14 of the beta</b>, ask every active tester for a quote, a screenshot they'd share, and an App Store review on launch day.</li>
+  </ul>
+  <h3>Budget tiers</h3>
+  <div class="tablebox"><table>
+    <thead><tr><th>Tier</th><th>What it buys</th></tr></thead>
+    <tbody>
+      <tr><td class="num">$0</td><td>Reddit and Facebook groups, free waitlist tools, Canva carousels, podcast pitches, studio talks, press tips, featuring nomination, revenue-share creator deals</td></tr>
+      <tr><td class="num">~$500</td><td>Plus the waitlist tool, 3 creator-made videos for the faceless account (~$200 to 300), printed QR cards and clinician one-pagers</td></tr>
+      <tr><td class="num">~$2,000</td><td>Plus a pay-per-view creator campaign (~$700), 3 to 5 hybrid creator deals (~$400), Arabic App Store text and posts (~$200), a UAE permit and legal check</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Eight weeks to launch</h3>
+  <div class="tablebox"><table>
+    <thead><tr><th>Week of</th><th>Theme</th><th>Growth action</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Nov 23</td><td>Why I built it</td><td>Waitlist and referrals live, Dubai Fitness Challenge QR cards</td></tr>
+      <tr><td class="mono">Nov 30</td><td>The overlap: ADHD and the luteal phase</td><td>First messages to subreddit moderators</td></tr>
+      <tr><td class="mono">Dec 7</td><td>GLP-1s and your cycle</td><td>First 50 beta testers in</td></tr>
+      <tr><td class="mono">Dec 14</td><td>Moon myth week</td><td>First Reddit beta thread</td></tr>
+      <tr><td class="mono">Dec 21</td><td>PCOS signs nobody mentions</td><td>Beta to 150, podcast pitches out</td></tr>
+      <tr><td class="mono">Dec 28</td><td>Perimenopause and the holidays</td><td>Apple featuring nomination submitted</td></tr>
+      <tr><td class="mono">Jan 4</td><td>Doctor-ready</td><td>Creator deals signed, press pitches out</td></tr>
+      <tr><td class="mono">Jan 11</td><td>Countdown</td><td>Launch reel, testimonials, App Store pages ready</td></tr>
+      <tr><td class="mono">Jan 20</td><td>Launch</td><td>Reddit stories, email list, Femtech Insider, Dubai media</td></tr>
+      <tr><td class="mono">Feb 8 to Mar 8</td><td>Ramadan</td><td>Respectful, clinician-reviewed fasting content (PCOS, GLP-1). No astrology. Gulf News app roundups.</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Numbers to watch every week</h3>
+  <p>Waitlist sign-ups, share of sign-ups from referrals, beta day-14 retention, how many testers share a screenshot, App Store conversion per page, and cost per install by creator. Drop any paid channel above about $3 per install.</p>
+  <div class="note"><b>UAE rule:</b> since early 2026, anyone promoting products on social media in the UAE, including gifted posts, needs a free Media Council advertiser permit. Only work with UAE creators who show their permit number, and check whether you need one to promote your own app.</div>
+</section>
+
+<section id="talk">
+  <div class="eyebrow">12 · Talking to real women</div>
+  <h2>Fifteen conversations before the beta</h2>
+  <p class="lede">I can't have these conversations for you, but everything around them is ready: who to ask, the message to send, the questions, and a short survey for people who prefer typing. Fifteen calls of 20 minutes each is about five hours spread over a few evenings, and it stops us building the wrong thing.</p>
+  <h3>Who to talk to</h3>
+  <ul class="tight">
+    <li>3 with PMDD or very bad PMS, 3 with ADHD, 3 with PCOS or endometriosis, 3 on a GLP-1, 3 in perimenopause. Ideally a few who have two of these at once.</li>
+    <li>A mix of ages from 22 to 55, and at least 5 who wear an Apple Watch or a ring.</li>
+    <li>Start with friends of friends and your followers. They give more honest answers than close friends.</li>
+  </ul>
+  <h3>The message to send</h3>
+  <div class="note">Hey! I'm building an app for women who are juggling more than one health thing at once, like ADHD and bad PMS, PCOS, Mounjaro, or perimenopause. Could I steal 20 minutes for a voice or video call this week? No selling, I just want to hear how you deal with it now. You'll get free lifetime access when it launches.</div>
+  <h3>The questions</h3>
+  <ol class="tight">
+    <li>Tell me about the last month with your health. What was the hardest week, and why?</li>
+    <li>What are you dealing with right now: conditions, meds, devices?</li>
+    <li>How do you keep track of it today? Show me if you can: notes, apps, screenshots, spreadsheets.</li>
+    <li>What happened the last time you went to a doctor about it? What did you bring? What did you wish you'd had?</li>
+    <li>Have you ever noticed one thing affecting another, like your cycle and your meds, or sleep and mood? How did you figure it out?</li>
+    <li>Which health apps have you paid for? Which did you delete, and why?</li>
+    <li>If you could open one app every morning, what would you want it to tell you in five seconds?</li>
+    <li>How do you feel about astrology or the moon? Love it, ignore it, or roll your eyes?</li>
+    <li>On a hard day, what actually helps? What makes it worse?</li>
+    <li>If this app existed and worked perfectly, what would it be worth to you per month?</li>
+  </ol>
+  <h3>What to listen for</h3>
+  <ul class="tight">
+    <li>The exact words she uses. Those become our App Store text and ads.</li>
+    <li>What she already does by hand, like screenshots, notes or spreadsheets. That's the strongest sign she'd pay.</li>
+    <li>Anything that makes her say "yes, exactly". Write it down word for word.</li>
+  </ul>
+  <h3>The five-question survey (for people who won't do a call)</h3>
+  <ol class="tight">
+    <li>Which of these apply to you? (PMDD or severe PMS, ADHD, PCOS, endometriosis, GLP-1, perimenopause, hormonal birth control, none)</li>
+    <li>Do you wear an Apple Watch, Oura or another tracker?</li>
+    <li>What's the most frustrating part of managing your health right now?</li>
+    <li>Have you ever felt dismissed by a doctor? What would have helped?</li>
+    <li>Can we email you when the beta opens?</li>
+  </ol>
+  <p>Put the survey on your waitlist page, so every answer also becomes a sign-up.</p>
+</section>
+
+<section id="ops">
+  <div class="eyebrow">13 · Legal and admin</div>
+  <h2>The boring list that protects you</h2>
+  <h3>Getting paid legally in the UAE</h3>
+  <p>Here's how it works for an employee who can get an NOC (a no-objection letter) from her employer:</p>
+  <ul class="tight">
+    <li><b>Apple pays you, not your customers.</b> Apple is the seller in every country. You get one monthly payment from Apple into your bank account. As an individual developer, that can be your personal UAE bank account.</li>
+    <li><b>During the beta you earn nothing</b>, so no license is needed yet. Build, test and grow the waitlist as you are.</li>
+    <li><b>Once money comes in</b>, UAE rules say ongoing commercial activity needs a license. Whether a small amount of App Store income on a personal account counts is a grey area. That's question one for the lawyer.</li>
+    <li><b>The cheapest proper options once you have revenue:</b>
+      <ul class="tight" style="margin-top:6px">
+        <li>A freelance permit for tech or software (Dubai GoFreelance, or a free zone freelance permit). These need your employer's NOC, which you can get.</li>
+        <li>A small free zone license for "software publishing" or "mobile app development": Ajman from about AED 4,900 a year, SHAMS (Sharjah) about AED 5,800, RAKEZ about AED 6,000. Dubai addresses like Meydan or IFZA cost about AED 12,500. You keep your current visa through your employer.</li>
+      </ul></li>
+    <li><b>My suggestion:</b> stay an individual through the beta and launch, ask the lawyer the three questions below, and get the cheapest license that covers app publishing once monthly revenue is steady. Then move the app to it.</li>
+  </ul>
+  <h3>Three questions for the lawyer (one hour)</h3>
+  <ol class="tight">
+    <li>With an NOC from my employer, can I receive App Store income as an individual at first, and from what point do I need a license?</li>
+    <li>Which option is cheapest for selling an app worldwide: a freelance permit or a free zone license, and which activity code?</li>
+    <li>Does keeping all health data on the user's phone keep the app outside the UAE health data law? (Federal Law 2 of 2019)</li>
+  </ol>
+  <div class="tablebox"><table>
+    <thead><tr><th>When</th><th>Task</th><th class="num">Cost</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">This week</td><td>Read your employment contract for intellectual property, outside work, non-compete and confidentiality clauses. Build only on your own devices and time.</td><td class="num">0</td></tr>
+      <tr><td class="mono">This week</td><td>Enroll in Apple Developer as an individual (legal name, passport, Apple Developer app). Allow 1 to 14 days.</td><td class="num">$99</td></tr>
+      <tr><td class="mono">By Oct 31</td><td>One hour with a UAE employment lawyer: your contract, whether you need your employer's permission, and whether you need a license before taking App Store income.</td><td class="num">AED 1K to 3K</td></tr>
+      <tr><td class="mono">Oct 27</td><td>Create the App Store Connect record to reserve the name. Turn on the HealthKit capability.</td><td class="num">0</td></tr>
+      <tr><td class="mono">Oct 27 to Nov 7</td><td>Trademark search for the name (UAE register, USPTO, EUIPO, App Store).</td><td class="num">0+</td></tr>
+      <tr><td class="mono">Nov 1 to 14</td><td>Decide: stay an individual for launch, or open a free zone company (SHAMS or RAKEZ from ~AED 5,800/yr; Meydan or IFZA ~AED 12,500/yr).</td><td class="num">AED 0 to 13K</td></tr>
+      <tr><td class="mono">Nov 1 to 14</td><td>Domain, simple website, support email.</td><td class="num">~$50</td></tr>
+      <tr><td class="mono">Nov 1 to 21</td><td>Privacy policy, a separate consumer health data policy (Washington state law), terms of use, in-app disclaimer.</td><td class="num">$0 to 3K</td></tr>
+      <tr><td class="mono">Nov 10</td><td>Tax form (W-8BEN), bank details and paid apps agreement in App Store Connect. Join the Small Business Program (15% instead of 30%).</td><td class="num">0</td></tr>
+      <tr><td class="mono">Nov 15 to 30</td><td>Age rating (expect 16+), App Privacy label, Apple Health permission text. Confirm no health data goes to iCloud (Apple rule 5.1.3).</td><td class="num">0</td></tr>
+      <tr><td class="mono">Dec 1 to 15</td><td>EU storefronts: individuals must show a public address and phone. Use a virtual office, form a company, or skip the EU at launch.</td><td class="num">varies</td></tr>
+      <tr><td class="mono">December</td><td>File the UAE trademark (classes 9 and 44).</td><td class="num">AED 13K+</td></tr>
+      <tr><td class="mono">January</td><td>Paywall wording that meets Apple's subscription rules, restore purchases, screenshots that lead with health (astrology-first apps get rejected as spam under rule 4.3).</td><td class="num">0</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Safe wording, always</h3>
+  <ul class="tight">
+    <li>"This app helps you notice your own patterns. It doesn't diagnose, treat, or tell you how to take any medication."</li>
+    <li>"On days after a dose increase you logged, your energy averaged lower (seen 3 times). Worth mentioning to your prescriber."</li>
+    <li>"Never change, stop, or time a medication based on this app."</li>
+    <li>"Cycle predictions are estimates for wellness, not contraception."</li>
+    <li>"The doctor report is a summary of what you logged. It isn't a medical record or a clinical interpretation."</li>
+  </ul>
+</section>
+
+<section id="risks">
+  <div class="eyebrow">14 · Risks</div>
+  <h2>What could go wrong, and the plan for each</h2>
+  <div class="tablebox"><table>
+    <thead><tr><th>Risk</th><th>What we do about it</th></tr></thead>
+    <tbody>
+      <tr><td>Your employer claims the app or objects</td><td>Contract check and lawyer this week. Own devices, own time, dated git history.</td></tr>
+      <tr><td>Apple account delayed</td><td>Enroll as an individual today. Not as a company first.</td></tr>
+      <tr><td>Oura copies the multi-condition idea</td><td>Lead with any wearable, PMDD and ADHD, several meds at once, and the self and sky layers.</td></tr>
+      <tr><td>Patterns take months, users quit before</td><td>Value on day one: Today, check-in, meds, the doctor report. Patterns arrive as "early hunches" from the first cycle.</td></tr>
+      <tr><td>Too much to track, people get overwhelmed</td><td>The ten rules in section 9. Only her mix shows. Three taps a day.</td></tr>
+      <tr><td>Medical or legal wording trouble</td><td>Describe her data, never interpret it. Safe wording list. A clinician advisor reviews content.</td></tr>
+      <tr><td>UAE health data law</td><td>Everything stays on her phone. Lawyer check before any cloud or AI feature.</td></tr>
+      <tr><td>App Store rejection</td><td>Health-first category and screenshots, sources cited, a week of buffer before launch.</td></tr>
+      <tr><td>Ramadan clashes with launch</td><td>Launch January 20, before Ramadan. Use Ramadan as a content moment.</td></tr>
+      <tr><td>Burnout alongside a full-time job</td><td>A fixed scope for the beta. Anything new goes on the after-launch list.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="name">
+  <div class="eyebrow">15 · The name</div>
+  <h2>Still open, and here's where we start</h2>
+  <p>"Zuhra" is only a placeholder so this plan has something to call the app. The name is still to be decided together. These five passed a first web check and are a starting point for the brainstorm, not a final list. None has had a professional trademark search.</p>
+  <h3>What the name has to do</h3>
+  <ul class="tight">
+    <li>Sound like a fashion house or a fragrance: two or three syllables, looks good in capitals.</li>
+    <li>Work for a 22-year-old and a 55-year-old, and be something she is happy to say to her endocrinologist.</li>
+    <li>Ideally hold body, self and sky in one word. Feel like LILITH's grown-up sister.</li>
+    <li>Avoid the worn-out words: moon, luna, aura, glow, bloom, flo, thrive, "her-" anything, and "girl" puns.</li>
+  </ul>
+  <div class="tablebox"><table>
+    <thead><tr><th>Name</th><th>Say it</th><th>Story</th><th>Watch out for</th></tr></thead>
+    <tbody>
+      <tr><td><b>Zuhra</b></td><td>ZOO-ra</td><td>Arabic for Venus: the ♀ symbol on a lab report, beauty and desire, the brightest evening star. Body, self and sky in one word, rooted in Dubai.</td><td>People may say "Zahra". Atelier Zuhra is a Dubai couture label, so check the UAE register first.</td></tr>
+      <tr><td><b>Hesper</b></td><td>HESS-per</td><td>Greek for the evening star. Sounds like a fragrance house.</td><td>A pending US mark for bath products and drinks.</td></tr>
+      <tr><td><b>Cosima</b></td><td>KOH-zee-ma</td><td>From Greek <i>kosmos</i>, the root of both "cosmetic" and "cosmos".</td><td>Cosia, a women's health app with similar positioning, already exists.</td></tr>
+      <tr><td><b>Sidera</b></td><td>SID-er-a</td><td>Latin for "the stars", and the root of "desire".</td><td>A live self-reflection app called Sidera.</td></tr>
+      <tr><td><b>Naamah</b></td><td>NAH-ah-mah</td><td>Lilith's companion in Jewish mystical lore. The literal sister name.</td><td>Hard spelling, and a dark story for something she shows her doctor.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src">Expect the exact .com to be taken. Plan on a domain like getzuhra.com or zuhra.app.</p>
+</section>
+
+<section id="decide">
+  <div class="eyebrow">16 · Your decisions</div>
+  <h2>Where we've landed, and what's still open</h2>
+  <h3>Settled</h3>
+  <ul class="tight">
+    <li><b>Your job:</b> you can get an NOC, so a side project is fine. We'll get the details right when it grows.</li>
+    <li><b>Apple account:</b> no problem, enroll as an individual.</li>
+    <li><b>Legal basics and a clinician advisor:</b> you'll find someone; the lawyer questions are in section 13.</li>
+    <li><b>Hours:</b> some evenings plus weekends.</li>
+    <li><b>Money:</b> minimal. About $350 to $600 before the app earns anything (section 8).</li>
+    <li><b>Structure:</b> stay an individual until steady revenue, then the cheapest license.</li>
+  </ul>
+  <h3>My recommendation for LILITH</h3>
+  <p>Shelve LILITH as a product, and harvest its engines. The cycle engine, the verified astrology math, the Face ID vault and the discreet notifications are the hardest parts of this new app, and they're already built and tested. Don't try to sell it: a half-launched app sells for very little, and its code is worth far more to you as the head start here. The LILITH repository stays exactly as it is, safe on GitHub, in case you ever want it back.</p>
+  <h3>Still open</h3>
+  <ol class="decide">
+    <li><b>Is this the one?</b> Read it all, sleep on it, and tell me what doesn't feel like you.</li>
+    <li><b>The name.</b> We brainstorm together next. Section 15 is the starting point.</li>
+    <li><b>Your first five conversations.</b> Use the message and questions in section 12.</li>
+    <li><b>Success test for spring.</b> My suggestion: 1,500 waitlist emails by launch and 150 paying subscribers by the end of March. Miss both and we rethink.</li>
+  </ol>
+</section>
+
+<section id="words">
+  <div class="eyebrow">17 · Words to know</div>
+  <h2>So you never have to stumble</h2>
+  <dl class="gloss">
+    <dt>HRV</dt><dd>Heart rate variability: the tiny changes in time between heartbeats. Higher usually means rested and recovered. Wearables measure it overnight.</dd>
+    <dt>Resting heart rate</dt><dd>Your heart rate at rest. It usually rises a little in the luteal phase.</dd>
+    <dt>Follicular / luteal</dt><dd>The two halves of the cycle. Follicular runs from your period to ovulation. Luteal runs from ovulation to your next period, when PMS and PMDD show up.</dd>
+    <dt>PMDD / PME</dt><dd>Premenstrual dysphoric disorder: severe mood symptoms in the luteal phase. Premenstrual exacerbation (PME): another condition (like ADHD or anxiety) getting worse before your period.</dd>
+    <dt>DRSP</dt><dd>The Daily Record of Severity of Problems, the daily rating form clinicians use to diagnose PMDD over two cycles.</dd>
+    <dt>GLP-1</dt><dd>The drug family that includes Ozempic, Wegovy, Mounjaro and Zepbound.</dd>
+    <dt>HealthKit / Apple Health</dt><dd>Apple's health data store on the iPhone. Apple Watch, Oura and many other devices write into it, and our app reads from it with her permission.</dd>
+    <dt>On-device</dt><dd>Her data is stored and processed on her own phone, not on a server.</dd>
+    <dt>TestFlight</dt><dd>Apple's beta testing app. Internal testing is up to 100 people with no review. External testing is up to 10,000 people after a short review.</dd>
+    <dt>TAM / SAM / SOM</dt><dd>Total market, reachable market, and the share we realistically win. Ours: 54M, 7.6M, 3,400 paying.</dd>
+    <dt>Conversion</dt><dd>The share of people who go from one step to the next, like download to paying.</dd>
+    <dt>Retention</dt><dd>The share of people still using the app after a period, like 30 days.</dd>
+    <dt>ARR / run rate</dt><dd>Annual recurring revenue: what the current subscriptions add up to over a year.</dd>
+    <dt>CPI / CAC</dt><dd>Cost per install, and customer acquisition cost (what it costs to win one paying customer).</dd>
+    <dt>Paywall</dt><dd>The screen that offers the paid plan.</dd>
+  </dl>
+  <p class="foot">Prepared October 20, 2026 from four research reports covering market size, marketing, legal and operations, and naming. Figures marked as estimates in the research are estimates here too. Nothing in this plan is legal, tax or medical advice. The full sourced research files sit next to this plan in the project repository.</p>
+</section>
+</main>
+</div>
