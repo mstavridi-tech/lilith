@@ -1,0 +1,630 @@
+<title>Body Self Sky Sketches</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500&family=Marcellus&family=Hanken+Grotesk:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap">
+<style>
+/* Layout: a sketchbook page. Short intro, then one band per design direction, each a horizontal row of real-scale phone screens (375pt wide), with notes underneath. */
+:root{
+  --bg:#F4F3F1;
+  --ink:#18171B;
+  --muted:#65626B;
+  --line:#DEDBDF;
+  --accent:#8E2A3B;
+  --surface:#FFFFFF;
+  --sans:-apple-system, "SF Pro Text", "Hanken Grotesk", system-ui, sans-serif;
+  --serif-page:"Bodoni Moda", "Didot", Georgia, serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#121114;--ink:#EEEBEF;--muted:#A7A2AB;--line:#2E2B31;--accent:#E08A9A;--surface:#1B191E;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#121114;--ink:#EEEBEF;--muted:#A7A2AB;--line:#2E2B31;--accent:#E08A9A;--surface:#1B191E;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0}
+.page{max-width:1240px;margin:0 auto;padding-block:44px 90px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--serif-page);font-weight:500;font-size:clamp(40px,7vw,64px);line-height:1.05;margin:10px 0 14px;text-wrap:balance}
+h2{font-family:var(--serif-page);font-weight:500;font-size:clamp(28px,4vw,38px);line-height:1.1;margin:6px 0 8px;text-wrap:balance}
+.intro{max-width:680px;color:var(--muted);font-size:17px}
+.intro p{margin:0 0 12px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:26px 0 0;padding:0;list-style:none}
+.rules li{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:13px 15px;font-size:14.5px}
+.rules b{display:block;margin-bottom:2px}
+.dir{margin-top:76px;padding-top:34px;border-top:1px solid var(--line)}
+.dir-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:end;max-width:1100px}
+@media (max-width:820px){.dir-head{grid-template-columns:minmax(0,1fr);gap:6px}}
+.dir-head p{margin:0;color:var(--muted);font-size:15.5px;max-width:58ch}
+.swatches{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.swatches span{width:30px;height:30px;border-radius:50%;border:1px solid var(--line)}
+.row{display:flex;gap:28px;overflow-x:auto;padding:26px 4px 18px;scroll-snap-type:x mandatory}
+.shot{flex:0 0 auto;scroll-snap-align:start;display:flex;flex-direction:column;gap:10px;width:375px}
+@media (max-width:440px){.shot{zoom:.86}}
+.shot .cap{font-size:13.5px;color:var(--muted);max-width:375px}
+.shot .cap b{color:var(--ink)}
+.notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:6px}
+@media (max-width:820px){.notes{grid-template-columns:minmax(0,1fr)}}
+.notes div{font-size:14.5px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:13px 15px}
+.notes b{display:block;margin-bottom:3px}
+.verdict{margin-top:80px;padding-top:34px;border-top:1px solid var(--line);max-width:720px}
+.verdict p{color:var(--muted)}
+.foot{margin-top:60px;font-size:13px;color:var(--muted)}
+
+/* ---------- phone shell, shared by all directions ---------- */
+.ph{width:375px;height:812px;border-radius:46px;overflow:hidden;position:relative;display:flex;flex-direction:column;
+  box-shadow:0 0 0 1px rgba(0,0,0,.08),0 30px 60px -30px rgba(20,16,26,.5);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+.ph .status{display:flex;justify-content:space-between;align-items:center;padding:16px 30px 0;font-size:15px;font-weight:600;height:50px;flex:0 0 auto}
+.ph .status .island{position:absolute;left:50%;top:11px;transform:translateX(-50%);width:122px;height:35px;border-radius:20px;background:#000}
+.ph .status svg{height:12px}
+.ph .body{flex:1;padding:14px 22px 0;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.ph .tabbar{position:absolute;left:18px;right:18px;bottom:26px;height:64px;border-radius:32px;display:flex;align-items:center;justify-content:space-around;padding:0 10px}
+.ph .tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:600;letter-spacing:.02em}
+.ph .tab svg{width:22px;height:22px}
+.ph .add{width:48px;height:48px;border-radius:50%;display:grid;place-items:center}
+.ph .add svg{width:22px;height:22px}
+.ph .home{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px}
+.lbl{font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.num{font-variant-numeric:tabular-nums}
+.sig{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.sig > div{padding:2px 0}
+.sig > div + div{padding-left:14px}
+.sig .v{font-size:22px;font-weight:600;letter-spacing:-.01em}
+.sig .v small{font-size:13px;font-weight:500;margin-left:2px}
+.sig .k{font-size:12px;margin-top:1px}
+.list{display:flex;flex-direction:column}
+.li{display:flex;justify-content:space-between;align-items:center;padding:15px 0;font-size:15.5px}
+.li .r{font-size:14px}
+.chev{width:7px;height:12px;margin-left:8px}
+.seg{display:flex;gap:8px}
+.seg span{flex:1;height:46px;border-radius:14px;display:grid;place-items:center}
+.seg span i{display:block;border-radius:50%}
+.slider{height:8px;border-radius:4px;position:relative}
+.slider b{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+.slider em{position:absolute;top:50%;width:24px;height:24px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.pill{display:inline-flex;align-items:center;height:34px;padding:0 14px;border-radius:17px;font-size:14px;font-weight:500}
+
+
+.strip{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-top:2px}
+.strip .d small{display:block;font-size:11px;font-weight:600;letter-spacing:.04em}
+.strip .d span{display:grid;place-items:center;width:34px;height:34px;margin:5px auto 0;border-radius:50%;font-size:14.5px;font-weight:600;position:relative}
+.strip .d span::after{content:"";position:absolute;bottom:-7px;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--mk,transparent)}
+.A .strip small{color:#7E7781}.A .strip span{color:#CFC8C0}.A .strip .on span{background:#D9B87C;color:#16130F}
+.B .strip small{color:#9A9CA1}.B .strip span{color:#3B3D42}.B .strip .on span{background:#17181C;color:#FFFFFF}
+.C .strip small{opacity:.65}.C .strip .on span{background:#FBEDE6;color:#5A1F2B}
+.legend{display:flex;gap:14px;font-size:11.5px;margin-top:6px}
+.legend i{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;vertical-align:1px}
+.scale{display:flex;justify-content:space-between;font-size:11.5px;margin-top:6px}
+/* ---------- Direction A: Noir ---------- */
+.A{background:#0E0D10;color:#F1ECE4}
+.A .status{color:#F1ECE4}
+.A .dim{color:#9A938C}
+.A .gold{color:#D9B87C}
+.A .serif{font-family:"Bodoni Moda","Didot",Georgia,serif;font-weight:500}
+.A .card{background:#18161B;border-radius:22px;padding:18px}
+.A .hair{height:1px;background:#2A262E}
+.A .tabbar{background:rgba(30,27,34,.92);border:1px solid #2A262E}
+.A .tab{color:#7E7781}
+.A .tab.on{color:#F1ECE4}
+.A .add{background:#D9B87C;color:#16130F}
+.A .home{background:#F1ECE4}
+.A .li{border-bottom:1px solid #24212A}
+.A .seg span{background:#1C1A20}
+.A .seg span.on{background:#D9B87C}
+.A .seg span i{background:#6F6874}
+.A .seg span.on i{background:#16130F}
+.A .slider{background:#2A262E}
+.A .slider b{background:#D9B87C}
+.A .slider em{background:#F1ECE4}
+.A .pill{background:#1C1A20;color:#CFC8C0}
+.A .pill.on{background:#F1ECE4;color:#16130F}
+.A .btn{background:#D9B87C;color:#16130F;border-radius:18px;height:56px;display:grid;place-items:center;font-weight:600;font-size:16px}
+
+/* ---------- Direction B: Porcelain ---------- */
+.B{background:#F2F2EF;color:#17181C}
+.B .status{color:#17181C}
+.B .dim{color:#6C6E74}
+.B .pom{color:#A3283C}
+.B .disp{font-family:"Marcellus","Optima",Georgia,serif;font-weight:400}
+.B .card{background:#FFFFFF;border-radius:20px;padding:18px;box-shadow:0 1px 0 rgba(23,24,28,.04),0 8px 24px -16px rgba(23,24,28,.18)}
+.B .hair{height:1px;background:#E4E4E0}
+.B .tabbar{background:rgba(255,255,255,.94);box-shadow:0 10px 30px -12px rgba(23,24,28,.25)}
+.B .tab{color:#9A9CA1}
+.B .tab.on{color:#17181C}
+.B .add{background:#A3283C;color:#FFFFFF}
+.B .home{background:#17181C}
+.B .li{border-bottom:1px solid #E7E7E3}
+.B .seg span{background:#FFFFFF;box-shadow:inset 0 0 0 1px #E4E4E0}
+.B .seg span.on{background:#17181C;box-shadow:none}
+.B .seg span i{background:#B9BBBF}
+.B .seg span.on i{background:#FFFFFF}
+.B .slider{background:#E4E4E0}
+.B .slider b{background:#A3283C}
+.B .slider em{background:#FFFFFF}
+.B .pill{background:#FFFFFF;color:#3B3D42;box-shadow:inset 0 0 0 1px #E4E4E0}
+.B .pill.on{background:#17181C;color:#FFFFFF;box-shadow:none}
+.B .btn{background:#17181C;color:#FFFFFF;border-radius:18px;height:56px;display:grid;place-items:center;font-weight:600;font-size:16px}
+
+/* ---------- Direction C: Phase colour ---------- */
+.C{background:#5A1F2B;color:#FBEDE6}
+.C.light{background:#FBF7F4;color:#24151A}
+.C .status{color:inherit}
+.C .dim{color:rgba(251,237,230,.72)}
+.C.light .dim{color:#7A6A6E}
+.C .dsp{font-family:"DM Serif Display",Georgia,serif;font-weight:400;letter-spacing:-.01em}
+.C .card{background:rgba(255,255,255,.1);border-radius:24px;padding:18px}
+.C.light .card{background:#FFFFFF;box-shadow:0 8px 24px -18px rgba(36,21,26,.3)}
+.C .tabbar{background:#FBEDE6}
+.C.light .tabbar{background:#24151A}
+.C .tab{color:#9A7A80}
+.C .tab.on{color:#24151A}
+.C.light .tab{color:#8E7F83}
+.C.light .tab.on{color:#FBEDE6}
+.C .add{background:#5A1F2B;color:#FBEDE6}
+.C.light .add{background:#F2725F;color:#24151A}
+.C .home{background:#FBEDE6}
+.C.light .home{background:#24151A}
+.C .li{border-bottom:1px solid rgba(251,237,230,.16)}
+.C.light .li{border-bottom:1px solid #EEE4E0}
+.C .seg span{background:#F4ECE8}
+.C .seg span.on{background:#F2725F}
+.C .seg span i{background:#C8B6B9}
+.C .seg span.on i{background:#24151A}
+.C .slider{background:#EFE4E0}
+.C .slider b{background:#F2725F}
+.C .slider em{background:#24151A}
+.C .pill{background:#F4ECE8;color:#4A363B}
+.C .pill.on{background:#24151A;color:#FBEDE6}
+.C .btn{background:#24151A;color:#FBEDE6;border-radius:28px;height:58px;display:grid;place-items:center;font-weight:600;font-size:16px}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-today" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-receipts" viewBox="0 0 24 24"><path d="M3.5 18.5c2.4-.2 3.4-6.5 6-6.5s2.6 4 5 4 3.3-8.5 6-8.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M3.5 21h17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-you" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4.8 20.5c1.1-3.6 3.9-5.5 7.2-5.5s6.1 1.9 7.2 5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-sky" viewBox="0 0 24 24"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 13.6 7 7 0 0 1-5-13.6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-bat" viewBox="0 0 27 12"><rect x=".5" y=".5" width="23" height="11" rx="3" fill="none" stroke="currentColor" opacity=".45"/><rect x="2" y="2" width="17" height="8" rx="1.6" fill="currentColor"/><rect x="24.5" y="4" width="1.8" height="4" rx=".9" fill="currentColor" opacity=".45"/></symbol>
+    <symbol id="i-sig" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="currentColor"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="1" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="1" fill="currentColor"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10.5A.5.5 0 0 1 6.5 20V4a.5.5 0 0 1 .5-.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12h5M9.5 15.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="page">
+  <div class="eyebrow">Interface sketches · first round</div>
+  <h1>Three ways the app could look</h1>
+  <div class="intro">
+    <p>These are rough sketches built from what you've told me: sleek, sexy, modern and minimal, still fun, easy to read, and never so busy that she closes it and forgets it. Each direction shows the same four screens with the same content, so you're comparing the look and feel, not the features.</p>
+    <p>Scroll each row sideways to see all four screens. Pick the one that feels most like you, or tell me which parts to mix.</p>
+  </div>
+  <ul class="rules">
+    <li><b>Three tabs and one button</b>Today, Receipts, You. The middle button is the daily check-in.</li>
+    <li><b>Today shows three things</b>How she is and why, her alter ego, and what's coming up.</li>
+    <li><b>Words before numbers</b>A plain sentence first. Raw signals underneath, never an invented score.</li>
+    <li><b>Only her mix shows</b>The Focus slider appears because ADHD is in her mix. Nothing she doesn't have ever shows.</li>
+  </ul>
+
+  <!-- ================= A: NOIR ================= -->
+  <section class="dir" id="noir">
+    <div class="dir-head">
+      <div>
+        <div class="eyebrow">Direction A</div>
+        <h2>Noir</h2>
+        <div class="swatches" aria-label="Palette"><span style="background:#0E0D10"></span><span style="background:#18161B"></span><span style="background:#F1ECE4"></span><span style="background:#D9B87C"></span></div>
+      </div>
+      <p>Near-black, ivory type and one champagne accent. Closest to the ring apps your friends already use, with a fashion-house serif for the headlines. Quiet, expensive and calm at night. The risk: dark apps can feel heavy for long reading.</p>
+    </div>
+    <div class="row">
+
+      <div class="shot">
+        <div class="ph A">
+          <div class="status"><span class="num">9:41</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 18 12" width="18"><use href="#i-sig"/></svg><svg viewBox="0 0 27 12" width="27"><use href="#i-bat"/></svg></span></div>
+          <div class="body">
+            <div class="strip"><div class="d"><small>M</small><span class="num">19</span></div><div class="d on"><small>T</small><span class="num">20</span></div><div class="d"><small>W</small><span class="num">21</span></div><div class="d"><small>T</small><span class="num" style="--mk:#D9B87C">22</span></div><div class="d"><small>F</small><span class="num">23</span></div><div class="d"><small>S</small><span class="num" style="--mk:#B9707F">24</span></div><div class="d"><small>S</small><span class="num">25</span></div></div>
+            <div class="lbl gold" style="margin-top:8px">Day 24 · Luteal</div>
+            <div class="serif" style="font-size:34px;line-height:1.08;letter-spacing:-.01em">Slow morning.<br><i>That tracks.</i></div>
+            <p class="dim" style="margin:0;font-size:15.5px;line-height:1.5">Short night and your HRV dipped. Your last three luteal Tuesdays looked exactly like this.</p>
+            <div class="sig" style="margin-top:4px">
+              <div><div class="v num">5h 50<small>m</small></div><div class="k dim">Sleep</div></div>
+              <div style="border-left:1px solid #2A262E"><div class="v num">38<small>ms</small></div><div class="k dim">HRV · ↓ 18%</div></div>
+              <div style="border-left:1px solid #2A262E"><div class="v num">64<small>bpm</small></div><div class="k dim">Resting HR</div></div>
+            </div>
+            <div class="card" style="margin-top:6px">
+              <div class="lbl gold" style="font-size:10.5px">Electra</div>
+              <div class="serif" style="font-size:19px;line-height:1.3;margin-top:8px"><i>"She doesn't need to be loud this week. She needs to be on time."</i></div>
+              <div class="dim" style="font-size:12.5px;margin-top:10px">You've had 4 weeks like this since July. You showed up for every one.</div>
+            </div>
+            <div>
+              <div class="lbl dim" style="font-size:10.5px;margin-bottom:2px">Coming up</div>
+              <div class="li" style="padding:12px 0"><span>Mounjaro 7.5 mg</span><span class="r dim">Thursday</span></div>
+              <div class="li" style="padding:12px 0;border-bottom:0"><span>Period likely</span><span class="r dim">in 4 days</span></div>
+            </div>
+          </div>
+          <nav class="tabbar"><span class="tab on"><svg><use href="#i-today"/></svg>Today</span><span class="add"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-receipts"/></svg>Receipts</span><span class="tab"><svg><use href="#i-you"/></svg>You</span></nav>
+          <span class="home"></span>
+        </div>
+        <p class="cap"><b>Today.</b> One sentence, three raw signals, her alter ego, two things coming up.</p>
+      </div>
+
+      <div class="shot">
+        <div class="ph A">
+          <div class="status"><span class="num">9:42</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 18 12" width="18"><use href="#i-sig"/></svg><svg viewBox="0 0 27 12" width="27"><use href="#i-bat"/></svg></span></div>
+          <div class="body" style="gap:22px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><span class="dim" style="font-size:15px">Cancel</span><span class="lbl dim" style="font-size:10.5px">10 seconds</span></div>
+            <div class="serif" style="font-size:34px;line-height:1.1">How's today?</div>
+            <div>
+              <div style="font-size:14px;font-weight:600;margin-bottom:10px">Mood</div>
+              <div class="seg"><span><i style="width:8px;height:8px"></i></span><span class="on"><i style="width:11px;height:11px"></i></span><span><i style="width:14px;height:14px"></i></span><span><i style="width:17px;height:17px"></i></span><span><i style="width:20px;height:20px"></i></span></div>
+              <div class="scale dim"><span>Rough</span><span>Great</span></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:14px"><b style="font-weight:600">Energy</b><span class="dim">Running low</span></div>
+              <div class="slider"><b style="width:34%"></b><em style="left:34%"></em></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:14px"><b style="font-weight:600">Focus</b><span class="dim">Patchy</span></div>
+              <div class="slider"><b style="width:46%"></b><em style="left:46%"></em></div>
+            </div>
+            <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:16px 18px">
+              <div><div style="font-size:15px;font-weight:600">Elvanse 40 mg</div><div class="dim" style="font-size:12.5px">Morning dose</div></div>
+              <span class="pill on">Taken</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill">+ Symptoms</span><span class="pill">+ Social</span><span class="pill">+ Note</span></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45" class="dim"><svg width="16" height="16" viewBox="0 0 24 24" style="flex:0 0 auto;margin-top:2px"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Already logged for you from Apple Watch: sleep 5h 50m, 2,140 steps, resting heart rate 64.</span></div>
+            <div class="btn" style="margin-top:auto;margin-bottom:34px">Done</div>
+          </div>
+          <span class="home"></span>
+        </div>
+        <p class="cap"><b>Check-in.</b> Three taps and done. Symptoms, social and notes stay folded until she wants them.</p>
+      </div>
+
+      <div class="shot">
+        <div class="ph A">
+          <div class="status"><span class="num">9:43</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 18 12" width="18"><use href="#i-sig"/></svg><svg viewBox="0 0 27 12" width="27"><use href="#i-bat"/></svg></span></div>
+          <div class="body">
+            <div class="lbl gold" style="margin-top:6px">Receipts · 4 cycles</div>
+            <div class="serif" style="font-size:34px;line-height:1.1">What your body keeps saying</div>
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:15.5px;font-weight:600">Luteal sleep</b><span class="dim num" style="font-size:12px">4 of 4 cycles</span></div>
+              <p class="dim" style="margin:6px 0 12px;font-size:14px">You sleep about 40 minutes less in the five days before your period.</p>
+              <svg viewBox="0 0 300 64" width="100%" height="64" aria-hidden="true">
+                <path d="M0 22 C40 20 70 24 110 21 S170 22 195 24 C215 30 230 44 250 46 S285 40 300 26" fill="none" stroke="#D9B87C" stroke-width="2"/>
+                <rect x="196" y="0" width="80" height="64" fill="#D9B87C" opacity=".08"/>
+                <text x="200" y="12" fill="#9A938C" font-size="10" font-family="-apple-system,Hanken Grotesk,sans-serif">luteal</text>
+              </svg>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div class="li"><div><div style="font-weight:600;font-size:15px">After a dose increase</div><div class="dim" style="font-size:13px">Energy dips for about 3 days</div></div><span class="r gold" style="font-size:12px">Early hunch · 2×</span></div>
+              <div class="li"><div><div style="font-weight:600;font-size:15px">Busy weekends</div><div class="dim" style="font-size:13px">Drain you in luteal week only</div></div><span class="r dim" style="font-size:12px">3×</span></div>
+              <div class="li" style="border-bottom:0"><div><div style="font-weight:600;font-size:15px">Full moon</div><div class="dim" style="font-size:13px">No change in your sleep</div></div><span class="r dim" style="font-size:12px">5 moons</span></div>
+            </div>
+            <div class="card" style="display:flex;align-items:center;gap:14px;padding:15px 18px">
+              <svg width="24" height="24" style="color:#D9B87C"><use href="#i-doc"/></svg>
+              <div style="flex:1"><div style="font-weight:600;font-size:15px">Doctor report</div><div class="dim" style="font-size:12.5px">Last 3 cycles, one page</div></div>
+              <svg class="chev" style="color:#9A938C"><use href="#i-chev"/></svg>
+            </div>
+          </div>
+          <nav class="tabbar"><span class="tab"><svg><use href="#i-today"/></svg>Today</span><span class="add"><svg><use href="#i-plus"/></svg></span><span class="tab on"><svg><use href="#i-receipts"/></svg>Receipts</span><span class="tab"><svg><use href="#i-you"/></svg>You</span></nav>
+          <span class="home"></span>
+        </div>
+        <p class="cap"><b>Receipts.</b> One pattern shown big, the rest as a quiet list. Every pattern says how many times it's been seen.</p>
+      </div>
+
+      <div class="shot">
+        <div class="ph A">
+          <div class="status"><span class="num">9:44</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 18 12" width="18"><use href="#i-sig"/></svg><svg viewBox="0 0 27 12" width="27"><use href="#i-bat"/></svg></span></div>
+          <div class="body">
+            <div class="lbl gold" style="margin-top:6px">You</div>
+            <div class="serif" style="font-size:34px;line-height:1.08">Maria, <i>also known as</i> Electra</div>
+            <div class="card">
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center">
+                <div><div class="gold" style="font-size:20px">♂︎</div><div style="font-size:13px;font-weight:600;margin-top:2px">Mars in Aries</div><div class="dim" style="font-size:11.5px">How she fights</div></div>
+                <div><div class="gold" style="font-size:20px">♀︎</div><div style="font-size:13px;font-weight:600;margin-top:2px">Venus in Leo</div><div class="dim" style="font-size:11.5px">How she shines</div></div>
+                <div><div class="gold" style="font-size:14px;font-weight:700;letter-spacing:.08em;line-height:31px">AC</div><div style="font-size:13px;font-weight:600;margin-top:2px">Scorpio rising</div><div class="dim" style="font-size:11.5px">How she enters</div></div>
+              </div>
+            </div>
+            <div class="list">
+              <div class="li"><span>Your mix</span><span class="r dim">ADHD · PMDD · GLP-1<svg class="chev"><use href="#i-chev"/></svg></span></div>
+              <div class="li"><span>Medications</span><span class="r dim">3 active<svg class="chev"><use href="#i-chev"/></svg></span></div>
+              <div class="li"><span style="display:flex;align-items:center;gap:8px"><svg width="17" height="17"><use href="#i-lock"/></svg>The Vault</span><span class="r dim">6 lab results<svg class="chev"><use href="#i-chev"/></svg></span></div>
+              <div class="li"><span>Devices</span><span class="r dim">Apple Watch<svg class="chev"><use href="#i-chev"/></svg></span></div>
+              <div class="li" ><span style="display:flex;align-items:center;gap:8px"><svg width="17" height="17"><use href="#i-sky"/></svg>Woo dial</span><span class="r dim">A little<svg class="chev"><use href="#i-chev"/></svg></span></div>
+              <div class="li" style="border-bottom:0"><span>Privacy</span><span class="r dim">Only on this phone<svg class="chev"><use href="#i-chev"/></svg></span></div>
+            </div>
+          </div>
+          <nav class="tabbar"><span class="tab"><svg><use href="#i-today"/></svg>Today</span><span class="add"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-receipts"/></svg>Receipts</span><span class="tab on"><svg><use href="#i-you"/></svg>You</span></nav>
+          <span class="home"></span>
+        </div>
+        <p class="cap"><b>You.</b> Her alter ego at the top, built from three placements. Everything else is a short list.</p>
+      </div>
+    </div>
+    <div class="notes">
+      <div><b>Feels like</b>A luxury ring app after dark. Bedtime-friendly.</div>
+      <div><b>Best for</b>Women who already love Oura's look, and night-time use.</div>
+      <div><b>Watch out</b>Long reading on black is tiring. Needs a light mode for the doctor report and older eyes.</div>
+    </div>
+  </section>
+
+  <!-- ================= B: PORCELAIN ================= -->
+  <section class="dir" id="porcelain">
+    <div class="dir-head">
+      <div>
+        <div class="eyebrow">Direction B</div>
+        <h2>Porcelain</h2>
+        <div class="swatches" aria-label="Palette"><span style="background:#F2F2EF"></span><span style="background:#FFFFFF"></span><span style="background:#17181C"></span><span style="background:#A3283C"></span></div>
+      </div>
+      <p>Cool porcelain white, graphite type and one pomegranate red. The headlines use an inscription-style face with Greek roots. The pomegranate is Persephone's fruit, the myth of a woman who lives in cycles. Easiest to read at any age, and it looks like a clinic you'd actually want to go to.</p>
+    </div>
+    <div class="row">
+
+      <div class="shot">
+        <div class="ph B">
+          <div class="status"><span class="num">9:41</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 18 12" width="18"><use href="#i-sig"/></svg><svg viewBox="0 0 27 12" width="27"><use href="#i-bat"/></svg></span></div>
+          <div class="body">
+            <div class="strip"><div class="d"><small>M</small><span class="num">19</span></div><div class="d on"><small>T</small><span class="num">20</span></div><div class="d"><small>W</small><span class="num">21</span></div><div class="d"><small>T</small><span class="num" style="--mk:#17181C">22</span></div><div class="d"><small>F</small><span class="num">23</span></div><div class="d"><small>S</small><span class="num" style="--mk:#A3283C">24</span></div><div class="d"><small>S</small><span class="num">25</span></div></div>
+            <div class="lbl pom" style="margin-top:8px">Day 24 · Luteal</div>
+            <div class="disp" style="font-size:36px;line-height:1.1">Slow morning.<br>That tracks.</div>
+            <p class="dim" style="margin:0;font-size:15.5px;line-height:1.5">Short night and your HRV dipped. Your last three luteal Tuesdays looked exactly like this.</p>
+            <div class="card" style="padding:16px 18px">
+              <div class="sig">
+                <div><div class="v num">5h 50<small>m</small></div><div class="k dim">Sleep</div></div>
+                <div style="border-left:1px solid #E4E4E0"><div class="v num">38<small>ms</small></div><div class="k dim">HRV · ↓ 18%</div></div>
+                <div style="border-left:1px solid #E4E4E0"><div class="v num">64<small>bpm</small></div><div class="k dim">Resting HR</div></div>
+              </div>
+            </div>
+            <div style="border-left:2px solid #A3283C;padding:2px 0 2px 16px">
+              <div class="lbl pom" style="font-size:10.5px">Electra</div>
+              <div class="disp" style="font-size:20px;line-height:1.35;margin-top:6px">She doesn't need to be loud this week. She needs to be on time.</div>
+              <div class="dim" style="font-size:12.5px;margin-top:8px">4 weeks like this since July. You showed up for every one.</div>
+            </div>
+            <div class="card" style="padding:4px 18px">
+              <div class="li" style="padding:13px 0"><span>Mounjaro 7.5 mg</span><span class="r dim">Thursday</span></div>
+              <div class="li" style="padding:13px 0;border-bottom:0"><span>Period likely</span><span class="r dim">in 4 days</span></div>
+            </div>
+          </div>
+          <nav class="tabbar"><span class="tab on"><svg><use href="#i-today"/></svg>Today</span><span class="add"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-receipts"/></svg>Receipts</span><span class="tab"><svg><use href="#i-you"/></svg>You</span></nav>
+          <span class="home"></span>
+        </div>
+        <p class="cap"><b>Today.</b> A small cycle ring in the corner, the sentence, signals in one white card, her alter ego as a pull quote.</p>
+      </div>
+
+      <div class="shot">
+        <div class="ph B">
+          <div class="status"><span class="num">9:42</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 18 12" width="18"><use href="#i-sig"/></svg><svg viewBox="0 0 27 12" width="27"><use href="#i-bat"/></svg></span></div>
+          <div class="body" style="gap:22px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><span class="dim" style="font-size:15px">Cancel</span><span class="lbl dim" style="font-size:10.5px">10 seconds</span></div>
+            <div class="disp" style="font-size:34px;line-height:1.1">How's today?</div>
+            <div>
+              <div style="font-size:14px;font-weight:600;margin-bottom:10px">Mood</div>
+              <div class="seg"><span><i style="width:8px;height:8px"></i></span><span class="on"><i style="width:11px;height:11px"></i></span><span><i style="width:14px;height:14px"></i></span><span><i style="width:17px;height:17px"></i></span><span><i style="width:20px;height:20px"></i></span></div>
+              <div class="scale dim"><span>Rough</span><span>Great</span></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:14px"><b style="font-weight:600">Energy</b><span class="dim">Running low</span></div>
+              <div class="slider"><b style="width:34%"></b><em style="left:34%"></em></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:14px"><b style="font-weight:600">Focus</b><span class="dim">Patchy</span></div>
+              <div class="slider"><b style="width:46%"></b><em style="left:46%"></em></div>
+            </div>
+            <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:16px 18px">
+              <div><div style="font-size:15px;font-weight:600">Elvanse 40 mg</div><div class="dim" style="font-size:12.5px">Morning dose</div></div>
+              <span class="pill on">Taken</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill">+ Symptoms</span><span class="pill">+ Social</span><span class="pill">+ Note</span></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45" class="dim"><svg width="16" height="16" viewBox="0 0 24 24" style="flex:0 0 auto;margin-top:2px"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Already logged for you from Apple Watch: sleep 5h 50m, 2,140 steps, resting heart rate 64.</span></div>
+            <div class="btn" style="margin-top:auto;margin-bottom:34px">Done</div>
+          </div>
+          <span class="home"></span>
+        </div>
+        <p class="cap"><b>Check-in.</b> Same three taps. Graphite for what's selected, pomegranate only for her own levels.</p>
+      </div>
+
+      <div class="shot">
+        <div class="ph B">
+          <div class="status"><span class="num">9:43</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 18 12" width="18"><use href="#i-sig"/></svg><svg viewBox="0 0 27 12" width="27"><use href="#i-bat"/></svg></span></div>
+          <div class="body">
+            <div class="lbl pom" style="margin-top:6px">Receipts · 4 cycles</div>
+            <div class="disp" style="font-size:34px;line-height:1.1">What your body keeps saying</div>
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:15.5px;font-weight:600">Luteal sleep</b><span class="dim num" style="font-size:12px">4 of 4 cycles</span></div>
+              <p class="dim" style="margin:6px 0 12px;font-size:14px">You sleep about 40 minutes less in the five days before your period.</p>
+              <svg viewBox="0 0 300 64" width="100%" height="64" aria-hidden="true">
+                <rect x="196" y="0" width="80" height="64" fill="#A3283C" opacity=".07"/>
+                <path d="M0 22 C40 20 70 24 110 21 S170 22 195 24 C215 30 230 44 250 46 S285 40 300 26" fill="none" stroke="#17181C" stroke-width="2"/>
+                <circle cx="250" cy="46" r="4" fill="#A3283C"/>
+                <text x="200" y="12" fill="#6C6E74" font-size="10" font-family="-apple-system,Hanken Grotesk,sans-serif">luteal</text>
+              </svg>
+            </div>
+            <div class="card" style="padding:2px 18px">
+              <div class="li"><div><div style="font-weight:600;font-size:15px">After a dose increase</div><div class="dim" style="font-size:13px">Energy dips for about 3 days</div></div><span class="r pom" style="font-size:12px">Early hunch · 2×</span></div>
+              <div class="li"><div><div style="font-weight:600;font-size:15px">Busy weekends</div><div class="dim" style="font-size:13px">Drain you in luteal week only</div></div><span class="r dim" style="font-size:12px">3×</span></div>
+              <div class="li" style="border-bottom:0"><div><div style="font-weight:600;font-size:15px">Full moon</div><div class="dim" style="font-size:13px">No change in your sleep</div></div><span class="r dim" style="font-size:12px">5 moons</span></div>
+            </div>
+            <div class="btn" style="display:flex;gap:10px;justify-content:center;align-items:center"><svg width="20" height="20"><use href="#i-doc"/></svg>Make doctor report</div>
+          </div>
+          <nav class="tabbar"><span class="tab"><svg><use href="#i-today"/></svg>Today</span><span class="add"><svg><use href="#i-plus"/></svg></span><span class="tab on"><svg><use href="#i-receipts"/></svg>Receipts</span><span class="tab"><svg><use href="#i-you"/></svg>You</span></nav>
+          <span class="home"></span>
+        </div>
+        <p class="cap"><b>Receipts.</b> The doctor report becomes the main button here, because on a light screen it reads like the document it makes.</p>
+      </div>
+
+      <div class="shot">
+        <div class="ph B">
+          <div class="status"><span class="num">9:44</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 18 12" width="18"><use href="#i-sig"/></svg><svg viewBox="0 0 27 12" width="27"><use href="#i-bat"/></svg></span></div>
+          <div class="body">
+            <div class="lbl pom" style="margin-top:6px">You</div>
+            <div class="disp" style="font-size:34px;line-height:1.08">Maria, also known as Electra</div>
+            <div class="card">
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center">
+                <div><div class="pom" style="font-size:20px">♂︎</div><div style="font-size:13px;font-weight:600;margin-top:2px">Mars in Aries</div><div class="dim" style="font-size:11.5px">How she fights</div></div>
+                <div style="border-left:1px solid #E4E4E0;border-right:1px solid #E4E4E0"><div class="pom" style="font-size:20px">♀︎</div><div style="font-size:13px;font-weight:600;margin-top:2px">Venus in Leo</div><div class="dim" style="font-size:11.5px">How she shines</div></div>
+                <div><div class="pom" style="font-size:14px;font-weight:700;letter-spacing:.08em;line-height:31px">AC</div><div style="font-size:13px;font-weight:600;margin-top:2px">Scorpio rising</div><div class="dim" style="font-size:11.5px">How she enters</div></div>
+              </div>
+            </div>
+            <div class="card" style="padding:2px 18px">
+              <div class="li"><span>Your mix</span><span class="r dim">ADHD · PMDD · GLP-1<svg class="chev"><use href="#i-chev"/></svg></span></div>
+              <div class="li"><span>Medications</span><span class="r dim">3 active<svg class="chev"><use href="#i-chev"/></svg></span></div>
+              <div class="li"><span style="display:flex;align-items:center;gap:8px"><svg width="17" height="17"><use href="#i-lock"/></svg>The Vault</span><span class="r dim">6 lab results<svg class="chev"><use href="#i-chev"/></svg></span></div>
+              <div class="li"><span>Devices</span><span class="r dim">Apple Watch<svg class="chev"><use href="#i-chev"/></svg></span></div>
+              <div class="li" ><span style="display:flex;align-items:center;gap:8px"><svg width="17" height="17"><use href="#i-sky"/></svg>Woo dial</span><span class="r dim">A little<svg class="chev"><use href="#i-chev"/></svg></span></div>
+              <div class="li" style="border-bottom:0"><span>Privacy</span><span class="r dim">Only on this phone<svg class="chev"><use href="#i-chev"/></svg></span></div>
+            </div>
+          </div>
+          <nav class="tabbar"><span class="tab"><svg><use href="#i-today"/></svg>Today</span><span class="add"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-receipts"/></svg>Receipts</span><span class="tab on"><svg><use href="#i-you"/></svg>You</span></nav>
+          <span class="home"></span>
+        </div>
+        <p class="cap"><b>You.</b> The same structure as Noir. Pomegranate marks the sky details, graphite does the rest.</p>
+      </div>
+    </div>
+    <div class="notes">
+      <div><b>Feels like</b>A beautiful private clinic, or a Greek gallery in daylight.</div>
+      <div><b>Best for</b>Every age, long reading, the doctor report, and women who'd switch the sky off.</div>
+      <div><b>Watch out</b>Light apps can tip into "clinical" if the type and the red aren't handled with care. Needs a dark mode for night.</div>
+    </div>
+  </section>
+
+  <!-- ================= C: PHASE ================= -->
+  <section class="dir" id="phase">
+    <div class="dir-head">
+      <div>
+        <div class="eyebrow">Direction C</div>
+        <h2>Phase colour</h2>
+        <div class="swatches" aria-label="Palette"><span style="background:#5A1F2B"></span><span style="background:#2E4A3F"></span><span style="background:#C9893A"></span><span style="background:#FBF7F4"></span><span style="background:#F2725F"></span></div>
+      </div>
+      <p>The fun one. Today is painted in the colour of her phase: deep wine for luteal, forest for follicular, amber around ovulation. She knows where she is before she reads a word. Everything else sits on warm white with a coral accent. Bold, but still one colour at a time.</p>
+    </div>
+    <div class="row">
+
+      <div class="shot">
+        <div class="ph C">
+          <div class="status"><span class="num">9:41</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 18 12" width="18"><use href="#i-sig"/></svg><svg viewBox="0 0 27 12" width="27"><use href="#i-bat"/></svg></span></div>
+          <div class="body">
+            <div class="strip"><div class="d"><small>M</small><span class="num">19</span></div><div class="d on"><small>T</small><span class="num">20</span></div><div class="d"><small>W</small><span class="num">21</span></div><div class="d"><small>T</small><span class="num" style="--mk:#FBEDE6">22</span></div><div class="d"><small>F</small><span class="num">23</span></div><div class="d"><small>S</small><span class="num" style="--mk:#F2725F">24</span></div><div class="d"><small>S</small><span class="num">25</span></div></div>
+            <div class="lbl" style="margin-top:8px;opacity:.8">Luteal · Day 24 of 29</div>
+            <div class="dsp" style="font-size:46px;line-height:1">Slow morning. <i>That tracks.</i></div>
+            <p class="dim" style="margin:0;font-size:15.5px;line-height:1.5">Short night and your HRV dipped. Your last three luteal Tuesdays looked exactly like this.</p>
+            <div class="sig" style="margin-top:2px">
+              <div><div class="v num">5h 50<small>m</small></div><div class="k dim">Sleep</div></div>
+              <div style="border-left:1px solid rgba(251,237,230,.2)"><div class="v num">38<small>ms</small></div><div class="k dim">HRV · ↓ 18%</div></div>
+              <div style="border-left:1px solid rgba(251,237,230,.2)"><div class="v num">64<small>bpm</small></div><div class="k dim">Resting HR</div></div>
+            </div>
+            <div class="card">
+              <div class="lbl" style="font-size:10.5px;opacity:.8">Electra</div>
+              <div class="dsp" style="font-size:23px;line-height:1.25;margin-top:6px">She doesn't need to be loud this week. She needs to be on time.</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <div class="card" style="flex:1;padding:14px 16px"><div class="dim" style="font-size:12px">Thursday</div><div style="font-size:15px;font-weight:600">Mounjaro 7.5 mg</div></div>
+              <div class="card" style="flex:1;padding:14px 16px"><div class="dim" style="font-size:12px">In 4 days</div><div style="font-size:15px;font-weight:600">Period likely</div></div>
+            </div>
+          </div>
+          <nav class="tabbar"><span class="tab on"><svg><use href="#i-today"/></svg>Today</span><span class="add"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-receipts"/></svg>Receipts</span><span class="tab"><svg><use href="#i-you"/></svg>You</span></nav>
+          <span class="home"></span>
+        </div>
+        <p class="cap"><b>Today, luteal.</b> The whole screen is the phase. Big friendly serif, signals in white on wine.</p>
+      </div>
+
+      <div class="shot">
+        <div class="ph C" style="background:#2E4A3F;color:#EEF3EC">
+          <div class="status"><span class="num">9:41</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 18 12" width="18"><use href="#i-sig"/></svg><svg viewBox="0 0 27 12" width="27"><use href="#i-bat"/></svg></span></div>
+          <div class="body">
+            <div class="strip"><div class="d"><small>M</small><span class="num">2</span></div><div class="d on"><small>T</small><span class="num">3</span></div><div class="d"><small>W</small><span class="num">4</span></div><div class="d"><small>T</small><span class="num">5</span></div><div class="d"><small>F</small><span class="num" style="--mk:#EEF3EC">6</span></div><div class="d"><small>S</small><span class="num">7</span></div><div class="d"><small>S</small><span class="num">8</span></div></div>
+            <div class="lbl" style="margin-top:8px;opacity:.8">Follicular · Day 8 of 29</div>
+            <div class="dsp" style="font-size:46px;line-height:1">Good night's sleep. <i>Use it.</i></div>
+            <p style="margin:0;font-size:15.5px;line-height:1.5;opacity:.75">Your HRV is above your usual for the third day running. This is usually your sharpest week.</p>
+            <div class="sig" style="margin-top:2px">
+              <div><div class="v num">7h 40<small>m</small></div><div class="k" style="opacity:.7">Sleep</div></div>
+              <div style="border-left:1px solid rgba(238,243,236,.2)"><div class="v num">52<small>ms</small></div><div class="k" style="opacity:.7">HRV · ↑ 9%</div></div>
+              <div style="border-left:1px solid rgba(238,243,236,.2)"><div class="v num">58<small>bpm</small></div><div class="k" style="opacity:.7">Resting HR</div></div>
+            </div>
+            <div class="card">
+              <div class="lbl" style="font-size:10.5px;opacity:.8">Electra</div>
+              <div class="dsp" style="font-size:23px;line-height:1.25;margin-top:6px">Book the scary meeting. Send the email. This is your week.</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <div class="card" style="flex:1;padding:14px 16px"><div style="font-size:12px;opacity:.7">Wednesday</div><div style="font-size:15px;font-weight:600">Blood test results</div></div>
+              <div class="card" style="flex:1;padding:14px 16px"><div style="font-size:12px;opacity:.7">Friday</div><div style="font-size:15px;font-weight:600">Mounjaro 7.5 mg</div></div>
+            </div>
+          </div>
+          <nav class="tabbar" style="background:#EEF3EC"><span class="tab on" style="color:#1C2E27"><svg><use href="#i-today"/></svg>Today</span><span class="add" style="background:#2E4A3F;color:#EEF3EC"><svg><use href="#i-plus"/></svg></span><span class="tab" style="color:#7D8E86"><svg><use href="#i-receipts"/></svg>Receipts</span><span class="tab" style="color:#7D8E86"><svg><use href="#i-you"/></svg>You</span></nav>
+          <span class="home" style="background:#EEF3EC"></span>
+        </div>
+        <p class="cap"><b>Today, follicular.</b> Same layout two weeks later. Only the colour and the words change, so it never feels repetitive.</p>
+      </div>
+
+      <div class="shot">
+        <div class="ph C light">
+          <div class="status"><span class="num">9:43</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 18 12" width="18"><use href="#i-sig"/></svg><svg viewBox="0 0 27 12" width="27"><use href="#i-bat"/></svg></span></div>
+          <div class="body">
+            <div class="lbl" style="margin-top:6px;color:#C2493A">Receipts · 4 cycles</div>
+            <div class="dsp" style="font-size:38px;line-height:1.05">What your body keeps saying</div>
+            <div class="card" style="background:#5A1F2B;color:#FBEDE6">
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:15.5px;font-weight:600">Luteal sleep</b><span class="num" style="font-size:12px;opacity:.7">4 of 4 cycles</span></div>
+              <p style="margin:6px 0 12px;font-size:14px;opacity:.8">You sleep about 40 minutes less in the five days before your period.</p>
+              <svg viewBox="0 0 300 64" width="100%" height="64" aria-hidden="true">
+                <path d="M0 22 C40 20 70 24 110 21 S170 22 195 24 C215 30 230 44 250 46 S285 40 300 26" fill="none" stroke="#F2725F" stroke-width="2.4"/>
+                <circle cx="250" cy="46" r="4.5" fill="#FBEDE6"/>
+              </svg>
+            </div>
+            <div class="list">
+              <div class="li"><div><div style="font-weight:600;font-size:15px">After a dose increase</div><div class="dim" style="font-size:13px">Energy dips for about 3 days</div></div><span class="r" style="font-size:12px;color:#C2493A">Early hunch · 2×</span></div>
+              <div class="li"><div><div style="font-weight:600;font-size:15px">Busy weekends</div><div class="dim" style="font-size:13px">Drain you in luteal week only</div></div><span class="r dim" style="font-size:12px">3×</span></div>
+              <div class="li" style="border-bottom:0"><div><div style="font-weight:600;font-size:15px">Full moon</div><div class="dim" style="font-size:13px">No change in your sleep</div></div><span class="r dim" style="font-size:12px">5 moons</span></div>
+            </div>
+            <div class="btn" style="display:flex;gap:10px;justify-content:center;align-items:center"><svg width="20" height="20"><use href="#i-doc"/></svg>Make doctor report</div>
+          </div>
+          <nav class="tabbar"><span class="tab"><svg><use href="#i-today"/></svg>Today</span><span class="add"><svg><use href="#i-plus"/></svg></span><span class="tab on"><svg><use href="#i-receipts"/></svg>Receipts</span><span class="tab"><svg><use href="#i-you"/></svg>You</span></nav>
+          <span class="home"></span>
+        </div>
+        <p class="cap"><b>Receipts.</b> Warm white, so the phase colour still means something. Each pattern card wears the colour of the phase it's about.</p>
+      </div>
+
+      <div class="shot">
+        <div class="ph C light">
+          <div class="status"><span class="num">9:42</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg viewBox="0 0 18 12" width="18"><use href="#i-sig"/></svg><svg viewBox="0 0 27 12" width="27"><use href="#i-bat"/></svg></span></div>
+          <div class="body" style="gap:22px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><span class="dim" style="font-size:15px">Cancel</span><span class="lbl dim" style="font-size:10.5px">10 seconds</span></div>
+            <div class="dsp" style="font-size:38px;line-height:1.05">How's today?</div>
+            <div>
+              <div style="font-size:14px;font-weight:600;margin-bottom:10px">Mood</div>
+              <div class="seg"><span><i style="width:8px;height:8px"></i></span><span class="on"><i style="width:11px;height:11px"></i></span><span><i style="width:14px;height:14px"></i></span><span><i style="width:17px;height:17px"></i></span><span><i style="width:20px;height:20px"></i></span></div>
+              <div class="scale dim"><span>Rough</span><span>Great</span></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:14px"><b style="font-weight:600">Energy</b><span class="dim">Running low</span></div>
+              <div class="slider"><b style="width:34%"></b><em style="left:34%"></em></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:14px"><b style="font-weight:600">Focus</b><span class="dim">Patchy</span></div>
+              <div class="slider"><b style="width:46%"></b><em style="left:46%"></em></div>
+            </div>
+            <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:16px 18px">
+              <div><div style="font-size:15px;font-weight:600">Elvanse 40 mg</div><div class="dim" style="font-size:12.5px">Morning dose</div></div>
+              <span class="pill on">Taken</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill">+ Symptoms</span><span class="pill">+ Social</span><span class="pill">+ Note</span></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45" class="dim"><svg width="16" height="16" viewBox="0 0 24 24" style="flex:0 0 auto;margin-top:2px"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Already logged for you from Apple Watch: sleep 5h 50m, 2,140 steps, resting heart rate 64.</span></div>
+            <div class="btn" style="margin-top:auto;margin-bottom:34px;background:#F2725F;color:#24151A">Done</div>
+          </div>
+          <span class="home"></span>
+        </div>
+        <p class="cap"><b>Check-in.</b> Rounder, softer controls and a coral finish button. The most playful of the three.</p>
+      </div>
+    </div>
+    <div class="notes">
+      <div><b>Feels like</b>A fashion magazine that knows your cycle. Instantly recognisable in screenshots.</div>
+      <div><b>Best for</b>Shareability on TikTok and Instagram, and women who want the app to feel like a mood.</div>
+      <div><b>Watch out</b>Colour carries meaning, so it has to stay consistent. Some women may not want their phase visible to anyone glancing at their phone.</div>
+    </div>
+  </section>
+
+  <section class="verdict">
+    <div class="eyebrow">My recommendation</div>
+    <h2>Porcelain by day, Noir by night, with Phase colour as the accent</h2>
+    <p>Porcelain reads best for every age and makes the doctor report feel trustworthy. Noir is its dark mode, so the app follows her phone's setting. From Phase colour, keep one idea: a small phase-coloured detail on Today, like the ring and the eyebrow, rather than painting the whole screen. That keeps it discreet in public and still fun.</p>
+    <p>Everything here is a sketch. Tell me what you love and what you'd change, and the next round will be one direction, polished, with onboarding and the doctor report.</p>
+  </section>
+  <p class="foot">Sketch content is example data, not real readings. The alter ego name, placements and medications are placeholders.</p>
+</div>
