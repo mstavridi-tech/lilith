@@ -123,11 +123,11 @@ Research date: October 19, 2026. Method: brainstorm against the brief, then web 
 
 ## Top 5, ranked
 
-1. **ZUHRA** — Venus in Arabic, ♀ on a lab report, and the brightest planet. It's the cleanest three-way double meaning, rooted where the founder lives, and nothing obvious is in its lane. Honest caveats: people will say "Zahra", and Atelier Zuhra in Dubai means she should check UAE registration first.
-2. **HESPER** — The evening star, the adult version of Vesper without Vesper's collisions. It's quiet, lux, and fragrance-coded. Honest caveats: it's less instantly meaningful, body only comes through Venus, and a pending HESPER bath-products application is nearby.
-3. **COSIMA** — The best story on the list (cosmetic + cosmos + order from chaos) and the most fashion-house sound. Honest caveat: the near-names Cosia (a women's-health app with the same positioning) and Cosma Health make it the riskiest of the three on confusion. Ranked third for that reason, not for quality.
-4. **SIDERA** — Stars plus desire is gorgeous Latin. Honest caveat: a live "Sidera: Guidance" self-reflection app is too close for comfort. She'd need a modifier or a buyout.
-5. **NAAMAH** — The perfect insider sister to LILITH, and clean on trademarks. Honest caveat: the spelling and pronunciation cost her, and the "mother of demons" lore works against a product doctors are meant to trust.
+1. **ZUHRA**, Venus in Arabic, ♀ on a lab report, and the brightest planet. It's the cleanest three-way double meaning, rooted where the founder lives, and nothing obvious is in its lane. Honest caveats: people will say "Zahra", and Atelier Zuhra in Dubai means she should check UAE registration first.
+2. **HESPER**, The evening star, the adult version of Vesper without Vesper's collisions. It's quiet, lux, and fragrance-coded. Honest caveats: it's less instantly meaningful, body only comes through Venus, and a pending HESPER bath-products application is nearby.
+3. **COSIMA**, The best story on the list (cosmetic + cosmos + order from chaos) and the most fashion-house sound. Honest caveat: the near-names Cosia (a women's-health app with the same positioning) and Cosma Health make it the riskiest of the three on confusion. Ranked third for that reason, not for quality.
+4. **SIDERA**, Stars plus desire is gorgeous Latin. Honest caveat: a live "Sidera: Guidance" self-reflection app is too close for comfort. She'd need a modifier or a buyout.
+5. **NAAMAH**, The perfect insider sister to LILITH, and clean on trademarks. Honest caveat: the spelling and pronunciation cost her, and the "mother of demons" lore works against a product doctors are meant to trust.
 
 **Dropped after the checks:** Vesper and Theia (live, direct women's-health and wearable-health conflicts), Ichor (its medical meaning is a wound discharge), Metis (Indigenous identity collision), and Apogee (generic, and an existing wellness trademark family).
 
