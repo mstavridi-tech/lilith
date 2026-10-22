@@ -1,0 +1,616 @@
+
+
+########## BRANCH 1: Trying to get pregnant ##########
+
+--- page ---
+Let's start with you and your TTC journey.
+Where are you in your trying-to-conceive journey right now?
+Just getting started, figuring out my cycle
+Not trying, but not NOT trying
+Actively trying on our own
+Trying with help from a doctor or fertility clinic (meds, IUI, IVF)
+Taking a break from trying right now
+Other (please specify)
+How long have you been trying?
+Less than 3 months
+3–6 months
+6–12 months
+1–2 years
+2+ years
+We're not officially trying, just not preventing
+Is this your first time trying for a baby?
+Yes, first time
+No, I have a child (or children) already
+No, I've been pregnant before
+Prefer not to say
+First word that comes to your mind when you think about your TTC journey so far?
+How are you feeling about trying-to-conceive so far? Select all that apply.
+Anxious, I overthink every twinge and every test
+Lonely, people around me don't get it
+Excited
+Burnt out, I need a break from all of it
+Impatient, why is it taking so long
+Calm, letting it happen
+Other (please specify)
+How are you trying to conceive? Select all that apply.
+Sex timed to my fertile window
+Sex every other day through the window
+Sex whenever, not really timing it
+At-home insemination (ICI) with a partner or donor
+IUI at a clinic
+IVF and embryo transfer
+Donor sperm or donor eggs
+Prefer not to say
+Other (please specify)
+Are you doing any of the following right now? Select all that apply.
+Trigger shot (hCG)
+Acupuncture, herbs, or TCM for fertility
+Egg or embryo freezing
+Fertility testing but no treatment yet
+Ovulation meds
+Diet or lifestyle changes for fertility
+Prenatal vitamins or supplements
+Progesterone support
+IUI
+IVF, egg retrieval, or embryo transfer
+None of these
+Prefer not to say
+Other (please specify)
+Have you been diagnosed with any of these? Select all that apply.
+Blocked or damaged tubes
+Endometriosis
+Insulin resistance or diabetes
+Short luteal phase or low progesterone
+Thyroid condition
+PCOS
+Low AMH / diminished ovarian reserve
+Recurrent pregnancy loss
+PMDD or severe PMS
+I haven’t been tested
+An autoimmune condition
+Anxiety or depression
+Fibroids or polyps
+Unexplained infertility
+Prefer not to say
+Something else (please specify)
+How would you describe your cycle?
+Like clockwork, within a day or two every month
+Irregular, I never really know when it's coming
+Mostly regular, with the occasional surprise
+Very long cycles or I rarely get a period
+Just came off birth control, still figuring it out
+Other (please specify)
+How do you track your fertile window and ovulation? Select all that apply.
+Ovulation strips
+Temping (BBT) with a regular thermometer
+Temping with a wearable
+Cervical mucus
+Cervix position
+Hormone monitor
+Ovulation pain or other body cues
+Bloodwork or ultrasounds at a clinic
+I go by the app's fertile window prediction
+I don't track beyond my period
+Other (please specify)
+What apps or tools do you use for trying to conceive? Select all that apply.
+Oura or another ring
+Ovia
+A spreadsheet or notes app
+Clue
+Flo
+Tempdrop
+Clearblue (app or monitor)
+Pregmate
+Stardust
+Inito
+None
+Mira
+Natural Cycles
+Read Your Body or Kindara
+Premom
+Glow
+Apple Watch / Apple Health
+Femometer
+Fertility Friend
+Other (please specify)
+Who knows you're trying? Select all that apply.
+My partner
+Online communities (Reddit, TikTok, Facebook groups)
+Family
+A therapist or counselor
+Everyone, I'm an open book
+Co-workers
+My OB-GYN or doctor
+Close friends
+Nobody, it's just me
+Where do you go for TTC info and support? Select all that apply.
+AI Chatbot (ChatGPT, Claude etc..)
+Reddit
+Instagram
+TikTok
+Podcasts
+In-app support groups
+Books
+My OB-GYN or fertility doctor
+Facebook groups
+Google
+YouTube
+Friends who've been through it
+Other (please specify)
+How involved is your partner in TTC?
+I'm doing this solo
+Not that involved
+Wants to help but doesn't really know how
+All in and making lifestyle changes, too
+We're not on the same page about trying
+Fully in it, knows my cycle, tracks with me
+Supportive, but I run the show
+Prefer not to say
+Has trying changed sex and intimacy for you? Select all that apply.
+Our sex life hasn't really changed!
+I carry more of the pressure than my partner
+We mostly only have sex when it "counts"
+We've actually gotten closer
+We are having fun with it
+It's causing tension or pressure on one or both of us
+My fertile window has turned sex into homework
+It's a new level of intimacy
+Prefer not to say
+Prev
+Next
+
+--- page ---
+Let's chat about how Stardust fits into your TTC journey. Don't hold back. Our ego can take it!
+*
+Stardust has a trying-to-conceive mode. Where are you with it?
+(Required.)
+It's on and I use it
+I turned it on, then turned it off
+I know it exists but haven't turned it on
+I didn't know it existed
+Prev
+Next
+
+--- page ---
+Let's chat about how Stardust fits into your TTC journey. Don't hold back. Our ego can take it!
+This question requires an answer.
+*
+Stardust has a trying-to-conceive mode. Where are you with it?
+(Required.)
+It's on and I use it
+I turned it on, then turned it off
+I know it exists but haven't turned it on
+I didn't know it existed
+Prev
+Next
+[STOPPED: required question, not answering]
+
+
+########## BRANCH 2: Following my pregnancy ##########
+
+--- page ---
+We are most grateful for your enthusiasm!
+
+We love that you want to share your cycle-tracking thoughts with us! Right now, we’re conducting an investigation into some other journeys in the Stardust universe: Trying to Conceive, Perimenopause, and Partner Mode…to name a few!
+
+But please, don’t let that stop you from speaking your mind and helping us make your wishes come true. Our inbox is always open at support@stardust.app
+
+As a token of our eternal devotion, enjoy 1 month of Stardust Premium on us with code: THANKSLUV. If you’re already a premium user, thanks! (and feel free to share the love and gift it to a friend.)
+
+Prev
+Done
+
+[LAST PAGE: not submitting]
+
+
+########## BRANCH 3: Navigating perimenopause or menopause ##########
+
+--- page ---
+Let's chat about you and your journey into perimenapause.
+Where are you in your journey?
+I think I’m in perimenopause, but it’s not confirmed
+My doctor confirmed I’m in perimenopause
+I’m in menopause (no period for 12+ months)
+Medical or surgical menopause (hysterectomy, treatment, medication)
+Honestly not sure
+When did you first start noticing changes?
+In the last 6 months
+6–12 months ago
+1–2 years ago
+3–5 years ago
+More than 5 years ago
+Not sure
+What’s your biggest priority right now?
+Figuring out if my current treatment is helping
+Finding a treatment that works for me
+Figuring out if this is perimenopause
+Understanding patterns in my mood, energy, and symptoms
+Knowing what to expect next
+Feeling more like myself
+Finding a doctor who understands my concerns
+Making sense of changes in my periods
+Other (please specify)
+Which of these are you dealing with? Select all that apply.
+Weight gain or bloating
+Joint pain or aches
+Irregular, heavier, or longer periods
+Low libido or vaginal dryness
+Heart palpitations
+Bad sleep or waking at 3am
+Headaches or migraines
+Anxiety or a sense of dread
+Skin or hair changes
+Mood swings, rage, or irritability
+Exhaustion and low energy
+Brain fog, forgetting words
+Hot flashes or night sweats
+Other (please specify)
+What do you use to track your perimenopause symptoms right now? Select all that apply.
+Balance
+Nothing right now
+Health & Her
+A spreadsheet or notes app
+Bearable
+Clue
+Natural Cycles
+Flo
+Wearables (Apple watch, Oura, Whoop, Fitbit, etc.)
+Stella
+Caria
+Pen and paper, a journal, or a calendar
+Stardust
+Other (please specify)
+Have you used an at-home hormone test or tracker? Select all that apply.
+No, but I’m curious
+Inito
+Clearblue Menopause Stage Indicator
+Mira
+Blood tests through my doctor
+No, not interested
+Proov
+Other (please specify)
+Where do you get care for perimenopause or menopause? Select all that apply.
+Hers
+Alloy
+I’m not looking for care right now
+Winona
+Midi Health
+I haven’t found care yet
+A menopause specialist (in person)
+Allara Health
+Evernow
+My regular OB-GYN or primary care doctor
+A program through my employer or insurance (Maven, etc.)
+Other (please specify)
+*
+Are you on hormone therapy (HRT / MHT)?
+(Required.)
+I tried it and stopped
+My doctor didn't recommend it for me
+No, it’s not for me
+Not yet, but I’m considering it
+Yes
+Prefer not to say
+Prev
+Next
+
+--- page ---
+Let's chat about you and your journey into perimenapause.
+Where are you in your journey?
+I think I’m in perimenopause, but it’s not confirmed
+My doctor confirmed I’m in perimenopause
+I’m in menopause (no period for 12+ months)
+Medical or surgical menopause (hysterectomy, treatment, medication)
+Honestly not sure
+When did you first start noticing changes?
+In the last 6 months
+6–12 months ago
+1–2 years ago
+3–5 years ago
+More than 5 years ago
+Not sure
+What’s your biggest priority right now?
+Figuring out if my current treatment is helping
+Finding a treatment that works for me
+Figuring out if this is perimenopause
+Understanding patterns in my mood, energy, and symptoms
+Knowing what to expect next
+Feeling more like myself
+Finding a doctor who understands my concerns
+Making sense of changes in my periods
+Other (please specify)
+Which of these are you dealing with? Select all that apply.
+Weight gain or bloating
+Joint pain or aches
+Irregular, heavier, or longer periods
+Low libido or vaginal dryness
+Heart palpitations
+Bad sleep or waking at 3am
+Headaches or migraines
+Anxiety or a sense of dread
+Skin or hair changes
+Mood swings, rage, or irritability
+Exhaustion and low energy
+Brain fog, forgetting words
+Hot flashes or night sweats
+Other (please specify)
+What do you use to track your perimenopause symptoms right now? Select all that apply.
+Balance
+Nothing right now
+Health & Her
+A spreadsheet or notes app
+Bearable
+Clue
+Natural Cycles
+Flo
+Wearables (Apple watch, Oura, Whoop, Fitbit, etc.)
+Stella
+Caria
+Pen and paper, a journal, or a calendar
+Stardust
+Other (please specify)
+Have you used an at-home hormone test or tracker? Select all that apply.
+No, but I’m curious
+Inito
+Clearblue Menopause Stage Indicator
+Mira
+Blood tests through my doctor
+No, not interested
+Proov
+Other (please specify)
+Where do you get care for perimenopause or menopause? Select all that apply.
+Hers
+Alloy
+I’m not looking for care right now
+Winona
+Midi Health
+I haven’t found care yet
+A menopause specialist (in person)
+Allara Health
+Evernow
+My regular OB-GYN or primary care doctor
+A program through my employer or insurance (Maven, etc.)
+Other (please specify)
+This question requires an answer.
+*
+Are you on hormone therapy (HRT / MHT)?
+(Required.)
+I tried it and stopped
+My doctor didn't recommend it for me
+No, it’s not for me
+Not yet, but I’m considering it
+Yes
+Prefer not to say
+Prev
+Next
+[STOPPED: required question, not answering]
+
+
+########## BRANCH 4: Tracking my body after baby ##########
+
+--- page ---
+We are most grateful for your enthusiasm!
+
+We love that you want to share your cycle-tracking thoughts with us! Right now, we’re conducting an investigation into some other journeys in the Stardust universe: Trying to Conceive, Perimenopause, and Partner Mode…to name a few!
+
+But please, don’t let that stop you from speaking your mind and helping us make your wishes come true. Our inbox is always open at support@stardust.app
+
+As a token of our eternal devotion, enjoy 1 month of Stardust Premium on us with code: THANKSLUV. If you’re already a premium user, thanks! (and feel free to share the love and gift it to a friend.)
+
+Prev
+Done
+
+[LAST PAGE: not submitting]
+
+
+########## BRANCH 5: Avoiding pregnancy ##########
+
+--- page ---
+We are most grateful for your enthusiasm!
+
+We love that you want to share your cycle-tracking thoughts with us! Right now, we’re conducting an investigation into some other journeys in the Stardust universe: Trying to Conceive, Perimenopause, and Partner Mode…to name a few!
+
+But please, don’t let that stop you from speaking your mind and helping us make your wishes come true. Our inbox is always open at support@stardust.app
+
+As a token of our eternal devotion, enjoy 1 month of Stardust Premium on us with code: THANKSLUV. If you’re already a premium user, thanks! (and feel free to share the love and gift it to a friend.)
+
+Prev
+Done
+
+[LAST PAGE: not submitting]
+
+
+########## BRANCH 6: Tracking when my next period is ##########
+
+--- page ---
+We are most grateful for your enthusiasm!
+
+We love that you want to share your cycle-tracking thoughts with us! Right now, we’re conducting an investigation into some other journeys in the Stardust universe: Trying to Conceive, Perimenopause, and Partner Mode…to name a few!
+
+But please, don’t let that stop you from speaking your mind and helping us make your wishes come true. Our inbox is always open at support@stardust.app
+
+As a token of our eternal devotion, enjoy 1 month of Stardust Premium on us with code: THANKSLUV. If you’re already a premium user, thanks! (and feel free to share the love and gift it to a friend.)
+
+Prev
+Done
+
+[LAST PAGE: not submitting]
+
+
+########## BRANCH 7: Getting to know my cycle ##########
+
+--- page ---
+We are most grateful for your enthusiasm!
+
+We love that you want to share your cycle-tracking thoughts with us! Right now, we’re conducting an investigation into some other journeys in the Stardust universe: Trying to Conceive, Perimenopause, and Partner Mode…to name a few!
+
+But please, don’t let that stop you from speaking your mind and helping us make your wishes come true. Our inbox is always open at support@stardust.app
+
+As a token of our eternal devotion, enjoy 1 month of Stardust Premium on us with code: THANKSLUV. If you’re already a premium user, thanks! (and feel free to share the love and gift it to a friend.)
+
+Prev
+Done
+
+[LAST PAGE: not submitting]
+
+
+########## BRANCH 8: Following my partner ##########
+
+--- page ---
+Let's chat about your partner journey.
+Who are you following on Stardust?
+A family member
+My platonic partner
+A friend
+My romantic partner
+Someone else (please specify)
+How often do you actually open Stardust?
+Every day
+A few times a week
+About once a week
+Only when I get a notification
+Hardly ever, honestly
+What are the main reasons you check Stardust? Select all that apply.
+Following their pregnancy and baby development
+Sending spells and seeing their hints (snacks, cuddles, alone time)
+Knowing when we need protection (we’re not trying)
+Knowing when their period is coming
+Tracking where my partner is in their cycle
+Knowing their fertile window (we’re trying)
+Knowing how I can best support them
+Planning dates, trips, or plans around their cycle
+Reading their daily horoscope, insights, or messages
+Understanding how they might be feeling and why
+Understanding how their hormones might affect their mood or energy
+Other (please specify)
+What would make Stardust more useful for you? Choose up to 3.
+Strengthening our relationship
+Understanding my partner
+Understanding my own body
+Staying connected and organized
+Making Stardust easier to use
+Something else (please specify)
+Imagine Stardust as a little helper for your relationship. What would you want it to do?
+Prev
+Next
+
+--- page ---
+Last stretch.
+
+A few questions about you. Answer what feels right, skip what doesn't.
+
+Mini reminder, everything you share is reviewed in aggregate only (aka your personal identity remains completely private).
+
+How old are you?
+Under 18
+18–22
+23–27
+28–32
+33–38
+39–45
+46–55
+56+
+Prefer not to say
+Are you a Stardust Premium subscriber?
+Yes
+No, but I've considered it
+No, and I haven't considered it
+I used to be
+I am not sure
+Prev
+Next
+
+--- page ---
+Thank you, thank you, thank you.
+
+We’re so grateful you took the time to share your thoughts with us. We can’t wait to make Stardust the best possible place to be, wherever you are right now.
+
+As a token of our eternal devotion, enjoy 1 month of Stardust Premium on us with code THANKSLUV.
+
+If you’re already a premium user, share the love and gift it to a friend.
+
+Prev
+Next
+
+--- page ---
+We value your privacy
+We and our third party partners may use cookies and similar technologies on this site to analyze usage, optimize our services, personalize content, tailor and measure ads and keep this site secure. Privacy Notice Cookies Notice
+Continue
+Customize
+Consent powered by Ethyca
+Thank you for taking this survey.
+Get rewarded for sharing your opinions
+Take quick surveys and earn $5+ in gift cards from 100+ brands via Prizeout.
+Take a survey
+Product
+Overview
+Surveys
+AI Survey Generator
+Online Forms
+Market Research
+Integrations
+AI
+Enterprise
+Pricing
+Application Management
+Popular Templates
+Customer Satisfaction
+Employee Engagement
+Event Feedback
+Product Testing
+Net Promoter Score (NPS)
+Course Evaluation
+All Templates
+Resources
+Customers
+Blog
+Resource Center
+Free Tools
+Trust Center
+Support
+Contact Sales
+Partnership Programs
+Learn
+How to Create Surveys
+NPS Calculator
+Margin of Error Calculator
+Sample Size Calculator
+AB Test Significance Calculator
+Likert Scale
+Online Quizzes
+Free Survey Templates
+Survey Best Practices
+SurveyMonkey vs. Google Forms
+About
+Leadership Team
+Newsroom
+Vision and Mission
+Social Impact and Inclusion
+Careers
+Hiring
+Locations
+Imprint
+Log in
+Sign up
+English
+Copyright © 1999-2026 SurveyMonkey
+Privacy noticeTerms of useCookies noticeHealth Plan Transparency in CoverageDo not sell or share my personal information
+
+[no Next button]
+
+
+########## BRANCH 9: None of the above ##########
+
+--- page ---
+We are most grateful for your enthusiasm!
+
+We love that you want to share your cycle-tracking thoughts with us! Right now, we’re conducting an investigation into some other journeys in the Stardust universe: Trying to Conceive, Perimenopause, and Partner Mode…to name a few!
+
+But please, don’t let that stop you from speaking your mind and helping us make your wishes come true. Our inbox is always open at support@stardust.app
+
+As a token of our eternal devotion, enjoy 1 month of Stardust Premium on us with code: THANKSLUV. If you’re already a premium user, thanks! (and feel free to share the love and gift it to a friend.)
+
+Prev
+Done
+
+[LAST PAGE: not submitting]
